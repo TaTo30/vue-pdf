@@ -1,6 +1,6 @@
 {
   "name": "vuepdf",
-  "version": "0.0.0",
+  "version": "1.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -8,10 +8,10 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "pdfjs-dist": "^2.14.305",
-    "vue": "^3.2.33"
+    "pdfjs-dist": "^2.14.305"
   },
   "devDependencies": {
+    "vue": "^3.2.33",
     "@rushstack/eslint-patch": "^1.1.0",
     "@vitejs/plugin-vue": "^2.3.1",
     "@vue/eslint-config-prettier": "^7.0.0",

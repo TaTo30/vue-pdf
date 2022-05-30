@@ -49,23 +49,33 @@ export default {
     var AnnotationLayerLoaded = false
     var Annotations = []
 
+    // Use this function to handle annotation events
     const annotationEventsHandler = (evt) => {
       var annotation = evt.target.parentNode;
+
+      // annotations are <section> elements if div returned find in child nodes the section element
+      // Do this part recursive in future
       if (annotation.tagName === 'DIV'){
         annotation = annotation.firstChild
       }
+
+      // For linkAnnotation events get only click events
       if (annotation.className === 'linkAnnotation' && evt.type === 'click') {
         var id = annotation.dataset['annotationId']
         if (id) linkAnnotationEvent(getAnnotationByID(id, Annotations))
+
+      // For popupAnnotation events only manage text parsing of popup element
       } else if (annotation.className === 'popupAnnotation'){
         for (const spanElement of annotation.getElementsByTagName("span")) {
-          var unparsedContent = spanElement.textContent
+          var content = spanElement.textContent
           var args = JSON.parse(spanElement.dataset['l10nArgs'])
           for (const key in args) 
-              unparsedContent = unparsedContent.replace(`{{${key}}}`, args[key])
-          spanElement.textContent = unparsedContent
+              content = content.replace(`{{${key}}}`, args[key])
+          spanElement.textContent = content
         }
       }
+
+      // Another Annotations manage here
     }
 
     const linkAnnotationEvent = (annotation) => {
@@ -147,7 +157,7 @@ export default {
                 annotations: annotations,
                 viewport: viewport.clone({ dontFlip: true}),
                 page: page,
-                linkService: new SimpleLinkService(), // since no need pdfviewer, send void LinkService
+                linkService: new SimpleLinkService(), // no pdfviewer features needed, send void LinkService
                 div: AnnotationlayerRef.value
               })
               Annotations = annotations
@@ -158,8 +168,8 @@ export default {
               AnnotationlayerRef.value.addEventListener('mouseover', annotationEventsHandler)
             })
           }
+          context.emit('loaded', viewport)
         })
-        context.emit('loaded', viewport)
       })
     }
 
@@ -181,6 +191,7 @@ export default {
 
     watch(() => props.pdf, (pdf) => {
       // for any change in pdf proxy, rework all
+      console.log(pdf);
       clearLayers()
       initDoc(pdf)
     })
@@ -216,6 +227,7 @@ export default {
     })
 
     onMounted(() => {
+      console.log(props.pdf);
       if (props.pdf !== undefined) {
         initDoc(props.pdf)
       }

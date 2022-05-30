@@ -1,6 +1,6 @@
 <template>
-  <div v-for="page in pages" :key="page" style="text-align: center;" >
-    <VuePDF :pdf="pdf" :page="page" text-layer annotation-layer @annotation="annotationEvent" @loaded="loadedEvent" />
+  <div v-for="page in pages" :key="page"  >
+    <VuePDF :pdf="pdf" :page="page"   />
   </div>
 </template>
 
@@ -14,7 +14,17 @@ export default {
     VuePDF
   },
   setup(){
-    const {pdf, pages} = PDFProxy("./4Identity.pdf")
+    const onProgress = (cb) => {
+      // console.log(cb);
+    }
+
+    const onPassword = (updatePassword, _) => {
+      updatePassword('password')
+    }
+
+    const {pdf, pages, info} = PDFProxy("./popup.pdf", onProgress, onPassword)
+
+
     return {
       pdf,
       pages,
