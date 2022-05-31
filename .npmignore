@@ -9,9 +9,10 @@ lerna-debug.log*
 
 node_modules
 .vscode
+src/App.vue
+src/main.js
+index.html
 public
-cjs
-esm
 .DS_Store
 dist
 dist-ssr

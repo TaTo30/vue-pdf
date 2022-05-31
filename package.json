@@ -1,9 +1,30 @@
 {
-  "name": "vuepdf",
-  "version": "1.0",
+  "name": "@tato30/vue-pdf",
+  "description": "A vue 3 PDFJS wrapper",
+  "version": "1.1.0-beta.0",
+  "license": "MIT",
+  "main": "cjs/index.js",
+  "module": "esm/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TaTo30/VuePDF.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TaTo30/VuePDF/issues"
+  },
+  "homepage": "https://github.com/TaTo30/VuePDF/",
+  "keywords": [
+    "pdf",
+    "vue",
+    "viewer"
+  ],
+  "author": {
+    "name": "Aldo Hernandez",
+    "url": "https://github.com/TaTo30"
+  },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "rollup -c",
     "preview": "vite preview --port 5050",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
@@ -14,10 +35,18 @@
     "vue": "^3.2.33",
     "@rushstack/eslint-patch": "^1.1.0",
     "@vitejs/plugin-vue": "^2.3.1",
+    "@vue/compiler-sfc": "^3.2.36",
     "@vue/eslint-config-prettier": "^7.0.0",
     "eslint": "^8.16.0",
     "eslint-plugin-vue": "^8.2.0",
     "prettier": "^2.5.1",
+    "rollup": "^2.75.4",
+    "rollup-plugin-css-only": "^3.1.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-vue": "^6.0.0",
     "vite": "^2.9.5"
+  },
+  "peerDependencies": {
+    "vue": "^3.2.33"
   }
 }

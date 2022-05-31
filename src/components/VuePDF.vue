@@ -27,8 +27,8 @@ export default {
       required: true
     },
     page: {
-      required: true,
-      type: Number
+      type: Number,
+      default: 1
     },
     scale: {
       type: Number,
@@ -191,9 +191,10 @@ export default {
 
     watch(() => props.pdf, (pdf) => {
       // for any change in pdf proxy, rework all
-      console.log(pdf);
-      clearLayers()
-      initDoc(pdf)
+      if (pdf !== undefined) {
+        clearLayers()
+        initDoc(pdf)
+      }
     })
 
     watch(() => props.textLayer, (textLayer) => {
@@ -216,18 +217,19 @@ export default {
 
     watch(() => props.scale, (_) => {
       // When scale change rework render task
-      clearLayers()
+      if (TextLayerLoaded && AnnotationLayerLoaded)
+        clearLayers()
       renderPage(props.page)
     })
 
     watch(() => props.page, (page) => {
       // When page change rework render task
-      clearLayers()
+      if (TextLayerLoaded && AnnotationLayerLoaded)
+        clearLayers()
       renderPage(page)
     })
 
     onMounted(() => {
-      console.log(props.pdf);
       if (props.pdf !== undefined) {
         initDoc(props.pdf)
       }
