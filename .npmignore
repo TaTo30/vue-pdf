@@ -7,12 +7,13 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
 .vscode
+_site
+node_modules
+public
 src/App.vue
 src/main.js
 index.html
-public
 .DS_Store
 dist
 dist-ssr

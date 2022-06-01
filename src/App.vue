@@ -15,7 +15,7 @@ export default {
   setup(){
   
     const textBool = ref(false)
-    const {pdf, pages} = PDFProxy("4Identity.pdf")
+    const {pdf, pages} = PDFProxy("popup.pdf")
 
     return {
       pdf,
