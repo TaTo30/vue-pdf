@@ -1,10 +1,10 @@
 <template>
-  <div v-for="page in pages" :key="page"  >
-    <VuePDF :pdf="pdf" :page="page" annotation-layer text-layer  />
-  </div>
+    <VuePDF :pdf="pdf" />
 </template>
 
 <script>
+
+import {ref} from 'vue'
 import PDFProxy from "./components/VuePDFProxy";
 import VuePDF from "./components/VuePDF.vue";
 
@@ -13,24 +13,25 @@ export default {
     VuePDF
   },
   setup(){
-    const onProgress = ({loaded, total}) => {
-      console.log(`${loaded/total*100}% Loaded`);
-    }
-
-    // const onPassword = (updatePassword, _) => {
-    //   updatePassword('password')
-    // }
-
-    const {pdf, pages, info} = PDFProxy("popup.pdf", {onProgress: onProgress})
+  
+    const textBool = ref(false)
+    const {pdf, pages} = PDFProxy("4Identity.pdf")
 
     return {
       pdf,
       pages,
+      textBool,
       annotationEvent: (value) => {
         console.log(value);
       },
       loadedEvent: (value) => {
         console.log(value);
+      },
+      menos: () => {
+        textBool.value = false
+      },
+      mas: () => {
+        textBool.value = true
       }
     }
   }

@@ -26,17 +26,20 @@
     "dev": "vite",
     "build": "rollup -c",
     "preview": "vite preview --port 5050",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "dependencies": {
     "pdfjs-dist": "^2.14.305"
   },
   "devDependencies": {
-    "vue": "^3.2.33",
+    "@babel/core": "^7.18.2",
     "@rushstack/eslint-patch": "^1.1.0",
     "@vitejs/plugin-vue": "^2.3.1",
     "@vue/compiler-sfc": "^3.2.36",
     "@vue/eslint-config-prettier": "^7.0.0",
+    "babel-loader": "^8.2.5",
     "eslint": "^8.16.0",
     "eslint-plugin-vue": "^8.2.0",
     "prettier": "^2.5.1",
@@ -44,7 +47,9 @@
     "rollup-plugin-css-only": "^3.1.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-vue": "^6.0.0",
-    "vite": "^2.9.5"
+    "vite": "^2.9.5",
+    "vue": "^3.2.33",
+    "vue-loader": "^16.8.3"
   },
   "peerDependencies": {
     "vue": "^3.2.33"

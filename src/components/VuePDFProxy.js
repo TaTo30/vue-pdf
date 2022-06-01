@@ -42,7 +42,6 @@ export default function VuePDF(src, options = {
     })
   });
 
-  
   return {
     pdf,
     pages,

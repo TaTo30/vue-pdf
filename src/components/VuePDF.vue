@@ -1,8 +1,8 @@
 <template>
  <span style="position: relative; display: block">
     <canvas ref="CanvasREF" style="display: inline-block"></canvas>
-    <div ref="AnnotationlayerRef" class="annotationLayer" style="display: inline-block;" v-if="annotationLayer"></div>
-    <div ref="TextlayerREF" class="textLayer" style="display: inline-block;" v-if="textLayer"></div>
+    <div ref="AnnotationlayerRef" class="annotationLayer" style="display: inline-block;" v-show="annotationLayer"></div>
+    <div ref="TextlayerREF" class="textLayer" style="display: inline-block;" v-show="textLayer"></div>
  </span>
 </template>
 
@@ -175,11 +175,11 @@ export default {
 
     const clearLayers = () => {
       // Clear all childnodes of layer elements
-      TextlayerREF.value.replaceChildren()
-      AnnotationlayerRef.value.replaceChildren()
+      TextlayerREF.value.replaceChildren?.()
+      AnnotationlayerRef.value.replaceChildren?.()
       // Clear event listeners of annotation layer 
-      AnnotationlayerRef.value.removeEventListener('click', annotationEventsHandler)
-      AnnotationlayerRef.value.removeEventListener('mouseover', annotationEventsHandler)
+      AnnotationlayerRef.value.removeEventListener?.('click', annotationEventsHandler)
+      AnnotationlayerRef.value.removeEventListener?.('mouseover', annotationEventsHandler)
     }
 
     const initDoc = (proxy) => {
@@ -217,15 +217,13 @@ export default {
 
     watch(() => props.scale, (_) => {
       // When scale change rework render task
-      if (TextLayerLoaded && AnnotationLayerLoaded)
-        clearLayers()
+      clearLayers()
       renderPage(props.page)
     })
 
     watch(() => props.page, (page) => {
       // When page change rework render task
-      if (TextLayerLoaded && AnnotationLayerLoaded)
-        clearLayers()
+      clearLayers()
       renderPage(page)
     })
 
