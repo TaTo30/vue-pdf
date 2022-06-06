@@ -2,14 +2,33 @@
 
 VuePDF is a **Vue 3** wrapper for pdf.js that enable you to display pdf pages in your project. this package consist in two parts: PDFProxy Composable and VuePDF Component, will be explained in more details later in this document.
 
-## Install
-
-No install info yet.
-
 ## Compatibility
 
 This package is for Vue 3 and supports the same browsers as Vue 3.
-If you want a package for Vue 2 or older browsers check this project from FranckFreiburger: vue-pdf.
+If you want a package for Vue 2 or older browsers check this project from FranckFreiburger: [vue-pdf](https://github.com/FranckFreiburger/vue-pdf).
+
+## Content
+
+* [**Install**](#install)
+* [**Live Demo**](#live-demo)
+* [**Basic Usage**](#basic-usage)
+* [**PDFProxy Composable**](#pdfproxy-composable)
+  * [**Params**](#params)
+  * [**Returns**](#returns)
+* [**VuePDF Component**](#vuepdf-component)
+  * [**Props**](#props)
+  * [**Events**](#events)
+
+## Install
+
+```console
+npm i @tato30/vue-pdf
+```
+
+
+## Live Demo
+
+You can find a [live demo](https://tato30.github.io/VuePDF/) to check a few examples to use the component.
 
 ## Basic Usage
 
@@ -26,15 +45,10 @@ export default {
     VuePDF
   },
   setup(){
-    const onProgress = ({loaded, total}) => {
-      console.log(`${loaded / total * 100}% Loaded`);
-    }
+    const { pdf, pages, info } = PDFProxy("document.pdf")
 
-    const onPassword = (updatePassword, _) => {
-      updatePassword('password')
-    }
-
-    const { pdf } = PDFProxy("document.pdf", onProgress, onPassword)
+    console.log(`Document has ${pages} pages`)
+    console.log(`Document info: ${info}`)
 
     return {
       pdf
@@ -50,43 +64,63 @@ This function is the pdf loader, let you get the basic information and propertie
 
 ### **Params**
 
-### **src**
+#### **src**
 
-Type: `string | URL | TypedArray`
+Type: `string | URL | TypedArray` <br/>
+Required: `True`
 
 This param is the same `src`  of pdf.js
 
-### **onProgress**
+```js
+const { pdf, pages, info } = PDFProxy("document.pdf")
+```
 
-Type: `function`
+#### **options**
 
-Callback function to enable loading progress monitor
+Type: `object`
 
-### **onPassword**
+an object with the possible properties:
 
-Type: `function`
+- `onPassword`: Callback function to request the document password if wrong or no passwrod provider.
+- `onProgress`: Callback function to enable progress monitor.
 
-Callback function to request document password
+```js
+const onPassword = (updatePassword, reason) => {
+  console.log(`Reason for callback: ${reason}`)
+  updatePassword('documentpassword1234')
+}
+
+const onProgress = ({loaded, total}) => {
+  console.log(`${loaded / total * 100}% Loaded`);
+}
+
+const { pdf, pages, info } = PDFProxy("document.pdf", {
+  onPassword: onPassword,
+  onProgress: onProgress
+})
+```
 
 ### **Returns**
 
-### **pdf**
+#### **pdf**
 
 Type: `PDFDocumentLoadingTask`
 
 The loading task of document, see [PDFDocumentLoadingTask]([https://](https://mozilla.github.io/pdf.js/api/draft/module-pdfjsLib-PDFDocumentLoadingTask.html)) for more details
 
-### **pages**
+#### **pages**
 
 Type: `int`
 
 Pages number of document
 
-### **info**
+#### **info**
 
 Type: `object`
 
-Info about document
+Info object about document
+
+---
 
 ## VuePDF Component
 
@@ -94,7 +128,7 @@ This is the component to render a pdf page.
 
 ### **Props**
 
-### **pdf**
+#### **:pdf**
 
 Type: `PDFDocumentLoadingTask` <br/>
 Required: `True`
@@ -105,7 +139,7 @@ The PDFDocumentLoadingTask obtained from [PDFProxy](#pdf)
 <VuePDF :pdf="pdf" />
 ```
 
-### **:page**
+#### **:page**
 
 Type: `int` <br/>
 Default: `1`
@@ -116,7 +150,7 @@ Page to render, this prop must be the page number starting at 1
 <VuePDF :pdf="pdf" :page="2" />
 ```
 
-### **:scale**
+#### **:scale**
 
 Type: `int` <br />
 Default: `1`
@@ -127,7 +161,7 @@ Scale to render page
 <VuePDF :pdf="pdf" :page="1" :scale="0.5" />
 ```
 
-### **:text-layer**
+#### **:text-layer**
 
 Type: `boolean` <br />
 Default: `false`
@@ -138,7 +172,7 @@ Enable text selection in page
 <VuePDF :pdf="pdf" :page="1" text-layer />
 ```
 
-### **:annotation-layer**
+#### **:annotation-layer**
 
 Type: `boolean` <br />
 Default: `false`
@@ -151,7 +185,7 @@ Enable document annotations like links, popups, etc.
 
 ### **Events**
 
-### **@loaded** -> `object`
+#### **@loaded** -> `object`
 
 Emitted when page has finishes rendering in view
 
@@ -166,7 +200,7 @@ const loadedEvent = (value) => {
 
 ```
 
-### **@annotation** -> `object`
+#### **@annotation** -> `object`
 
 Emitted when user has interaction with any annotation in document view
 
