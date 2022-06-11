@@ -8,13 +8,20 @@
 
 <script>
 import * as PDFJSLib from "pdfjs-dist/build/pdf";
+import * as PDFJSViewer from "pdfjs-dist/web/pdf_viewer"
 import { SimpleLinkService } from "pdfjs-dist/web/pdf_viewer";
 import "pdfjs-dist/web/pdf_viewer.css"
 
-import { watch, ref, onMounted } from 'vue'
+import { watch, ref, onMounted, render } from 'vue'
 
 const INTERNAL_LINK = "internal-link"
 const LINK = "link"
+const FILE_ATTACHMENT = "file-attachment"
+const FORM_TEXT = "form-text"
+const FORM_SELECT = "form-select"
+const FORM_CHECKBOX = "form-checkbox"
+const FOMR_RADIO = "form-radio"
+
 
 export default {
   name: 'VuePDF',
@@ -34,6 +41,7 @@ export default {
       type: Number,
       default: 1
     },
+    rotation: Number,
     "text-layer": Boolean,
     "annotation-layer": Boolean
   },
@@ -61,11 +69,10 @@ export default {
 
       // For linkAnnotation events get only click events
       if (annotation.className === 'linkAnnotation' && evt.type === 'click') {
-        var id = annotation.dataset['annotationId']
-        if (id) linkAnnotationEvent(getAnnotationByID(id, Annotations))
-
-      // For popupAnnotation events only manage text parsing of popup element
-      } else if (annotation.className === 'popupAnnotation'){
+        const id = annotation.dataset['annotationId']
+        if (id) linkAnnotationEvent(getAnnotationsByKey('id', id)[0])
+      // For annotations con popups
+      } else if (annotation.className === 'popupAnnotation' || annotation.className === 'textAnnotation' || annotation.className === 'fileAttachmentAnnotation'){
         for (const spanElement of annotation.getElementsByTagName("span")) {
           var content = spanElement.textContent
           var args = JSON.parse(spanElement.dataset['l10nArgs'])
@@ -73,10 +80,88 @@ export default {
               content = content.replace(`{{${key}}}`, args[key])
           spanElement.textContent = content
         }
+        if (annotation.className === 'fileAttachmentAnnotation' && evt.type === 'dblclick'){
+          const id = annotation.dataset['annotationId']
+          if (id) fileAttachmentAnnotationEvent(getAnnotationsByKey('id', id)[0])
+        }
+      // TextFields and TextAreas
+      } else if (annotation.className === 'textWidgetAnnotation' && evt.type === 'input') {
+        let inputElement = annotation.getElementsByTagName("input")[0]
+        if (!inputElement) inputElement = annotation.getElementsByTagName("textarea")[0]
+        inputAnnotationEvent(inputElement)
+      
+      } else if (annotation.className === 'choiceWidgetAnnotation' && evt.type === 'input') {
+        inputAnnotationEvent(annotation.getElementsByTagName("select")[0])
+      } else if (annotation.className === 'buttonWidgetAnnotation checkBox' && evt.type === 'change') {
+        inputAnnotationEvent(annotation.getElementsByTagName("input")[0])
+      } else if (annotation.className === 'buttonWidgetAnnotation radioButton' && evt.type === 'change') {
+        const id = annotation.dataset['annotationId']
+        if (id){
+          const anno = getAnnotationsByKey('id', id)[0]
+          const radioOptions = []
+          for (const radioAnnotations of getAnnotationsByKey('fieldName', anno.fieldName)) 
+            if (radioAnnotations.buttonValue) radioOptions.push(radioAnnotations.buttonValue)
+          inputAnnotationEvent(annotation.getElementsByTagName("input")[0], {
+            value: anno.buttonValue,
+            defaultValue: anno.fieldValue,
+            options: radioOptions
+          })
+        }
       }
-
       // Another Annotations manage here
     }
+
+    const inputAnnotationEvent = (inputEl, args) => {
+      switch (inputEl.type) {
+        case "textarea":
+        case "text":
+          annotationEvent(FORM_TEXT, {
+            fieldName: inputEl.name,
+            value: inputEl.value
+          })
+          break;
+        case "select-one":
+        case "select-multiple":
+          const options = []
+          for (const opt of inputEl.options) {
+            options.push({
+              value: opt.value,
+              label: opt.label
+            })
+          }
+          const selected = []
+          for (const opt of inputEl.selectedOptions) {
+            selected.push({
+              value: opt.value,
+              label: opt.label
+            })
+          }
+          annotationEvent(FORM_SELECT, {
+            fieldName: inputEl.name,
+            value: selected,
+            options: options
+          })
+          break;
+        case "checkbox":
+          annotationEvent(FORM_CHECKBOX, {
+            fieldName: inputEl.name,
+            checked: inputEl.checked
+          })
+          break;
+        case "radio":
+          annotationEvent(FOMR_RADIO, {
+            fieldName: inputEl.name,
+            ...args,
+          })
+          break;
+        default:
+          break;
+      }
+    }
+
+    const fileAttachmentAnnotationEvent = (annotation) => 
+      annotationEvent(FILE_ATTACHMENT, annotation.file)
+    
 
     const linkAnnotationEvent = (annotation) => {
       if (annotation.dest){
@@ -101,17 +186,27 @@ export default {
     }
 
     const annotationEvent = (type, data) => {
-      context.emit("annotation", {type: type, info: data})
+      context.emit("annotation", {type: type, data: data})
     }
 
-    const getAnnotationByID = (id, annotations) => {
-      for (const annotation of annotations) 
-        if (annotation.id === id) return annotation
+    const getAnnotationsByKey = (key, value) => {
+      const result = []
+      for (const annotation of Annotations) 
+        if (annotation[key] === value) result.push(annotation)
+      return result
     }
 
     const renderPage = (pageNum) => {
       PDFDoc.getPage(pageNum).then(page => {
-        var viewport = page.getViewport({ scale: props.scale });
+        const viewportParams = {
+          scale: props.scale
+        }
+
+        // Send rotation params only if is a valid number
+        if (typeof props.rotation === "number" && props.rotation % 90 === 0)
+          viewportParams['rotation'] = props.rotation
+        
+        var viewport = page.getViewport(viewportParams);
         var ctx = CanvasREF.value.getContext('2d')
 
         CanvasREF.value.width = viewport.width;
@@ -134,13 +229,16 @@ export default {
               TextlayerREF.value.style.height = CanvasREF.value.offsetHeight + 'px';
               TextlayerREF.value.style.width = CanvasREF.value.offsetWidth + 'px';
 
-              PDFJSLib.renderTextLayer({
-                textContent: textContent,
-                container: TextlayerREF.value,
+              // Render text using TextLayerBuilder from pdfjs viewer
+              const TextLayerBuilder = new PDFJSViewer.TextLayerBuilder({
+                textLayerDiv: TextlayerREF.value, 
+                pageIndex: page._pageIndex,
+                eventBus: new PDFJSViewer.EventBus(),
                 viewport: viewport,
-                textDivs: [],
-                enhanceTextSelection: true
-              });
+                enhanceTextSelection: false
+              })
+              TextLayerBuilder.setTextContent(textContent)
+              TextLayerBuilder.render();
               TextLayerLoaded = true
             })
           }
@@ -165,7 +263,10 @@ export default {
 
               // Add event listeners to manage some events of annotations layer items
               AnnotationlayerRef.value.addEventListener('click', annotationEventsHandler)
+              AnnotationlayerRef.value.addEventListener('dblclick', annotationEventsHandler)
               AnnotationlayerRef.value.addEventListener('mouseover', annotationEventsHandler)
+              AnnotationlayerRef.value.addEventListener('input', annotationEventsHandler)
+              AnnotationlayerRef.value.addEventListener('change', annotationEventsHandler)
             })
           }
           context.emit('loaded', viewport)
@@ -180,6 +281,8 @@ export default {
       // Clear event listeners of annotation layer 
       AnnotationlayerRef.value.removeEventListener?.('click', annotationEventsHandler)
       AnnotationlayerRef.value.removeEventListener?.('mouseover', annotationEventsHandler)
+      AnnotationlayerRef.value.removeEventListener?.('input', annotationEventsHandler)
+      AnnotationlayerRef.value.removeEventListener?.('change', annotationEventsHandler)
     }
 
     const initDoc = (proxy) => {
@@ -217,6 +320,12 @@ export default {
 
     watch(() => props.scale, (_) => {
       // When scale change rework render task
+      clearLayers()
+      renderPage(props.page)
+    })
+
+    watch(() => props.rotation, (_) => {
+      // When rotation change rework render task
       clearLayers()
       renderPage(props.page)
     })

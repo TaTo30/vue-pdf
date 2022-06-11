@@ -1,11 +1,13 @@
 <template>
-    <VuePDF :pdf="pdf" />
+  <div style="text-align: center;">
+    <VuePDF :pdf="pdf" :annotation-layer="true" :text-layer="true" @annotation="annotationEvent" />
+  </div>
 </template>
 
 <script>
 
 import {ref} from 'vue'
-import PDFProxy from "./components/VuePDFProxy";
+import usePDF from "./components/usePDF";
 import VuePDF from "./components/VuePDF.vue";
 
 export default {
@@ -15,7 +17,7 @@ export default {
   setup(){
   
     const textBool = ref(false)
-    const {pdf, pages} = PDFProxy("popup.pdf")
+    const {pdf, pages} = usePDF("example_041.pdf")
 
     return {
       pdf,
