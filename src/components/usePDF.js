@@ -5,8 +5,6 @@ import PDFJSWorker from "pdfjs-dist/build/pdf.worker.entry";
 
 PDFJSlib.GlobalWorkerOptions.workerSrc = PDFJSWorker;
 
-
-
 /** 
  * @typedef {Object} UsePDFParameters 
  * @property {string} password

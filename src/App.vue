@@ -1,6 +1,6 @@
 <template>
   <div style="text-align: center;">
-    <VuePDF :pdf="pdf" :annotation-layer="true" :text-layer="true" @annotation="annotationEvent" />
+    <VuePDF :pdf="pdf" />
   </div>
 </template>
 
@@ -29,12 +29,6 @@ export default {
       loadedEvent: (value) => {
         console.log(value);
       },
-      menos: () => {
-        textBool.value = false
-      },
-      mas: () => {
-        textBool.value = true
-      }
     }
   }
 

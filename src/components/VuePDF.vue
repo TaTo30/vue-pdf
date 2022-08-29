@@ -71,7 +71,7 @@ export default {
       if (annotation.className === 'linkAnnotation' && evt.type === 'click') {
         const id = annotation.dataset['annotationId']
         if (id) linkAnnotationEvent(getAnnotationsByKey('id', id)[0])
-      // For annotations con popups
+      // For popups annotations 
       } else if (annotation.className === 'popupAnnotation' || annotation.className === 'textAnnotation' || annotation.className === 'fileAttachmentAnnotation'){
         for (const spanElement of annotation.getElementsByTagName("span")) {
           var content = spanElement.textContent

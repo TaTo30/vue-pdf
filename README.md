@@ -1,6 +1,6 @@
 # VuePDF
 
-VuePDF is a **Vue 3** wrapper for pdf.js that enable you to display pdf pages in your project. this package consist in two parts: PDFProxy Composable and VuePDF Component, will be explained in more details later in this document.
+VuePDF is a **Vue 3** wrapper for pdf.js that enable you to display pdf pages in your project.
 
 ## Compatibility
 
@@ -12,7 +12,7 @@ If you want a package for Vue 2 or older browsers check this project from Franck
 * [**Install**](#install)
 * [**Live Demo**](#live-demo)
 * [**Basic Usage**](#basic-usage)
-* [**PDFProxy Composable**](#pdfproxy-composable)
+* [**usePDF Composable**](#pdfproxy-composable)
   * [**Params**](#params)
   * [**Returns**](#returns)
 * [**VuePDF Component**](#vuepdf-component)
@@ -24,7 +24,6 @@ If you want a package for Vue 2 or older browsers check this project from Franck
 ```console
 npm i @tato30/vue-pdf
 ```
-
 
 ## Live Demo
 
@@ -38,14 +37,14 @@ You can find a [live demo](https://tato30.github.io/VuePDF/) to check a few exam
 </template>
 
 <script>
-import {PDFProxy, VuePDF} from 'VuePDF'
+import {usePDF, VuePDF} from 'VuePDF'
 
 export default {
   components: {
     VuePDF
   },
   setup(){
-    const { pdf, pages, info } = PDFProxy("document.pdf")
+    const { pdf, pages, info } = usePDF("document.pdf")
 
     console.log(`Document has ${pages} pages`)
     console.log(`Document info: ${info}`)
@@ -58,7 +57,7 @@ export default {
 </script>
 ```
 
-## PDFProxy Composable
+## usePDF Composable
 
 This function is the pdf loader, let you get the basic information and properties about pdf document.
 
@@ -72,14 +71,14 @@ Required: `True`
 This param is the same `src`  of pdf.js
 
 ```js
-const { pdf, pages, info } = PDFProxy("document.pdf")
+const { pdf, pages, info } = usePDF("document.pdf")
 ```
 
 #### **options**
 
 Type: `object`
 
-an object with the possible properties:
+an object with the optional properties:
 
 - `onPassword`: Callback function to request the document password if wrong or no passwrod provider.
 - `onProgress`: Callback function to enable progress monitor.
@@ -94,7 +93,7 @@ const onProgress = ({loaded, total}) => {
   console.log(`${loaded / total * 100}% Loaded`);
 }
 
-const { pdf, pages, info } = PDFProxy("document.pdf", {
+const { pdf, pages, info } = usePDF("document.pdf", {
   onPassword: onPassword,
   onProgress: onProgress
 })
@@ -156,6 +155,17 @@ Type: `int` <br />
 Default: `1`
 
 Scale to render page
+
+```html
+<VuePDF :pdf="pdf" :page="1" :scale="0.5" />
+```
+
+#### **:rotation**
+
+Type: `int` <br />
+Default: `Document Default`
+
+Rotate the page in 90 multiples eg. (`90`, `180`, `270`)
 
 ```html
 <VuePDF :pdf="pdf" :page="1" :scale="0.5" />
