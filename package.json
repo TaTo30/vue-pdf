@@ -1,7 +1,7 @@
 {
   "name": "@tato30/vue-pdf",
   "description": "PDF viewer for Vue 3",
-  "version": "1.1.1",
+  "version": "1.2.1",
   "license": "MIT",
   "main": "cjs/index.js",
   "module": "esm/index.js",
@@ -25,10 +25,9 @@
   "scripts": {
     "dev": "vite",
     "build": "rollup -c",
+    "publish": "npm publish --access public",
     "preview": "vite preview --port 5050",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
     "pdfjs-dist": "^2.14.305"

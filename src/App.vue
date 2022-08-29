@@ -1,11 +1,13 @@
 <template>
+  <div style="text-align: center;">
     <VuePDF :pdf="pdf" />
+  </div>
 </template>
 
 <script>
 
 import {ref} from 'vue'
-import PDFProxy from "./components/VuePDFProxy";
+import usePDF from "./components/usePDF";
 import VuePDF from "./components/VuePDF.vue";
 
 export default {
@@ -15,7 +17,7 @@ export default {
   setup(){
   
     const textBool = ref(false)
-    const {pdf, pages} = PDFProxy("popup.pdf")
+    const {pdf, pages} = usePDF("example_041.pdf")
 
     return {
       pdf,
@@ -27,12 +29,6 @@ export default {
       loadedEvent: (value) => {
         console.log(value);
       },
-      menos: () => {
-        textBool.value = false
-      },
-      mas: () => {
-        textBool.value = true
-      }
     }
   }
 
