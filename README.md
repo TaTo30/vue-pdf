@@ -68,7 +68,7 @@ This function is the pdf loader, let you get the basic information and propertie
 Type: `string | URL | TypedArray` <br/>
 Required: `True`
 
-This param is the same `src`  of pdf.js
+This param is the same `src`  of [pdf.js](https://github.com/mozilla/pdf.js/blob/348665934e195a7d7af7f09ecfe26cbc7f2f9751/src/display/api.js#L246)
 
 ```js
 const { pdf, pages, info } = usePDF("document.pdf")
