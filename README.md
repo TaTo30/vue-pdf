@@ -165,10 +165,10 @@ Scale to render page
 Type: `int` <br />
 Default: `Document Default`
 
-Rotate the page in 90 multiples eg. (`90`, `180`, `270`)
+Rotate the page in 90° multiples eg. (`90`, `180`, `270`)
 
 ```html
-<VuePDF :pdf="pdf" :page="1" :scale="0.5" />
+<VuePDF :pdf="pdf" :page="1" :rotation="90" />
 ```
 
 #### **:text-layer**
@@ -212,7 +212,7 @@ const loadedEvent = (value) => {
 
 #### **@annotation** -> `object`
 
-Emitted when user has interaction with any annotation in document view
+Emitted when user has interaction with any annotation in document view.
 
 ```vue
 <template>
@@ -222,8 +222,122 @@ Emitted when user has interaction with any annotation in document view
 const annotationEvent = (value) => {
   console.log(value);
 },
-
 ```
+
+Annotations values has the following struct:
+| Property | Value                                                                                                                                  |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `type`   | Annotation type, posible values: `internal-link`, `link`, `file-attachment`, `form-text`, `form-select`, `form-checkbox`, `form-radio` |
+| `data`   | Annotation associated data                                                                                                             |
+
+#### **EXAMPLES**:
+#### **internal-link**
+`internal-link` fires when user clicks a link that redirects to other content within the document
+```json
+{
+  "type": "internal-link",
+  "data": {
+    "referencedPage": 3,
+    "offset": { 
+      "left": 82,
+      "bottom": 716
+    }
+  }
+}
+```
+#### **link**
+`link` fires when user clicks an external link 
+```json
+{
+  "type": "link",
+  "data": {
+    "url": "mailto:aor@testmail.com",
+    "unsafeUrl": "mailto:aor@testmail.com"
+  }
+}
+```
+#### **file-attachment**
+`file-attachment` fires when user double-clicks an attachment link 
+```json
+{
+  "type": "file-attachment",
+  "data": {
+    "filename": "utf8test.txt",
+    "content": [ 83, 101, 110, ... ] // Uint8Array
+  }
+}
+```
+#### **form-text**
+`form-text` fires when user inputs a value in an textfield element 
+```json
+{
+  "type": "form-text",
+  "data": {
+    "fieldName": "firstname",
+    "value": "Aldo Hernandez"
+  }
+}
+```
+#### **form-select**
+`form-text` fires when user inputs a value in an one-select or multi-select element 
+```json
+{
+  "type": "form-select",
+  "data": {
+    "fieldName": "gender",
+    "value": [
+      {
+        "value": "M",
+        "label": "Male"
+      }
+    ],
+    "options": [
+      {
+        "value": "",
+        "label": "-"
+      },
+      {
+        "value": "M",
+        "label": "Male"
+      },
+      {
+        "value": "F",
+        "label": "Female"
+      }
+    ]
+  }
+}
+```
+#### **form-checkbox**
+`form-checkbox` fires when user changes a checkbox field 
+```json
+{
+  "type": "form-checkbox",
+  "data": {
+    "fieldName": "newsletter",
+    "checked": true
+  }
+}
+```
+#### **form-radio**
+`form-radio` fires when user changes a radio field 
+```json
+{
+  "type": "form-radio",
+  "data": {
+    "fieldName": "drink",
+    "value": "Wine",
+    "defaultValue": "Beer",
+    "options": [ "Water", "Beer", "Wine", "Milk" ]
+  }
+}
+```
+
+
+
+
+
+
 
 <!-- 
 { 

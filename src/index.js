@@ -6,7 +6,7 @@ const plugin = {
     }
 }
 
-export { default as PDFProxy } from "./components/VuePDFProxy.js";
+export { default as usePDF } from "./components/usePDF";
 export { default as VuePDF} from "./components/VuePDF.vue";
 
 export default plugin

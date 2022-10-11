@@ -7,12 +7,12 @@
 </template>
 
 <script>
-import * as PDFJSLib from "pdfjs-dist/build/pdf";
+import * as PDFJSLib from "pdfjs-dist/build/pdf"
 import * as PDFJSViewer from "pdfjs-dist/web/pdf_viewer"
-import { SimpleLinkService } from "pdfjs-dist/web/pdf_viewer";
+import { SimpleLinkService } from "pdfjs-dist/web/pdf_viewer"
 import "pdfjs-dist/web/pdf_viewer.css"
 
-import { watch, ref, onMounted, render } from 'vue'
+import { watch, ref, onMounted } from 'vue'
 
 const INTERNAL_LINK = "internal-link"
 const LINK = "link"
@@ -20,8 +20,9 @@ const FILE_ATTACHMENT = "file-attachment"
 const FORM_TEXT = "form-text"
 const FORM_SELECT = "form-select"
 const FORM_CHECKBOX = "form-checkbox"
-const FOMR_RADIO = "form-radio"
+const FORM_RADIO = "form-radio"
 
+const EVENTS_TO_HANDLER = ['click', 'dblclick', 'mouseover', 'input', 'change']
 
 export default {
   name: 'VuePDF',
@@ -62,7 +63,7 @@ export default {
       var annotation = evt.target.parentNode;
 
       // annotations are <section> elements if div returned find in child nodes the section element
-      // Do this part recursive in future
+      // TODO this part recursive in future
       if (annotation.tagName === 'DIV'){
         annotation = annotation.firstChild
       }
@@ -149,7 +150,7 @@ export default {
           })
           break;
         case "radio":
-          annotationEvent(FOMR_RADIO, {
+          annotationEvent(FORM_RADIO, {
             fieldName: inputEl.name,
             ...args,
           })
@@ -262,11 +263,8 @@ export default {
               AnnotationLayerLoaded = true
 
               // Add event listeners to manage some events of annotations layer items
-              AnnotationlayerRef.value.addEventListener('click', annotationEventsHandler)
-              AnnotationlayerRef.value.addEventListener('dblclick', annotationEventsHandler)
-              AnnotationlayerRef.value.addEventListener('mouseover', annotationEventsHandler)
-              AnnotationlayerRef.value.addEventListener('input', annotationEventsHandler)
-              AnnotationlayerRef.value.addEventListener('change', annotationEventsHandler)
+              for (const evtHandler of EVENTS_TO_HANDLER) 
+                AnnotationlayerRef.value.addEventListener(evtHandler, annotationEventsHandler)
             })
           }
           context.emit('loaded', viewport)
@@ -279,10 +277,8 @@ export default {
       TextlayerREF.value.replaceChildren?.()
       AnnotationlayerRef.value.replaceChildren?.()
       // Clear event listeners of annotation layer 
-      AnnotationlayerRef.value.removeEventListener?.('click', annotationEventsHandler)
-      AnnotationlayerRef.value.removeEventListener?.('mouseover', annotationEventsHandler)
-      AnnotationlayerRef.value.removeEventListener?.('input', annotationEventsHandler)
-      AnnotationlayerRef.value.removeEventListener?.('change', annotationEventsHandler)
+      for (const evtHandler of EVENTS_TO_HANDLER) 
+        AnnotationlayerRef.value.removeEventListener?.(evtHandler, annotationEventsHandler)
     }
 
     const initDoc = (proxy) => {
