@@ -1,7 +1,7 @@
 {
   "name": "@tato30/vue-pdf",
   "description": "PDF viewer for Vue 3",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "license": "MIT",
   "main": "cjs/index.js",
   "module": "esm/index.js",

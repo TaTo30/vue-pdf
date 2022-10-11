@@ -1,8 +1,8 @@
 <template>
  <span style="position: relative; display: block">
     <canvas ref="CanvasREF" style="display: inline-block"></canvas>
-    <div ref="AnnotationlayerRef" class="annotationLayer" style="display: inline-block;" v-show="annotationLayer"></div>
-    <div ref="TextlayerREF" class="textLayer" style="display: inline-block;" v-show="textLayer"></div>
+    <div ref="AnnotationlayerRef" class="annotationLayer" style="display: block;" v-show="annotationLayer"></div>
+    <div ref="TextlayerREF" class="textLayer" style="display: block;" v-show="textLayer"></div>
  </span>
 </template>
 

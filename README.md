@@ -210,6 +210,22 @@ const loadedEvent = (value) => {
 
 ```
 
+Value contains render page info
+
+#### **EXAMPLE**:
+```json
+{ 
+  "viewBox": [ 0, 0, 595.276, 841.89 ],
+  "scale": 1,
+  "rotation": 90,
+  "offsetX": 0,
+  "offsetY": 0,
+  "transform": [ 0, 1, 1, 0, 0, 0 ],
+  "width": 841.89,
+  "height": 595.276
+}
+```
+
 #### **@annotation** -> `object`
 
 Emitted when user has interaction with any annotation in document view.
@@ -332,22 +348,3 @@ Annotations values has the following struct:
   }
 }
 ```
-
-
-
-
-
-
-
-<!-- 
-{ 
-  "viewBox": [0, 0, 595.276, 841.89],
-  "scale": 1,
-  "rotation": 90,
-  "offsetX": 0,
-  "offsetY": 0,
-  "transform": [0, 1, 1, 0, 0, 0],
-  "width": 841.89,
-  "height": 595.276
-}
- -->
