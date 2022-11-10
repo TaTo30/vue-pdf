@@ -13,6 +13,8 @@ PDFJSlib.GlobalWorkerOptions.workerSrc = PDFJSWorker;
  * Callback to request a password if a wrong or no password was provided. The callback receives two parameters: a function that should be called with the new password, and a reason (see PasswordResponses). 
  * @property {function} onPassword 
  * Callback to be able to monitor the loading progress of the PDF file (necessary to implement e.g. a loading bar). The callback receives an OnProgressParameters argument. if this function is used option.password is ignored
+ * @property {function} onError
+ * Callback to be able to handle errors during loading 
  * */
 
 /**
@@ -25,6 +27,7 @@ PDFJSlib.GlobalWorkerOptions.workerSrc = PDFJSWorker;
 export default function usePDF(src, options = {
   onProgress: undefined,
   onPassword: undefined,
+  onError: undefined,
   password: ''
 }) {
   const pdf = ref();
@@ -45,6 +48,11 @@ export default function usePDF(src, options = {
     doc.getMetadata().then(data => {
       info.value = data
     })
+  }, (reason) => {
+    // PDF loading error
+    if(typeof options.onError === 'function') {
+      options.onError(reason)
+    }
   });
 
   return {
