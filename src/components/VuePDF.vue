@@ -21,6 +21,7 @@ const FORM_TEXT = "form-text"
 const FORM_SELECT = "form-select"
 const FORM_CHECKBOX = "form-checkbox"
 const FORM_RADIO = "form-radio"
+const FORM_BUTTON = "form-button"
 
 const EVENTS_TO_HANDLER = ['click', 'dblclick', 'mouseover', 'input', 'change']
 
@@ -43,6 +44,7 @@ export default {
       default: 1
     },
     rotation: Number,
+    "annotations-filter": Array,
     "text-layer": Boolean,
     "annotation-layer": Boolean
   },
@@ -57,17 +59,16 @@ export default {
     var TextLayerLoaded = false
     var AnnotationLayerLoaded = false
     var Annotations = []
+    var FieldObjects = {}
 
     // Use this function to handle annotation events
     const annotationEventsHandler = (evt) => {
       var annotation = evt.target.parentNode;
-
       // annotations are <section> elements if div returned find in child nodes the section element
-      // TODO this part recursive in future
+      // TODO this part in recursive mode 
       if (annotation.tagName === 'DIV'){
         annotation = annotation.firstChild
       }
-
       // For linkAnnotation events get only click events
       if (annotation.className === 'linkAnnotation' && evt.type === 'click') {
         const id = annotation.dataset['annotationId']
@@ -108,6 +109,13 @@ export default {
             options: radioOptions
           })
         }
+      } else if (annotation.className === 'buttonWidgetAnnotation pushButton' && evt.type === 'click'){
+        const id = annotation.dataset['annotationId']
+        if (id){
+          const anno = getAnnotationsByKey('id', id)[0]
+          if (!anno.resetForm)
+            inputAnnotationEvent({name: anno.fieldName, type: "button"}, {actions: anno.actions})
+        }  
       }
       // Another Annotations manage here
     }
@@ -116,7 +124,7 @@ export default {
       switch (inputEl.type) {
         case "textarea":
         case "text":
-          annotationEvent(FORM_TEXT, {
+          emitAnnotation(FORM_TEXT, {
             fieldName: inputEl.name,
             value: inputEl.value
           })
@@ -137,31 +145,36 @@ export default {
               label: opt.label
             })
           }
-          annotationEvent(FORM_SELECT, {
+          emitAnnotation(FORM_SELECT, {
             fieldName: inputEl.name,
             value: selected,
             options: options
           })
           break;
         case "checkbox":
-          annotationEvent(FORM_CHECKBOX, {
+          emitAnnotation(FORM_CHECKBOX, {
             fieldName: inputEl.name,
             checked: inputEl.checked
           })
           break;
         case "radio":
-          annotationEvent(FORM_RADIO, {
+          emitAnnotation(FORM_RADIO, {
             fieldName: inputEl.name,
             ...args,
           })
           break;
+        case "button":
+          emitAnnotation(FORM_BUTTON,  {
+            fieldName: inputEl.name,
+            ...args,
+          })
         default:
           break;
       }
     }
 
     const fileAttachmentAnnotationEvent = (annotation) => 
-      annotationEvent(FILE_ATTACHMENT, annotation.file)
+      emitAnnotation(FILE_ATTACHMENT, annotation.file)
     
 
     const linkAnnotationEvent = (annotation) => {
@@ -175,19 +188,23 @@ export default {
               bottom: annotation.dest[3]
             }
           }
-          annotationEvent(INTERNAL_LINK, eventInfo)
+          emitAnnotation(INTERNAL_LINK, eventInfo)
         })
       }else if (annotation.url){
         const eventInfo = {
           url: annotation.url,
           unsafeUrl: annotation.unsafeUrl
         }
-        annotationEvent(LINK, eventInfo)
+        emitAnnotation(LINK, eventInfo)
       }
     }
 
-    const annotationEvent = (type, data) => {
+    const emitAnnotation = (type, data) => {
       context.emit("annotation", {type: type, data: data})
+    }
+
+    const emitLoaded = (data) => {
+      context.emit("loaded", data)
     }
 
     const getAnnotationsByKey = (key, value) => {
@@ -199,11 +216,13 @@ export default {
 
     const renderPage = (pageNum) => {
       PDFDoc.getPage(pageNum).then(page => {
+        let emitLoadedEvent = false
+        const pageLoadInfo = {}
         const viewportParams = {
           scale: props.scale
         }
 
-        // Send rotation params only if is a valid number
+        // Set rotation param only if is a valid number
         if (typeof props.rotation === "number" && props.rotation % 90 === 0)
           viewportParams['rotation'] = props.rotation
         
@@ -246,28 +265,57 @@ export default {
 
           // Load annotaion layer if prop is true
           if (props.annotationLayer) {
+            emitLoadedEvent = true
             page.getAnnotations().then(annotations => {
               AnnotationlayerRef.value.style.left = CanvasREF.value.offsetLeft + 'px';
               AnnotationlayerRef.value.style.top = CanvasREF.value.offsetTop + 'px';
               AnnotationlayerRef.value.style.height = CanvasREF.value.offsetHeight + 'px';
               AnnotationlayerRef.value.style.width = CanvasREF.value.offsetWidth + 'px';
-              
+              if (props.annotationsFilter){
+                annotations = annotations.filter(value => {
+                  const filters = props.annotationsFilter
+                  const subType = value.subtype
+                  const fieldType = value.fieldType? `${subType}.${value.fieldType}` : null
+                  
+                  return filters.includes(subType) || filters.includes(fieldType)
+                })
+              }
+
+              // Canvas map for push button widget
+              const canvasMap = new Map([])
+              for (const anno of annotations) {
+                if (anno.subtype === "Widget" && anno.fieldType==="Btn" && anno.pushButton) {
+                  const canvasWidth = anno.rect[2] - anno.rect[0] 
+                  const canvasHeight = anno.rect[3] - anno.rect[1] 
+                  const subCanvas = document.createElement("canvas")
+                  subCanvas.setAttribute("width", canvasWidth)
+                  subCanvas.setAttribute("height", canvasHeight)
+                  canvasMap.set(anno.id, subCanvas)
+                }
+              }
               PDFJSLib.AnnotationLayer.render({
                 annotations: annotations,
                 viewport: viewport.clone({ dontFlip: true}),
                 page: page,
                 linkService: new SimpleLinkService(), // no pdfviewer features needed, send void LinkService
-                div: AnnotationlayerRef.value
+                div: AnnotationlayerRef.value,
+                enableScripting: true,
+                hasJSActions: true,
+                annotationCanvasMap: canvasMap,
+                fieldObjects: FieldObjects
               })
+
               Annotations = annotations
               AnnotationLayerLoaded = true
-
+              emitLoaded({...viewport, annotations: Annotations})
+              
               // Add event listeners to manage some events of annotations layer items
               for (const evtHandler of EVENTS_TO_HANDLER) 
                 AnnotationlayerRef.value.addEventListener(evtHandler, annotationEventsHandler)
             })
           }
-          context.emit('loaded', viewport)
+          if (!emitLoadedEvent)
+            emitLoaded(viewport)
         })
       })
     }
@@ -284,6 +332,9 @@ export default {
     const initDoc = (proxy) => {
       proxy.promise.then(doc => {
         PDFDoc = doc
+        PDFDoc.getFieldObjects().then(data => {
+          FieldObjects = data
+        })
         renderPage(props.page)
       })
     }
@@ -312,6 +363,12 @@ export default {
           renderPage(props.page)
         }
       }
+    })
+
+    // WHhen annotations filter change rework render task
+    watch(() => props.annotationsFilter, () => {
+      clearLayers()
+      renderPage(props.page)
     })
 
     watch(() => props.scale, (_) => {

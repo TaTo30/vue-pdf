@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { isVNode, ref } from "vue";
 
 import * as PDFJSlib from "pdfjs-dist/build/pdf";
 import PDFJSWorker from "pdfjs-dist/build/pdf.worker.entry";
@@ -32,7 +32,11 @@ export default function usePDF(src, options = {
 }) {
   const pdf = ref();
   const pages = ref(0);
-  const info = ref({})
+  const info = ref({
+    metadata: {},
+    attachments: {},
+    javascript: {}
+  })
 
   const loadingTask = PDFJSlib.getDocument(src)
   loadingTask.onProgress = options?.onProgress
@@ -46,7 +50,13 @@ export default function usePDF(src, options = {
     pdf.value = doc.loadingTask;
     pages.value = doc.numPages;
     doc.getMetadata().then(data => {
-      info.value = data
+      info.value.metadata = data
+    })
+    doc.getAttachments().then(data => {
+      info.value.attachments = data
+    })
+    doc.getJavaScript().then(data => {
+      info.value.javascript = data
     })
   }, (reason) => {
     // PDF loading error

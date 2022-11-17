@@ -10,7 +10,8 @@ lerna-debug.log*
 node_modules
 _site
 .vscode
-public
+public/*
+!public/example_*.pdf
 cjs
 esm
 .DS_Store

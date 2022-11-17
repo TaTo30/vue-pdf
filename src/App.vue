@@ -1,6 +1,8 @@
 <template>
   <div style="text-align: center;">
-    <VuePDF :pdf="pdf" :page="1" @loaded="loadedEvent" @annotation="annotationEvent" annotation-layer />
+    <VuePDF  :pdf="pdf" :page="1" @loaded="loadedEvent" @annotation="annotationEvent" annotation-layer />
+  </div>
+  <div>
   </div>
 </template>
 
@@ -17,9 +19,10 @@ export default {
   setup(){
   
     const textBool = ref(false)
-    const {pdf, pages} = usePDF("example_014.pdf")
+    const {pdf, pages, info} = usePDF("example_014.pdf")
 
     return {
+      info,
       pdf,
       pages,
       textBool,
