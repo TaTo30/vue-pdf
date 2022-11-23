@@ -1,6 +1,6 @@
 <template>
   <div style="text-align: center;">
-    <VuePDF  :pdf="pdf" :page="1" @loaded="loadedEvent" @annotation="annotationEvent" annotation-layer />
+    <VuePDF :pdf="pdf" :page="1" :annotations-filter="filter" @loaded="loadedEvent"  annotation-layer  />
   </div>
   <div>
   </div>
@@ -19,15 +19,16 @@ export default {
   setup(){
   
     const textBool = ref(false)
-    const {pdf, pages, info} = usePDF("example_014.pdf")
+    const {pdf, pages, info} = usePDF("popup.pdf")
 
     return {
       info,
       pdf,
       pages,
       textBool,
+      filter: ["Highlight", "Popup"],
       annotationEvent: (value) => {
-        console.log(value);
+        console.log(JSON.stringify(value));
       },
       loadedEvent: (value) => {
         console.log(value);

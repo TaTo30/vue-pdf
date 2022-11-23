@@ -119,6 +119,15 @@ Type: `object`
 
 Info object about document
 
+```json
+{
+  "metadata": {...}, // Metadata object
+  "attachments": {...}, // File attachments object
+  "javascript": [...], // Array of embedded scripts
+}
+
+```
+
 ---
 
 ## VuePDF Component
@@ -193,6 +202,36 @@ Enable document annotations like links, popups, etc.
 <VuePDF :pdf="pdf" :page="1" annotation-layer />
 ```
 
+#### **:annotations-filter**
+
+Type: `array` <br />
+Default: `null`
+
+Allows to choose which annotations display on page, the following options are available:
+
+||||||
+|-|-|-|-|-|
+|`Link`| `Text` | `Stamp` | `Popup` | `FreeText` |
+|`Line`| `Square` | `Circle` | `PolyLine` | `Caret` |
+|`Ink`| `Polygon` | `Highlight` | `Underline` | `Squiggly` |
+|`StrikeOut`| `FileAttachment` |  `Widget.Tx` | `Widget.Btn` | `Widget.Ch` |
+|`Widget.Sig` | `Widget`
+
+> NOTE: `Widget` shows all `Widget` subtypes like `Widget.Tx`, etc.
+
+
+```html
+<VuePDF :pdf="pdf" :page="1" annotation-layer :annotations-filter="filter" />
+
+<script>
+...
+setup(){
+  return {
+    filter: ["Highlight", "Popup", "Widget"]
+  }
+}
+```
+
 ### **Events**
 
 #### **@loaded** -> `object`
@@ -222,7 +261,8 @@ Value contains render page info
   "offsetY": 0,
   "transform": [ 0, 1, 1, 0, 0, 0 ],
   "width": 841.89,
-  "height": 595.276
+  "height": 595.276,
+  "annotations": []
 }
 ```
 
@@ -243,7 +283,7 @@ const annotationEvent = (value) => {
 Annotations values has the following struct:
 | Property | Value                                                                                                                                  |
 | -------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`   | Annotation type, posible values: `internal-link`, `link`, `file-attachment`, `form-text`, `form-select`, `form-checkbox`, `form-radio` |
+| `type`   | Annotation type, posible values: `internal-link`, `link`, `file-attachment`, `form-text`, `form-select`, `form-checkbox`, `form-radio`, `form-button` |
 | `data`   | Annotation associated data                                                                                                             |
 
 #### **EXAMPLES**:
@@ -345,6 +385,21 @@ Annotations values has the following struct:
     "value": "Wine",
     "defaultValue": "Beer",
     "options": [ "Water", "Beer", "Wine", "Milk" ]
+  }
+}
+```
+
+#### **form-button**
+`form-button` fires when user click on push button
+```json
+{
+  "type": "form-button",
+  "data": {
+    "fieldName": "Print",
+    "actions": {
+      "Mouse Down": [ "Print()" ]
+    },
+    "reset": false
   }
 }
 ```

@@ -72,7 +72,7 @@ export default {
       // For linkAnnotation events get only click events
       if (annotation.className === 'linkAnnotation' && evt.type === 'click') {
         const id = annotation.dataset['annotationId']
-        if (id) linkAnnotationEvent(getAnnotationsByKey('id', id)[0])
+        if (id) linkAnnotationHandler(getAnnotationsByKey('id', id)[0])
       // For popups annotations 
       } else if (annotation.className === 'popupAnnotation' || annotation.className === 'textAnnotation' || annotation.className === 'fileAttachmentAnnotation'){
         for (const spanElement of annotation.getElementsByTagName("span")) {
@@ -84,18 +84,18 @@ export default {
         }
         if (annotation.className === 'fileAttachmentAnnotation' && evt.type === 'dblclick'){
           const id = annotation.dataset['annotationId']
-          if (id) fileAttachmentAnnotationEvent(getAnnotationsByKey('id', id)[0])
+          if (id) fileAnnotationHandler(getAnnotationsByKey('id', id)[0])
         }
       // TextFields and TextAreas
       } else if (annotation.className === 'textWidgetAnnotation' && evt.type === 'input') {
         let inputElement = annotation.getElementsByTagName("input")[0]
         if (!inputElement) inputElement = annotation.getElementsByTagName("textarea")[0]
-        inputAnnotationEvent(inputElement)
+        inputAnnotationHandler(inputElement)
       
       } else if (annotation.className === 'choiceWidgetAnnotation' && evt.type === 'input') {
-        inputAnnotationEvent(annotation.getElementsByTagName("select")[0])
+        inputAnnotationHandler(annotation.getElementsByTagName("select")[0])
       } else if (annotation.className === 'buttonWidgetAnnotation checkBox' && evt.type === 'change') {
-        inputAnnotationEvent(annotation.getElementsByTagName("input")[0])
+        inputAnnotationHandler(annotation.getElementsByTagName("input")[0])
       } else if (annotation.className === 'buttonWidgetAnnotation radioButton' && evt.type === 'change') {
         const id = annotation.dataset['annotationId']
         if (id){
@@ -103,7 +103,7 @@ export default {
           const radioOptions = []
           for (const radioAnnotations of getAnnotationsByKey('fieldName', anno.fieldName)) 
             if (radioAnnotations.buttonValue) radioOptions.push(radioAnnotations.buttonValue)
-          inputAnnotationEvent(annotation.getElementsByTagName("input")[0], {
+          inputAnnotationHandler(annotation.getElementsByTagName("input")[0], {
             value: anno.buttonValue,
             defaultValue: anno.fieldValue,
             options: radioOptions
@@ -114,13 +114,15 @@ export default {
         if (id){
           const anno = getAnnotationsByKey('id', id)[0]
           if (!anno.resetForm)
-            inputAnnotationEvent({name: anno.fieldName, type: "button"}, {actions: anno.actions})
+            inputAnnotationHandler({name: anno.fieldName, type: "button"}, {actions: anno.actions, reset: false})
+          else
+            inputAnnotationHandler({name: anno.fieldName, type: "button"}, {actions: anno.actions, reset: true})
         }  
       }
       // Another Annotations manage here
     }
 
-    const inputAnnotationEvent = (inputEl, args) => {
+    const inputAnnotationHandler = (inputEl, args) => {
       switch (inputEl.type) {
         case "textarea":
         case "text":
@@ -173,11 +175,11 @@ export default {
       }
     }
 
-    const fileAttachmentAnnotationEvent = (annotation) => 
+    const fileAnnotationHandler = (annotation) => 
       emitAnnotation(FILE_ATTACHMENT, annotation.file)
     
 
-    const linkAnnotationEvent = (annotation) => {
+    const linkAnnotationHandler = (annotation) => {
       if (annotation.dest){
         // Get referenced page number of internal link
         PDFDoc.getPageIndex(annotation.dest[0]).then(pageIndex => {
@@ -199,6 +201,13 @@ export default {
       }
     }
 
+    const getAnnotationsByKey = (key, value) => {
+      const result = []
+      for (const annotation of Annotations) 
+        if (annotation[key] === value) result.push(annotation)
+      return result
+    }
+    
     const emitAnnotation = (type, data) => {
       context.emit("annotation", {type: type, data: data})
     }
@@ -207,17 +216,9 @@ export default {
       context.emit("loaded", data)
     }
 
-    const getAnnotationsByKey = (key, value) => {
-      const result = []
-      for (const annotation of Annotations) 
-        if (annotation[key] === value) result.push(annotation)
-      return result
-    }
-
     const renderPage = (pageNum) => {
       PDFDoc.getPage(pageNum).then(page => {
         let emitLoadedEvent = false
-        const pageLoadInfo = {}
         const viewportParams = {
           scale: props.scale
         }
