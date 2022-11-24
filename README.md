@@ -37,7 +37,7 @@ You can find a [live demo](https://tato30.github.io/VuePDF/) to check a few exam
 </template>
 
 <script>
-import {usePDF, VuePDF} from 'VuePDF'
+import {usePDF, VuePDF} from '@tato30/vue-pdf'
 
 export default {
   components: {
@@ -82,6 +82,7 @@ an object with the optional properties:
 
 - `onPassword`: Callback function to request the document password if wrong or no passwrod provider.
 - `onProgress`: Callback function to enable progress monitor.
+- `onError`: function to handle pdf loading errors
 
 ```js
 const onPassword = (updatePassword, reason) => {
@@ -93,9 +94,14 @@ const onProgress = ({loaded, total}) => {
   console.log(`${loaded / total * 100}% Loaded`);
 }
 
+const onError = (reason) => {
+  console.error(`PDF loading error: ${reason}`)
+}
+
 const { pdf, pages, info } = usePDF("document.pdf", {
   onPassword: onPassword,
-  onProgress: onProgress
+  onProgress: onProgress,
+  onError: onError
 })
 ```
 
@@ -141,7 +147,7 @@ This is the component to render a pdf page.
 Type: `PDFDocumentLoadingTask` <br/>
 Required: `True`
 
-The PDFDocumentLoadingTask obtained from [PDFProxy](#pdf)
+The PDFDocumentLoadingTask obtained from [usePDF](#pdf)
 
 ```html
 <VuePDF :pdf="pdf" />
