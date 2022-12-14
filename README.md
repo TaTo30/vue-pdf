@@ -12,7 +12,7 @@ If you want a package for Vue 2 or older browsers check this project from Franck
 * [**Install**](#install)
 * [**Live Demo**](#live-demo)
 * [**Basic Usage**](#basic-usage)
-* [**usePDF Composable**](#pdfproxy-composable)
+* [**usePDF Composable**](#usepdf-composable)
   * [**Params**](#params)
   * [**Returns**](#returns)
 * [**VuePDF Component**](#vuepdf-component)
@@ -65,7 +65,7 @@ This function is the pdf loader, let you get the basic information and propertie
 
 #### **src**
 
-Type: `string | URL | TypedArray` <br/>
+Type: `string | URL | TypedArray | DocumentInitParameters` <br/>
 Required: `True`
 
 This param is the same `src`  of [pdf.js](https://github.com/mozilla/pdf.js/blob/348665934e195a7d7af7f09ecfe26cbc7f2f9751/src/display/api.js#L246)
