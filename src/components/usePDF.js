@@ -45,12 +45,14 @@ export default function usePDF(src, options = {
   loadingTask.promise.then((doc) => {
     pdf.value = doc.loadingTask;
     pages.value = doc.numPages;
-    doc.getMetadata().then(metadata => {
+    doc.getMetadata().then(metadatas => {
       doc.getAttachments().then(attachmentdata => {
         doc.getJavaScript().then(scriptdata => {
-          info.value['metadata'] = metadata
-          info.value['attachments'] = attachmentdata
-          info.value['javascript'] = scriptdata
+          info.value = {
+            metadata: metadatas,
+            attachments: attachmentdata,
+            javascript: scriptdata
+          }
         })
       })
     })
