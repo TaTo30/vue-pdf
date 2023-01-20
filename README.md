@@ -175,6 +175,17 @@ Scale to render page
 <VuePDF :pdf="pdf" :page="1" :scale="0.5" />
 ```
 
+#### **:fit-parent**
+
+Type: `boolean` <br /> 
+Default: `false`
+
+Fit page with parent width, this prop replace `scale` in width calculation
+
+```html
+<VuePDF :pdf="pdf" :page="1" fit-parent />
+```
+
 #### **:rotation**
 
 Type: `int` <br />
@@ -236,6 +247,29 @@ setup(){
     filter: ["Highlight", "Popup", "Widget"]
   }
 }
+```
+
+### **Methods**
+
+#### **reload()**
+
+Allows to reload page render task, useful to update parent width when `fit-parent` prop is used
+
+```vue
+<template>
+  <VuePDF :pdf="pdf" :page="2" ref="VPDF"  />
+</template>
+
+setup(){  
+    const VPDF = ref({})
+    return {
+      VPDF,
+      someEvent: () => {        
+        VPDF.value.reload()
+      },
+    }
+  }
+
 ```
 
 ### **Events**

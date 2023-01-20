@@ -32,11 +32,7 @@ export default function usePDF(src, options = {
 }) {
   const pdf = ref();
   const pages = ref(0);
-  const info = ref({
-    metadata: {},
-    attachments: {},
-    javascript: {}
-  })
+  const info = ref({})
 
   const loadingTask = PDFJSlib.getDocument(src)
   loadingTask.onProgress = options?.onProgress
@@ -49,14 +45,14 @@ export default function usePDF(src, options = {
   loadingTask.promise.then((doc) => {
     pdf.value = doc.loadingTask;
     pages.value = doc.numPages;
-    doc.getMetadata().then(data => {
-      info.value.metadata = data
-    })
-    doc.getAttachments().then(data => {
-      info.value.attachments = data
-    })
-    doc.getJavaScript().then(data => {
-      info.value.javascript = data
+    doc.getMetadata().then(metadata => {
+      doc.getAttachments().then(attachmentdata => {
+        doc.getJavaScript().then(scriptdata => {
+          info.value['metadata'] = metadata
+          info.value['attachments'] = attachmentdata
+          info.value['javascript'] = scriptdata
+        })
+      })
     })
   }, (reason) => {
     // PDF loading error

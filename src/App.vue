@@ -1,14 +1,13 @@
 <template>
-  <div style="text-align: center;">
-    <VuePDF :pdf="pdf" :page="1" :annotations-filter="filter" @loaded="loadedEvent"  annotation-layer  />
-  </div>
-  <div>
-  </div>
+  <button @click="updateParentWidth">100 mas</button>
+    <div :style="`text-align: center; border: 1px red solid; width: ${parentWidth}px;`" >
+      <VuePDF ref="viewer" :pdf="pdf" :page="1" text-layer annotation-layer fit-parent  />
+    </div>
 </template>
 
 <script>
 
-import {ref} from 'vue'
+import {ref, watch} from 'vue'
 import usePDF from "./components/usePDF";
 import VuePDF from "./components/VuePDF.vue";
 
@@ -18,20 +17,18 @@ export default {
   },
   setup(){
   
-    const textBool = ref(false)
-    const {pdf, pages, info} = usePDF("popup.pdf")
-
+    const {pdf, pages, info} = usePDF("example_014.pdf")
+  
+    const viewer = ref({})
+    const parentWidth = ref(600)
     return {
+      viewer,
       info,
       pdf,
-      pages,
-      textBool,
-      filter: ["Highlight", "Popup"],
-      annotationEvent: (value) => {
-        console.log(JSON.stringify(value));
-      },
-      loadedEvent: (value) => {
-        console.log(value);
+      parentWidth,
+      updateParentWidth: () => {        
+        parentWidth.value += 100
+        viewer.value.reload()
       },
     }
   }

@@ -1,7 +1,7 @@
 <template>
- <span style="position: relative; display: block">
+ <span ref="ContainerREF" style="position: relative; display: flex;">
     <canvas ref="CanvasREF" style="display: inline-block"></canvas>
-    <div ref="AnnotationlayerRef" class="annotationLayer" style="display: block;" v-show="annotationLayer"></div>
+    <div ref="AnnotationlayerREF" class="annotationLayer" style="display: block;" v-show="annotationLayer"></div>
     <div ref="TextlayerREF" class="textLayer" style="display: block;" v-show="textLayer"></div>
  </span>
 </template>
@@ -44,6 +44,7 @@ export default {
       default: 1
     },
     rotation: Number,
+    "fit-parent": Boolean,
     "annotations-filter": Array,
     "text-layer": Boolean,
     "annotation-layer": Boolean
@@ -52,7 +53,8 @@ export default {
     // Template elements
     const CanvasREF = ref({})
     const TextlayerREF = ref({})
-    const AnnotationlayerRef = ref({})
+    const AnnotationlayerREF = ref({})
+    const ContainerREF = ref({})
 
     // PDF objects
     var PDFDoc = null
@@ -217,12 +219,20 @@ export default {
     }
 
     const renderPage = (pageNum) => {
-      PDFDoc.getPage(pageNum).then(page => {
+      PDFDoc.getPage(pageNum).then(page => { 
         let emitLoadedEvent = false
-        const viewportParams = {
-          scale: props.scale
+
+        let fscale = props.scale
+        if (props.fitParent){
+          const parentWidth = ContainerREF.value.parentNode.clientWidth
+          const scale1Width = page.getViewport({scale: 1}).width
+          fscale = parentWidth / scale1Width
         }
 
+        const viewportParams = {
+          scale: fscale
+        }
+        
         // Set rotation param only if is a valid number
         if (typeof props.rotation === "number" && props.rotation % 90 === 0)
           viewportParams['rotation'] = props.rotation
@@ -268,10 +278,10 @@ export default {
           if (props.annotationLayer) {
             emitLoadedEvent = true
             page.getAnnotations().then(annotations => {
-              AnnotationlayerRef.value.style.left = CanvasREF.value.offsetLeft + 'px';
-              AnnotationlayerRef.value.style.top = CanvasREF.value.offsetTop + 'px';
-              AnnotationlayerRef.value.style.height = CanvasREF.value.offsetHeight + 'px';
-              AnnotationlayerRef.value.style.width = CanvasREF.value.offsetWidth + 'px';
+              AnnotationlayerREF.value.style.left = CanvasREF.value.offsetLeft + 'px';
+              AnnotationlayerREF.value.style.top = CanvasREF.value.offsetTop + 'px';
+              AnnotationlayerREF.value.style.height = CanvasREF.value.offsetHeight + 'px';
+              AnnotationlayerREF.value.style.width = CanvasREF.value.offsetWidth + 'px';
               if (props.annotationsFilter){
                 annotations = annotations.filter(value => {
                   const filters = props.annotationsFilter
@@ -289,8 +299,8 @@ export default {
                   const canvasWidth = anno.rect[2] - anno.rect[0] 
                   const canvasHeight = anno.rect[3] - anno.rect[1] 
                   const subCanvas = document.createElement("canvas")
-                  subCanvas.setAttribute("width", canvasWidth)
-                  subCanvas.setAttribute("height", canvasHeight)
+                  subCanvas.setAttribute("width", canvasWidth * fscale)
+                  subCanvas.setAttribute("height", canvasHeight * fscale)
                   canvasMap.set(anno.id, subCanvas)
                 }
               }
@@ -299,7 +309,7 @@ export default {
                 viewport: viewport.clone({ dontFlip: true}),
                 page: page,
                 linkService: new SimpleLinkService(), // no pdfviewer features needed, send void LinkService
-                div: AnnotationlayerRef.value,
+                div: AnnotationlayerREF.value,
                 enableScripting: true,
                 hasJSActions: true,
                 annotationCanvasMap: canvasMap,
@@ -312,7 +322,7 @@ export default {
               
               // Add event listeners to manage some events of annotations layer items
               for (const evtHandler of EVENTS_TO_HANDLER) 
-                AnnotationlayerRef.value.addEventListener(evtHandler, annotationEventsHandler)
+                AnnotationlayerREF.value.addEventListener(evtHandler, annotationEventsHandler)
             })
           }
           if (!emitLoadedEvent)
@@ -324,10 +334,10 @@ export default {
     const clearLayers = () => {
       // Clear all childnodes of layer elements
       TextlayerREF.value.replaceChildren?.()
-      AnnotationlayerRef.value.replaceChildren?.()
+      AnnotationlayerREF.value.replaceChildren?.()
       // Clear event listeners of annotation layer 
       for (const evtHandler of EVENTS_TO_HANDLER) 
-        AnnotationlayerRef.value.removeEventListener?.(evtHandler, annotationEventsHandler)
+        AnnotationlayerREF.value.removeEventListener?.(evtHandler, annotationEventsHandler)
     }
 
     const initDoc = (proxy) => {
@@ -396,10 +406,17 @@ export default {
       }
     })
 
+    const reload = () => {
+      clearLayers()
+      renderPage(props.page)
+    }
+
     return {
       CanvasREF,
       TextlayerREF,
-      AnnotationlayerRef
+      AnnotationlayerREF,
+      ContainerREF,
+      reload
     }
   }
 
