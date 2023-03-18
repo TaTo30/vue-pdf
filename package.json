@@ -30,7 +30,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "pdfjs-dist": "^2.14.305"
+    "pdfjs-dist": "^2.16.105"
   },
   "devDependencies": {
     "@babel/core": "^7.18.2",
