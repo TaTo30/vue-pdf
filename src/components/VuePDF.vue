@@ -68,12 +68,13 @@ function annotationEventsHandler(evt: Event) {
       // For popups annotations
   }
   else if (annotation.className === 'popupAnnotation' || annotation.className === 'textAnnotation' || annotation.className === 'fileAttachmentAnnotation') {
-    // @ts-expect-error Why no iterator on HTML collection ?
     for (const spanElement of annotation.getElementsByTagName('span')) {
       let content = spanElement.textContent
-      const args = JSON.parse(spanElement.dataset.l10nArgs)
-      for (const key in args)
-        content = content.replace(`{{${key}}}`, args[key])
+      const args = JSON.parse(spanElement.dataset.l10nArgs ?? '{}')
+      if (content) {
+        for (const key in args)
+          content = content.replace(`{{${key}}}`, args[key])
+      }
       spanElement.textContent = content
     }
     if (annotation.className === 'fileAttachmentAnnotation' && evt.type === 'dblclick') {
@@ -229,8 +230,7 @@ function renderPage(pageNum: number) {
 
     let fscale = props.scale
     if (props.fitParent) {
-      // @ts-expect-error ClientWidth is not defined in type
-      const parentWidth: number = ContainerREF.value!.parentNode!.clientWidth
+      const parentWidth: number = (ContainerREF.value!.parentNode! as HTMLElement).clientWidth
       const scale1Width = page.getViewport({ scale: 1 }).width
       fscale = parentWidth / scale1Width
     }
