@@ -11,8 +11,6 @@ lerna-debug.log*
 _site
 node_modules
 public
-src/App.vue
-src/main.js
 index.html
 .DS_Store
 dist
