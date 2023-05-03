@@ -54,25 +54,21 @@ let FieldObjects: Record<string, Object[]> = {}
 
 // Use this function to handle annotation events
 function annotationEventsHandler(evt: Event) {
-  let annotation: ChildNode | ParentNode = (evt.target as HTMLInputElement).parentNode!
+  let annotation = (evt.target as HTMLInputElement).parentNode! as HTMLElement
   // annotations are <section> elements if div returned find in child nodes the section element
   // TODO this part in recursive mode
-  // @ts-expect-error tagname is a valid property
   if (annotation.tagName === 'DIV')
-    annotation = annotation.firstChild!
+    annotation = annotation.firstChild! as HTMLElement
 
   // For linkAnnotation events get only click events
-  // @ts-expect-error className is a valid property
   if (annotation.className === 'linkAnnotation' && evt.type === 'click') {
-    // @ts-expect-error dataset is a valid property
     const id: string | undefined = annotation.dataset?.annotationId
     if (id)
       linkAnnotationHandler(getAnnotationsByKey('id', id)[0])
       // For popups annotations
   }
-  // @ts-expect-error className is a valid property
   else if (annotation.className === 'popupAnnotation' || annotation.className === 'textAnnotation' || annotation.className === 'fileAttachmentAnnotation') {
-    // @ts-expect-error getElementsByTagName is a valid property
+    // @ts-expect-error Why no iterator on HTML collection ?
     for (const spanElement of annotation.getElementsByTagName('span')) {
       let content = spanElement.textContent
       const args = JSON.parse(spanElement.dataset.l10nArgs)
@@ -80,38 +76,27 @@ function annotationEventsHandler(evt: Event) {
         content = content.replace(`{{${key}}}`, args[key])
       spanElement.textContent = content
     }
-    // @ts-expect-error className is a valid property
     if (annotation.className === 'fileAttachmentAnnotation' && evt.type === 'dblclick') {
-      // @ts-expect-error dataset is a valid property
       const id = annotation.dataset.annotationId
       if (id)
         fileAnnotationHandler(getAnnotationsByKey('id', id)[0])
     }
     // TextFields and TextAreas
   }
-  // @ts-expect-error className is a valid property
   else if (annotation.className === 'textWidgetAnnotation' && evt.type === 'input') {
-    // @ts-expect-error getElementsByTagName is a valid property
-    let inputElement = annotation.getElementsByTagName('input')[0]
-    if (!inputElement) {
-      // @ts-expect-error getElementsByTagName is a valid property
+    let inputElement: HTMLInputElement | HTMLTextAreaElement = annotation.getElementsByTagName('input')[0]
+    if (!inputElement)
       inputElement = annotation.getElementsByTagName('textarea')[0]
-    }
+
     inputAnnotationHandler(inputElement)
   }
-  // @ts-expect-error className is a valid property
   else if (annotation.className === 'choiceWidgetAnnotation' && evt.type === 'input') {
-    // @ts-expect-error getElementsByTagName is a valid property
     inputAnnotationHandler(annotation.getElementsByTagName('select')[0])
   }
-  // @ts-expect-error className is a valid property
   else if (annotation.className === 'buttonWidgetAnnotation checkBox' && evt.type === 'change') {
-    // @ts-expect-error getElementsByTagName is a valid property
     inputAnnotationHandler(annotation.getElementsByTagName('input')[0])
   }
-  // @ts-expect-error className is a valid property
   else if (annotation.className === 'buttonWidgetAnnotation radioButton' && evt.type === 'change') {
-    // @ts-expect-error dataset is a valid property
     const id = annotation.dataset.annotationId
     if (id) {
       const anno = getAnnotationsByKey('id', id)[0]
@@ -120,7 +105,6 @@ function annotationEventsHandler(evt: Event) {
         if (radioAnnotations.buttonValue)
           radioOptions.push(radioAnnotations.buttonValue)
       }
-      // @ts-expect-error getElementsByTagName is a valid property
       inputAnnotationHandler(annotation.getElementsByTagName('input')[0], {
         value: anno.buttonValue,
         defaultValue: anno.fieldValue,
@@ -128,9 +112,7 @@ function annotationEventsHandler(evt: Event) {
       })
     }
   }
-  // @ts-expect-error className is a valid property
   else if (annotation.className === 'buttonWidgetAnnotation pushButton' && evt.type === 'click') {
-    // @ts-expect-error dataset is a valid property
     const id = annotation.dataset.annotationId
     if (id) {
       const anno = getAnnotationsByKey('id', id)[0]
