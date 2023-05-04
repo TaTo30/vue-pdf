@@ -1,10 +1,13 @@
 {
   "name": "@tato30/vue-pdf",
-  "description": "PDF viewer for Vue 3",
   "version": "1.3.3",
+  "description": "PDF viewer for Vue 3",
+  "author": {
+    "name": "Aldo Hernandez",
+    "url": "https://github.com/TaTo30"
+  },
   "license": "MIT",
-  "main": "cjs/index.js",
-  "module": "esm/index.js",
+  "homepage": "https://github.com/TaTo30/VuePDF/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/TaTo30/VuePDF.git"
@@ -12,45 +15,52 @@
   "bugs": {
     "url": "https://github.com/TaTo30/VuePDF/issues"
   },
-  "homepage": "https://github.com/TaTo30/VuePDF/",
   "keywords": [
     "pdf",
     "vue",
     "viewer"
   ],
-  "author": {
-    "name": "Aldo Hernandez",
-    "url": "https://github.com/TaTo30"
+    "exports": {
+    ".": {
+      "require": "./dist/lib/index.cjs",
+      "import": "./dist/lib/index.mjs"
+    },
+    "./src/*": "./src/*"
   },
+  "main": "./dist/lib/index.cjs",
+  "module": "./dist/lib/index.mjs",
+  "types": "./dist/types/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "rollup -c",
+    "dev": "vite --config vite.playground.ts",
+    "build": "npm run build:lib && npm run build:dts",
+    "build:lib": "vite build",
+    "build:dts": "vue-tsc --declaration --emitDeclarationOnly -p tsconfig.build.json",
     "publish": "npm publish --access public",
     "preview": "vite preview --port 5050",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
+  },
+  "peerDependencies": {
+    "vue": "^3.2.33"
   },
   "dependencies": {
     "pdfjs-dist": "^2.16.105"
   },
   "devDependencies": {
-    "@babel/core": "^7.18.2",
-    "@rushstack/eslint-patch": "^1.1.0",
-    "@vitejs/plugin-vue": "^2.3.1",
-    "@vue/compiler-sfc": "^3.2.36",
-    "@vue/eslint-config-prettier": "^7.0.0",
-    "babel-loader": "^8.2.5",
-    "eslint": "^8.16.0",
-    "eslint-plugin-vue": "^8.2.0",
-    "prettier": "^2.5.1",
-    "rollup": "^2.75.4",
-    "rollup-plugin-css-only": "^3.1.0",
-    "rollup-plugin-peer-deps-external": "^2.2.4",
-    "rollup-plugin-vue": "^6.0.0",
-    "vite": "^2.9.5",
-    "vue": "^3.2.33",
-    "vue-loader": "^16.8.3"
-  },
-  "peerDependencies": {
-    "vue": "^3.2.33"
+    "@antfu/eslint-config": "^0.38.5",
+    "@babel/core": "^7.21.8",
+    "@originjs/vite-plugin-commonjs": "^1.0.3",
+    "@types/node": "^18.16.3",
+    "@vitejs/plugin-vue": "^4.2.1",
+    "@vue/eslint-config-prettier": "^7.1.0",
+    "eslint": "^8.39.0",
+    "typescript": "^4.9.4",
+    "vite": "^4.3.4",
+    "vue": "^3.2.47",
+    "vue-tsc": "^1.6.3"
   }
 }

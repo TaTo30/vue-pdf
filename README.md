@@ -32,19 +32,15 @@ You can find a [live demo](https://tato30.github.io/VuePDF/) to check a few exam
 ## Basic Usage
 
 ```vue
-<template>
-  <VuePDF :pdf="pdf" :page="1" />
-</template>
-
 <script>
-import {usePDF, VuePDF} from '@tato30/vue-pdf'
+import { VuePDF, usePDF } from '@tato30/vue-pdf'
 
 export default {
   components: {
     VuePDF
   },
-  setup(){
-    const { pdf, pages, info } = usePDF("document.pdf")
+  setup() {
+    const { pdf, pages, info } = usePDF('document.pdf')
 
     console.log(`Document has ${pages} pages`)
     console.log(`Document info: ${info}`)
@@ -55,6 +51,10 @@ export default {
   }
 }
 </script>
+
+<template>
+  <VuePDF :pdf="pdf" :page="1" />
+</template>
 ```
 
 ## usePDF Composable
@@ -71,7 +71,7 @@ Required: `True`
 This param is the same `src`  of [pdf.js](https://github.com/mozilla/pdf.js/blob/348665934e195a7d7af7f09ecfe26cbc7f2f9751/src/display/api.js#L246)
 
 ```js
-const { pdf, pages, info } = usePDF("document.pdf")
+const { pdf, pages, info } = usePDF('document.pdf')
 ```
 
 #### **options**
@@ -85,23 +85,23 @@ an object with the optional properties:
 - `onError`: function to handle pdf loading errors
 
 ```js
-const onPassword = (updatePassword, reason) => {
+function onPassword(updatePassword, reason) {
   console.log(`Reason for callback: ${reason}`)
   updatePassword('documentpassword1234')
 }
 
-const onProgress = ({loaded, total}) => {
-  console.log(`${loaded / total * 100}% Loaded`);
+function onProgress({ loaded, total }) {
+  console.log(`${loaded / total * 100}% Loaded`)
 }
 
-const onError = (reason) => {
+function onError(reason) {
   console.error(`PDF loading error: ${reason}`)
 }
 
-const { pdf, pages, info } = usePDF("document.pdf", {
-  onPassword: onPassword,
-  onProgress: onProgress,
-  onError: onError
+const { pdf, pages, info } = usePDF('document.pdf', {
+  onPassword,
+  onProgress,
+  onError
 })
 ```
 
@@ -257,19 +257,18 @@ Allows to reload page render task, useful to update parent width when `fit-paren
 
 ```vue
 <template>
-  <VuePDF :pdf="pdf" :page="2" ref="VPDF"  />
+  <VuePDF ref="VPDF" :pdf="pdf" :page="2" />
 </template>
 
-setup(){  
+setup(){
     const VPDF = ref({})
     return {
       VPDF,
-      someEvent: () => {        
+      someEvent: () => {
         VPDF.value.reload()
       },
     }
   }
-
 ```
 
 ### **Events**
@@ -280,26 +279,25 @@ Emitted when page has finishes rendering in view
 
 ```vue
 <template>
-  <VuePDF :pdf="pdf" :page="2"  @loaded="loadedEvent"  />
+  <VuePDF :pdf="pdf" :page="2" @loaded="loadedEvent" />
 </template>
 
 const loadedEvent = (value) => {
   console.log(value);
 },
-
 ```
 
 Value contains render page info
 
 #### **EXAMPLE**:
 ```json
-{ 
-  "viewBox": [ 0, 0, 595.276, 841.89 ],
+{
+  "viewBox": [0, 0, 595.276, 841.89],
   "scale": 1,
   "rotation": 90,
   "offsetX": 0,
   "offsetY": 0,
-  "transform": [ 0, 1, 1, 0, 0, 0 ],
+  "transform": [0, 1, 1, 0, 0, 0],
   "width": 841.89,
   "height": 595.276,
   "annotations": []
@@ -312,7 +310,7 @@ Emitted when user has interaction with any annotation in document view.
 
 ```vue
 <template>
-  <VuePDF :pdf="pdf" :page="2"  @annotation="annotationEvent"  />
+  <VuePDF :pdf="pdf" :page="2" @annotation="annotationEvent" />
 </template>
 
 const annotationEvent = (value) => {
@@ -334,7 +332,7 @@ Annotations values has the following struct:
   "type": "internal-link",
   "data": {
     "referencedPage": 3,
-    "offset": { 
+    "offset": {
       "left": 82,
       "bottom": 716
     }
@@ -424,7 +422,7 @@ Annotations values has the following struct:
     "fieldName": "drink",
     "value": "Wine",
     "defaultValue": "Beer",
-    "options": [ "Water", "Beer", "Wine", "Milk" ]
+    "options": ["Water", "Beer", "Wine", "Milk"]
   }
 }
 ```
@@ -437,7 +435,7 @@ Annotations values has the following struct:
   "data": {
     "fieldName": "Print",
     "actions": {
-      "Mouse Down": [ "Print()" ]
+      "Mouse Down": ["Print()"]
     },
     "reset": false
   }
