@@ -24,6 +24,7 @@ export default defineConfig({
         'vue',
         'pdfjs-dist',
         'pdfjs-dist/build/pdf',
+        'pdfjs-dist/build/pdf.worker',
         'pdfjs-dist/build/pdf.worker.entry',
         'pdfjs-dist/web/pdf_viewer',
         'pdfjs-dist/web/pdf_viewer.css',

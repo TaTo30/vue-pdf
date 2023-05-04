@@ -440,6 +440,6 @@ defineExpose({
 
 /* Make annotation sections available over text layer */
 .annotationLayer section {
-  z-index: 1;
+  z-index: 1 !important;
 }
 </style>

@@ -1,11 +1,12 @@
 import { shallowRef } from 'vue'
 import type { PDFDocumentLoadingTask } from 'pdfjs-dist'
 import * as PDFJSLib from 'pdfjs-dist/build/pdf'
+import PDFWorker from 'pdfjs-dist/build/pdf.worker.js?url'
 import type { OnPasswordCallback, UsePDFInfo, UsePDFOptions } from './types'
 
 // Could not find a way to make this work with vite, importing the worker entry bundle the whole worker to the the final output
 // https://erindoyle.dev/using-pdfjs-with-vite/
-PDFJSLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJSLib.version}/pdf.worker.js`
+PDFJSLib.GlobalWorkerOptions.workerSrc = PDFWorker
 
 /**
  * @typedef {Object} UsePDFParameters
