@@ -8,6 +8,7 @@ import 'pdfjs-dist/web/pdf_viewer.css'
 import { onMounted, ref, watch } from 'vue'
 import type { GetViewportParameters, RenderParameters } from 'pdfjs-dist/types/src/display/api'
 import type { AnnotationEventPayload, LoadedEventPayload } from './types'
+import { EVENTS_TO_HANDLER, annotationEventsHandler } from './utils/annotations'
 
 const props = withDefaults(defineProps<{
   pdf?: PDFDocumentLoadingTask
@@ -28,200 +29,35 @@ const emit = defineEmits<{
   (event: 'loaded', payload: LoadedEventPayload): void
 }>()
 
-const INTERNAL_LINK = 'internal-link'
-const LINK = 'link'
-const FILE_ATTACHMENT = 'file-attachment'
-const FORM_TEXT = 'form-text'
-const FORM_SELECT = 'form-select'
-const FORM_CHECKBOX = 'form-checkbox'
-const FORM_RADIO = 'form-radio'
-const FORM_BUTTON = 'form-button'
-
-const EVENTS_TO_HANDLER = ['click', 'dblclick', 'mouseover', 'input', 'change']
-
 // Template elements
 const CanvasREF = ref<HTMLCanvasElement>()
 const TextlayerREF = ref<HTMLDivElement>()
 const AnnotationlayerREF = ref<HTMLDivElement>()
 const ContainerREF = ref<HTMLSpanElement>()
+const LoadlayerREF = ref<HTMLSpanElement>()
+const loadingLayer = ref(true)
 
 // PDF objects
+let Annotations: Object[] = []
 let PDFDoc: PDFDocumentProxy | null = null
 let TextLayerLoaded = false
 let AnnotationLayerLoaded = false
-let Annotations: Record<string, any>[] = []
 let FieldObjects: Record<string, Object[]> = {}
-
-// Use this function to handle annotation events
-function annotationEventsHandler(evt: Event) {
-  let annotation = (evt.target as HTMLInputElement).parentNode! as HTMLElement
-  // annotations are <section> elements if div returned find in child nodes the section element
-  // TODO this part in recursive mode
-  if (annotation.tagName === 'DIV')
-    annotation = annotation.firstChild! as HTMLElement
-
-  // For linkAnnotation events get only click events
-  if (annotation.className === 'linkAnnotation' && evt.type === 'click') {
-    const id: string | undefined = annotation.dataset?.annotationId
-    if (id)
-      linkAnnotationHandler(getAnnotationsByKey('id', id)[0])
-      // For popups annotations
-  }
-  else if (annotation.className === 'popupAnnotation' || annotation.className === 'textAnnotation' || annotation.className === 'fileAttachmentAnnotation') {
-    for (const spanElement of annotation.getElementsByTagName('span')) {
-      let content = spanElement.textContent
-      const args = JSON.parse(spanElement.dataset.l10nArgs ?? '{}')
-      if (content) {
-        for (const key in args)
-          content = content.replace(`{{${key}}}`, args[key])
-      }
-      spanElement.textContent = content
-    }
-    if (annotation.className === 'fileAttachmentAnnotation' && evt.type === 'dblclick') {
-      const id = annotation.dataset.annotationId
-      if (id)
-        fileAnnotationHandler(getAnnotationsByKey('id', id)[0])
-    }
-    // TextFields and TextAreas
-  }
-  else if (annotation.className === 'textWidgetAnnotation' && evt.type === 'input') {
-    let inputElement: HTMLInputElement | HTMLTextAreaElement = annotation.getElementsByTagName('input')[0]
-    if (!inputElement)
-      inputElement = annotation.getElementsByTagName('textarea')[0]
-
-    inputAnnotationHandler(inputElement)
-  }
-  else if (annotation.className === 'choiceWidgetAnnotation' && evt.type === 'input') {
-    inputAnnotationHandler(annotation.getElementsByTagName('select')[0])
-  }
-  else if (annotation.className === 'buttonWidgetAnnotation checkBox' && evt.type === 'change') {
-    inputAnnotationHandler(annotation.getElementsByTagName('input')[0])
-  }
-  else if (annotation.className === 'buttonWidgetAnnotation radioButton' && evt.type === 'change') {
-    const id = annotation.dataset.annotationId
-    if (id) {
-      const anno = getAnnotationsByKey('id', id)[0]
-      const radioOptions = []
-      for (const radioAnnotations of getAnnotationsByKey('fieldName', anno.fieldName)) {
-        if (radioAnnotations.buttonValue)
-          radioOptions.push(radioAnnotations.buttonValue)
-      }
-      inputAnnotationHandler(annotation.getElementsByTagName('input')[0], {
-        value: anno.buttonValue,
-        defaultValue: anno.fieldValue,
-        options: radioOptions,
-      })
-    }
-  }
-  else if (annotation.className === 'buttonWidgetAnnotation pushButton' && evt.type === 'click') {
-    const id = annotation.dataset.annotationId
-    if (id) {
-      const anno = getAnnotationsByKey('id', id)[0]
-      if (!anno.resetForm)
-        inputAnnotationHandler({ name: anno.fieldName, type: 'button' }, { actions: anno.actions, reset: false })
-      else
-        inputAnnotationHandler({ name: anno.fieldName, type: 'button' }, { actions: anno.actions, reset: true })
-    }
-  }
-  // Another Annotations manage here
-}
-
-function inputAnnotationHandler(inputEl: any, args?: any) {
-  switch (inputEl.type) {
-    case 'textarea':
-    case 'text':
-      emitAnnotation(FORM_TEXT, {
-        fieldName: inputEl.name,
-        value: inputEl.value,
-      })
-      break
-    case 'select-one':
-    case 'select-multiple':
-      const options = []
-      for (const opt of inputEl.options) {
-        options.push({
-          value: opt.value,
-          label: opt.label,
-        })
-      }
-      const selected = []
-      for (const opt of inputEl.selectedOptions) {
-        selected.push({
-          value: opt.value,
-          label: opt.label,
-        })
-      }
-      emitAnnotation(FORM_SELECT, {
-        fieldName: inputEl.name,
-        value: selected,
-        options,
-      })
-      break
-    case 'checkbox':
-      emitAnnotation(FORM_CHECKBOX, {
-        fieldName: inputEl.name,
-        checked: inputEl.checked,
-      })
-      break
-    case 'radio':
-      emitAnnotation(FORM_RADIO, {
-        fieldName: inputEl.name,
-        ...args,
-      })
-      break
-    case 'button':
-      emitAnnotation(FORM_BUTTON, {
-        fieldName: inputEl.name,
-        ...args,
-      })
-      break
-    default:
-      break
-  }
-}
-
-function fileAnnotationHandler(annotation: any) {
-  return emitAnnotation(FILE_ATTACHMENT, annotation.file)
-}
-
-function linkAnnotationHandler(annotation: { dest?: any; url?: string; unsafeUrl?: string }) {
-  if (annotation.dest) {
-    // Get referenced page number of internal link
-    PDFDoc!.getPageIndex(annotation.dest[0]).then((pageIndex) => {
-      const eventInfo = {
-        referencedPage: pageIndex + 1,
-        offset: {
-          left: annotation.dest[2],
-          bottom: annotation.dest[3],
-        },
-      }
-      emitAnnotation(INTERNAL_LINK, eventInfo)
-    })
-  }
-  else if (annotation.url) {
-    const eventInfo = {
-      url: annotation.url,
-      unsafeUrl: annotation.unsafeUrl,
-    }
-    emitAnnotation(LINK, eventInfo)
-  }
-}
-
-function getAnnotationsByKey(key: string, value: any) {
-  const result = []
-  for (const annotation of Annotations) {
-    if (annotation[key] === value)
-      result.push(annotation)
-  }
-  return result
-}
-
-function emitAnnotation(type: string, data: any) {
-  emit('annotation', { type, data })
-}
 
 function emitLoaded(data: LoadedEventPayload) {
   emit('loaded', data)
+}
+
+function emitAnnotation(data: AnnotationEventPayload) {
+  emit('annotation', data)
+}
+
+function annotationsEvents(evt: Event) {
+  const value = annotationEventsHandler(evt, PDFDoc as PDFDocumentProxy, Annotations)
+  Promise.resolve(value).then((data) => {
+    if (data)
+      emitAnnotation(data)
+  })
 }
 
 function renderPage(pageNum: number) {
@@ -250,6 +86,8 @@ function renderPage(pageNum: number) {
     CanvasREF.value!.height = viewport.height
     CanvasREF.value!.style.width = `${viewport.width}px`
     CanvasREF.value!.style.height = `${viewport.height}px`
+    LoadlayerREF.value!.style.width = `${viewport.width}px`
+    LoadlayerREF.value!.style.height = `${viewport.height}px`
 
     // Render PDF page into canvas context
     const renderContext: RenderParameters = {
@@ -258,6 +96,7 @@ function renderPage(pageNum: number) {
     }
 
     page.render(renderContext).promise.then(() => {
+      loadingLayer.value = false
       // Load text layer if prop is true
       if (props.textLayer) {
         page.getTextContent().then((textContent) => {
@@ -322,14 +161,13 @@ function renderPage(pageNum: number) {
             // @ts-expect-error - private property
             fieldObjects: FieldObjects,
           })
-
           Annotations = annotations
           AnnotationLayerLoaded = true
           emitLoaded({ ...viewport, annotations: Annotations })
 
           // Add event listeners to manage some events of annotations layer items
           for (const evtHandler of EVENTS_TO_HANDLER)
-            AnnotationlayerREF.value!.addEventListener(evtHandler, annotationEventsHandler)
+            AnnotationlayerREF.value!.addEventListener(evtHandler, annotationsEvents)
         })
       }
       if (!emitLoadedEvent)
@@ -344,7 +182,7 @@ function clearLayers() {
   AnnotationlayerREF.value!.replaceChildren?.()
   // Clear event listeners of annotation layer
   for (const evtHandler of EVENTS_TO_HANDLER)
-    AnnotationlayerREF.value!.removeEventListener?.(evtHandler, annotationEventsHandler)
+    AnnotationlayerREF.value!.removeEventListener?.(evtHandler, annotationsEvents)
 }
 
 function initDoc(proxy: PDFDocumentLoadingTask) {
@@ -426,6 +264,9 @@ defineExpose({
     <canvas ref="CanvasREF" style="display: inline-block" />
     <div v-show="annotationLayer" ref="AnnotationlayerREF" class="annotationLayer" style="display: block;" />
     <div v-show="textLayer" ref="TextlayerREF" class="textLayer" style="display: block;" />
+    <div v-show="loadingLayer" ref="LoadlayerREF" style="display: block; position: absolute;">
+      <slot />
+    </div>
   </span>
 </template>
 
