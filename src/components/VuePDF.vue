@@ -1,13 +1,15 @@
 <!-- eslint-disable no-case-declarations -->
+// import { SimpleLinkService } from 'pdfjs-dist/web/pdf_viewer'
 <script setup lang="ts">
-import type { PDFDocumentLoadingTask, PDFDocumentProxy } from 'pdfjs-dist'
-import * as PDFJSViewer from 'pdfjs-dist/web/pdf_viewer'
-import * as PDFJSLib from 'pdfjs-dist/build/pdf'
-import { SimpleLinkService } from 'pdfjs-dist/web/pdf_viewer'
-import 'pdfjs-dist/web/pdf_viewer.css'
 import { onMounted, ref, watch } from 'vue'
+import { AnnotationLayer } from 'pdfjs-dist'
+import { EventBus, SimpleLinkService, TextLayerBuilder } from 'pdfjs-dist/web/pdf_viewer.js'
+import 'pdfjs-dist/web/pdf_viewer.css'
+
+import type { PDFDocumentLoadingTask, PDFDocumentProxy } from 'pdfjs-dist'
 import type { GetViewportParameters, RenderParameters } from 'pdfjs-dist/types/src/display/api'
 import type { AnnotationEventPayload, LoadedEventPayload } from './types'
+
 import { EVENTS_TO_HANDLER, annotationEventsHandler } from './utils/annotations'
 
 const props = withDefaults(defineProps<{
@@ -84,6 +86,7 @@ function renderPage(pageNum: number) {
 
     CanvasREF.value!.width = viewport.width
     CanvasREF.value!.height = viewport.height
+
     CanvasREF.value!.style.width = `${viewport.width}px`
     CanvasREF.value!.style.height = `${viewport.height}px`
     LoadlayerREF.value!.style.width = `${viewport.width}px`
@@ -100,21 +103,19 @@ function renderPage(pageNum: number) {
       // Load text layer if prop is true
       if (props.textLayer) {
         page.getTextContent().then((textContent) => {
-          TextlayerREF.value!.style.left = `${CanvasREF.value!.offsetLeft}px`
-          TextlayerREF.value!.style.top = `${CanvasREF.value!.offsetTop}px`
           TextlayerREF.value!.style.height = `${CanvasREF.value!.offsetHeight}px`
           TextlayerREF.value!.style.width = `${CanvasREF.value!.offsetWidth}px`
 
           // Render text using TextLayerBuilder from pdfjs viewer
-          const TextLayerBuilder = new PDFJSViewer.TextLayerBuilder({
+          const textLayerBuilder = new TextLayerBuilder({
             textLayerDiv: TextlayerREF.value,
             pageIndex: page._pageIndex,
-            eventBus: new PDFJSViewer.EventBus(),
+            eventBus: new EventBus(),
             viewport,
             enhanceTextSelection: false,
           })
-          TextLayerBuilder.setTextContent(textContent)
-          TextLayerBuilder.render()
+          textLayerBuilder.setTextContent(textContent)
+          textLayerBuilder.render()
           TextLayerLoaded = true
         })
       }
@@ -123,8 +124,6 @@ function renderPage(pageNum: number) {
       if (props.annotationLayer) {
         emitLoadedEvent = true
         page.getAnnotations().then((annotations) => {
-          AnnotationlayerREF.value!.style.left = `${CanvasREF.value!.offsetLeft}px`
-          AnnotationlayerREF.value!.style.top = `${CanvasREF.value!.offsetTop}px`
           AnnotationlayerREF.value!.style.height = `${CanvasREF.value!.offsetHeight}px`
           AnnotationlayerREF.value!.style.width = `${CanvasREF.value!.offsetWidth}px`
           if (props.annotationsFilter) {
@@ -149,7 +148,7 @@ function renderPage(pageNum: number) {
               canvasMap.set(anno.id, subCanvas)
             }
           }
-          PDFJSLib.AnnotationLayer.render({
+          AnnotationLayer.render({
             annotations,
             viewport: viewport.clone({ dontFlip: true }),
             page,
@@ -260,17 +259,23 @@ defineExpose({
 </script>
 
 <template>
-  <span ref="ContainerREF" style="position: relative; display: flex;">
+  <span ref="ContainerREF" style="position: relative; display: inline-block;">
     <canvas ref="CanvasREF" style="display: inline-block" />
     <div v-show="annotationLayer" ref="AnnotationlayerREF" class="annotationLayer" style="display: block;" />
     <div v-show="textLayer" ref="TextlayerREF" class="textLayer" style="display: block;" />
-    <div v-show="loadingLayer" ref="LoadlayerREF" style="display: block; position: absolute;">
+    <div v-show="loadingLayer" ref="LoadlayerREF" style="display: block;" class="loadingLayer">
       <slot />
     </div>
   </span>
 </template>
 
 <style>
+.loadingLayer {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
 .annotationLayer {
   position: absolute;
   left: 0;

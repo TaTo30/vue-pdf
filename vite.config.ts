@@ -9,16 +9,14 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, './src/index.ts'),
       name: '@tato30/vue-pdf',
-      formats: ['es', 'cjs'],
-      fileName: format => `index.${(format === 'cjs' || format === 'commonjs') ? 'cjs' : 'mjs'}`,
+      fileName: 'index',
     },
-    outDir: 'dist/lib',
-    sourcemap: true,
-    target: 'esnext',
-    minify: false,
     rollupOptions: {
       output: {
         exports: 'named',
+        globals: {
+          vue: 'Vue',
+        },
       },
       external: [
         'vue',
