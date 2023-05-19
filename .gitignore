@@ -8,7 +8,9 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-_site
+.ghpages
+.cache
+.temp
 .vscode
 public/*
 !public/example_*.pdf
