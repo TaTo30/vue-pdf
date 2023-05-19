@@ -1,4 +1,4 @@
-<div style="text-align: center">
+<div align="center">
   <img width=250 src="./docs/.vuepress/public/logo.png" />
   <h1>VuePDF</h1>
 </div>
@@ -8,7 +8,7 @@
 ![Downloads](https://img.shields.io/npm/dw/@tato30/vue-pdf?style=flat-square)
 ![License](https://img.shields.io/npm/l/@tato30/vue-pdf?style=flat-square)
 
-<div style="text-align: center">
+<div align="center">
   <h2><a href="https://tato30.github.io/VuePDF/">📖Documentation</a></h2>
 </div>
 
