@@ -23,9 +23,10 @@ const { pdf } = usePDF('example_014.pdf')
 <script setup>
 import { ref } from 'vue'
 import { VuePDF, usePDF } from '@tato30/vue-pdf'
+import { withBase } from '@vuepress/client'
 
 const annotation_layer = ref(false)
-const { pdf } = usePDF('/example_014.pdf')
+const { pdf } = usePDF(withBase('/example_014.pdf'))
 </script>
 
 <div style="text-align: center">
@@ -36,14 +37,3 @@ const { pdf } = usePDF('/example_014.pdf')
   </div>
   <VuePDF :pdf="pdf" :annotation-layer="annotation_layer" />
 </div>
-
-<style>
-.button-example {
-  background-color: var(--c-brand);
-  color: white;
-  padding: 10px;
-  margin: 7px;
-  border-radius: 2px;
-  border: none;
-}
-</style>

@@ -23,6 +23,8 @@ Value example:
 }
 ```
 
+> NOTE: "annotations" property will be appended if [annotation-layer](props.md#annotation-layer) prop is `true`
+
 ## annotation
 
 ```vue

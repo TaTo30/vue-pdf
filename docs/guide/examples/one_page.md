@@ -40,14 +40,3 @@ const { pdf, pages } = usePDF('https://raw.githubusercontent.com/mozilla/pdf.js/
     </div>
     <VuePDF :pdf="pdf" :page="page" />
 </div>
-
-<style>
-.button-example {
-  background-color: var(--c-brand);
-  color: white;
-  padding: 10px;
-  margin: 7px;
-  border-radius: 2px;
-  border: none;
-}
-</style>
