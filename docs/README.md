@@ -8,7 +8,7 @@ actions:
     link: /guide/
     type: primary
   - text: Examples
-    link: /guide/examples/one_page
+    link: /examples/basic/one_page
     type: secondary
 # features:
 #   - title: Simplicity First

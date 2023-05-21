@@ -1,4 +1,4 @@
-# VuePDF
+# Get Started
 
 ![Latest version](https://img.shields.io/npm/v/@tato30/vue-pdf?style=flat-square)
 ![Downloads](https://img.shields.io/npm/dw/@tato30/vue-pdf?style=flat-square)
