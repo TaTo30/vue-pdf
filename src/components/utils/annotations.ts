@@ -182,7 +182,7 @@ function annotationEventsHandler(evt: Event, PDFDoc: PDFDocumentProxy, Annotatio
       })
     }
   }
-  else if (annotation.className === 'buttonWidgetAnnotation pushButton' && evt.type === 'click') {
+  else if (annotation.className === 'linkAnnotation buttonWidgetAnnotation pushButton' && evt.type === 'click') {
     const id = annotation.dataset.annotationId
     if (id) {
       const anno = getAnnotationsByKey('id', id, Annotations)[0]
@@ -206,3 +206,4 @@ export {
   annotationEventsHandler,
   EVENTS_TO_HANDLER,
 }
+
