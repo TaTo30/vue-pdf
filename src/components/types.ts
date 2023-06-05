@@ -2,7 +2,7 @@ import type { PageViewport } from 'pdfjs-dist'
 import type { OnProgressParameters } from 'pdfjs-dist/types/src/display/api'
 import type { Metadata } from 'pdfjs-dist/types/src/display/metadata'
 
-export type LoadedEventPayload = Partial<PageViewport> & { annotations?: any[] }
+export type LoadedEventPayload = PageViewport
 
 export interface AnnotationEventPayload {
   type: string

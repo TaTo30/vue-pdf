@@ -6,6 +6,10 @@ const { pdf } = usePDF('https://raw.githubusercontent.com/mozilla/pdf.js/ba2edea
 const scale = ref(1)
 const rotation = ref(0)
 const layer = ref(false)
+
+function onLoaded(value) {
+  console.log(value)
+}
 </script>
 
 <template>
@@ -26,7 +30,7 @@ const layer = ref(false)
       Layer {{ layer }}
     </button>
     <div style="text-align: center;">
-      <VuePDF :pdf="pdf" :text-layer="layer" :scale="scale" :rotation="rotation" />
+      <VuePDF :pdf="pdf" :text-layer="layer" :scale="scale" :rotation="rotation" @loaded="onLoaded" />
     </div>
   </div>
 </template>

@@ -12,21 +12,13 @@ export default defineConfig({
       fileName: 'index',
     },
     rollupOptions: {
-      output: {
-        exports: 'named',
-        globals: {
-          vue: 'Vue',
-        },
-      },
       external: [
         'vue',
         'pdfjs-dist',
-        'pdfjs-dist/build/pdf',
-        'pdfjs-dist/build/pdf.worker',
-        'pdfjs-dist/build/pdf.worker.entry',
-        'pdfjs-dist/web/pdf_viewer',
-        'pdfjs-dist/web/pdf_viewer.css',
       ],
+      output: {
+        exports: 'named',
+      },
     },
   },
   plugins: [

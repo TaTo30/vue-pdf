@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { VuePDF, usePDF } from '../../src';
 
-import pdf014 from '../pdf/example_014.pdf';
+import pdf014 from '../pdf/_pdf4.pdf';
 
 const { pdf } = usePDF(pdf014)
 const scale = ref(1)

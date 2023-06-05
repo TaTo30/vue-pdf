@@ -23,9 +23,9 @@ function render() {
 
   const textStream = page?.streamTextContent({ includeMarkedContent: true, disableNormalization: true })
   const parameters: TextLayerRenderParameters = {
-    textContentSource: textStream as ReadableStream,
-    viewport: viewport as PageViewport,
-    container: TextlayerREF.value as HTMLElement,
+    textContentSource: textStream!,
+    viewport: viewport!,
+    container: TextlayerREF.value!,
     isOffscreenCanvasSupported: true,
     textDivs: [],
     textDivProperties: new WeakMap(),
@@ -43,19 +43,17 @@ function render() {
 function onMouseDown() {
   if (!EndOfContent.value)
     return
-
   EndOfContent.value.classList.add('active')
 }
 
 function onMouseUp() {
   if (!EndOfContent.value)
     return
-
   EndOfContent.value.classList.remove('active')
 }
 
-watch(() => [props.page, props.viewport], ([page, viewport]) => {
-  if (page && viewport)
+watch(() => props.page, (page, _) => {
+  if (page && props.viewport)
     render()
 })
 

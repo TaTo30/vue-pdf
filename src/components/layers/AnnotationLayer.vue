@@ -26,7 +26,7 @@ const AnnotationlayerREF = ref<HTMLDivElement>()
 const Annotations = ref<Object[]>()
 
 function annotationsEvents(evt: Event) {
-  const value = annotationEventsHandler(evt, props.document as PDFDocumentProxy, Annotations.value as Object[])
+  const value = annotationEventsHandler(evt, props.document!, Annotations.value!)
   Promise.resolve(value).then((data) => {
     if (data)
       emit('annotation', data)
@@ -70,7 +70,7 @@ function render() {
       viewport: viewport?.clone({ dontFlip: true }) as PageViewport,
       linkService: new SimpleLinkService(),
       annotationCanvasMap: canvasMap,
-      div: AnnotationlayerREF.value as HTMLDivElement,
+      div: AnnotationlayerREF.value!,
       renderForms: true,
       page,
       enableScripting: true,
@@ -85,8 +85,8 @@ function render() {
   })
 }
 
-watch(() => [props.page, props.viewport], ([page, viewport]) => {
-  if (page && viewport)
+watch(() => props.page, (page, _) => {
+  if (page && props.viewport)
     render()
 })
 
