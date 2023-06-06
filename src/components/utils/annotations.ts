@@ -206,4 +206,3 @@ export {
   annotationEventsHandler,
   EVENTS_TO_HANDLER,
 }
-

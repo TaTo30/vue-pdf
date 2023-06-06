@@ -1,13 +1,10 @@
 <!-- eslint-disable no-case-declarations -->
 // import { SimpleLinkService } from 'pdfjs-dist/web/pdf_viewer'
 <script setup lang="ts">
-// TODO:
-// Reimplements annotation-filter
-
-import { AnnotationMode } from 'pdfjs-dist'
+import * as PDFJS from 'pdfjs-dist'
 import { onMounted, ref, toRaw, watch } from 'vue'
 
-import type { PDFDocumentLoadingTask, PDFDocumentProxy, PDFPageProxy, PageViewport } from 'pdfjs-dist'
+import type { PDFDocumentLoadingTask, PDFDocumentProxy, PDFPageProxy, PageViewport, RenderTask } from 'pdfjs-dist'
 import type { GetViewportParameters, RenderParameters } from 'pdfjs-dist/types/src/display/api'
 import type { AnnotationEventPayload, LoadedEventPayload } from './types'
 
@@ -34,9 +31,10 @@ const emit = defineEmits<{
 }>()
 
 // Template Refs
-const ContainerREF = ref<HTMLSpanElement>()
-const LoadlayerREF = ref<HTMLSpanElement>()
-const loadingLayer = ref(true)
+const container = ref<HTMLSpanElement>()
+const loadingLayer = ref<HTMLSpanElement>()
+const loading = ref(false)
+let renderTask: RenderTask
 
 // PDF Refs
 const DocumentProxy = ref<PDFDocumentProxy | null>(null)
@@ -65,67 +63,91 @@ function computeRotation(rotation: number): number {
 function computeScale(page: PDFPageProxy): number {
   let fscale = props.scale
   if (props.fitParent) {
-    const parentWidth: number = (ContainerREF.value!.parentNode! as HTMLElement).clientWidth
+    const parentWidth: number = (container.value!.parentNode! as HTMLElement).clientWidth
     const scale1Width = page.getViewport({ scale: 1 }).width
     fscale = parentWidth / scale1Width
   }
-  ContainerREF.value?.style.setProperty('--scale-factor', `${fscale}`)
   return fscale
 }
 
-function setupCanvas(viewport: PageViewport) {
-  const canvas = document.createElement('canvas')
-  canvas.width = viewport.width
-  canvas.height = viewport.height
-
-  canvas.style.width = `${viewport.width}px`
-  canvas.style.height = `${viewport.height}px`
-  canvas.style.visibility = 'hidden'
-  canvas.style.display = 'none'
-
-  // Also setting dimension properties for load layer
-  LoadlayerREF.value!.style.width = `${viewport.width}px`
-  LoadlayerREF.value!.style.height = `${viewport.height}px`
-  return canvas
-}
-
-function getOldCanvas() {
+function getCurrentCanvas(): HTMLCanvasElement | null {
   let oldCanvas = null
-  ContainerREF.value?.childNodes.forEach((el) => {
+  container.value?.childNodes.forEach((el) => {
     if ((el as HTMLElement).tagName === 'CANVAS')
       oldCanvas = el
   })
   return oldCanvas
 }
 
+function setupCanvas(viewport: PageViewport): HTMLCanvasElement {
+  let canvas
+  const currentCanvas = getCurrentCanvas()!
+  if (currentCanvas && currentCanvas?.getAttribute('role') === 'main') {
+    canvas = currentCanvas
+  }
+  else {
+    canvas = document.createElement('canvas')
+    canvas.style.display = 'none'
+    canvas.setAttribute('dir', 'ltr')
+  }
+  canvas.width = viewport.width
+  canvas.height = viewport.height
+
+  canvas.style.width = `${viewport.width}px`
+  canvas.style.height = `${viewport.height}px`
+
+  // --scale-factor property
+  container.value?.style.setProperty('--scale-factor', `${viewport.scale}`)
+  // Also setting dimension properties for load layer
+  loadingLayer.value!.style.width = `${viewport.width}px`
+  loadingLayer.value!.style.height = `${viewport.height}px`
+  loading.value = true
+  return canvas
+}
+
 function renderPage(pageNum: number) {
   toRaw(DocumentProxy.value)?.getPage(pageNum).then((page) => {
+    if (renderTask)
+      renderTask.cancel()
+
     const viewportParams: GetViewportParameters = {
       scale: computeScale(page),
       rotation: computeRotation(props.rotation!),
     }
+    const viewport = page.getViewport(viewportParams)
 
-    InternalViewport.value = page.getViewport(viewportParams)
+    const oldCanvas = getCurrentCanvas()
+    const canvas = setupCanvas(viewport)
 
-    const canvas = setupCanvas(InternalViewport.value)
-    const oldCanvas = getOldCanvas()
-    ContainerREF.value?.appendChild(canvas)
+    if (canvas.getAttribute('role') !== 'main')
+      container.value?.appendChild(canvas)
 
     // Render PDF page into canvas context
     const renderContext: RenderParameters = {
-      canvasContext: canvas.getContext('2d', { alpha: false })!,
-      viewport: InternalViewport.value,
-      annotationMode: AnnotationMode.ENABLE_FORMS,
+      canvasContext: canvas.getContext('2d')!,
+      viewport,
+      annotationMode: PDFJS.AnnotationMode.ENABLE_FORMS,
     }
+    setTimeout(() => {
+      if (canvas?.getAttribute('role') !== 'main') {
+        if (oldCanvas) {
+          oldCanvas.remove()
+          canvas.style.display = 'block'
+        }
+      }
+      else {
+        canvas.removeAttribute('role')
+      }
+    }, 1)
 
-    page.render(renderContext).promise.then(() => {
+    renderTask = page.render(renderContext)
+    renderTask.promise.then(() => {
       PageProxy.value = page
-      loadingLayer.value = false
-      if (oldCanvas)
-        ContainerREF.value?.removeChild(oldCanvas)
-      canvas.style.display = 'inline-block'
-      canvas.style.visibility = ''
+      InternalViewport.value = viewport
+      loading.value = false
       emitLoaded(InternalViewport.value!)
+    }).catch(() => {
+      // render task cancelled
     })
   })
 }
@@ -143,17 +165,8 @@ watch(() => props.pdf, (pdf) => {
     initDoc(pdf)
 })
 
-// WHhen annotations filter change rework render task
-watch(() => props.annotationsFilter, () => {
+watch(() => [props.scale, props.rotation, props.page], () => {
   renderPage(props.page)
-})
-
-watch(() => [props.scale, props.rotation], (_) => {
-  renderPage(props.page)
-})
-
-watch(() => props.page, (page) => {
-  renderPage(page)
 })
 
 onMounted(() => {
@@ -171,13 +184,14 @@ defineExpose({
 </script>
 
 <template>
-  <span ref="ContainerREF" style="position: relative; display: inline-block;">
-    <AnnotationLayer v-show="annotationLayer" :page="PageProxy" :viewport="InternalViewport" :document="DocumentProxy" @annotation="emitAnnotation($event)" />
-    <TextLayer v-show="textLayer" :page="PageProxy" :viewport="InternalViewport" />
-    <div v-show="loadingLayer" ref="LoadlayerREF" style="display: block;" class="loadingLayer">
+  <div ref="container" style="position: relative; display: inline-block;">
+    <canvas dir="ltr" style="display: block" role="main" />
+    <AnnotationLayer v-show="annotationLayer" :page="PageProxy as PDFPageProxy" :viewport="InternalViewport" :document="DocumentProxy as PDFDocumentProxy" :filter="annotationsFilter!" @annotation="emitAnnotation($event)" />
+    <TextLayer v-show="textLayer" :page="PageProxy as PDFPageProxy" :viewport="InternalViewport" />
+    <div v-show="loading" ref="loadingLayer" style="display: block;" class="loadingLayer">
       <slot />
     </div>
-  </span>
+  </div>
 </template>
 
 <style>

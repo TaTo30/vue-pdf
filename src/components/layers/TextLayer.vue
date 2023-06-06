@@ -12,11 +12,11 @@ const props = defineProps<{
   viewport: PageViewport | null
 }>()
 
-const TextlayerREF = ref<HTMLDivElement>()
-const EndOfContent = ref<HTMLDivElement>()
+const layer = ref<HTMLDivElement>()
+const endContent = ref<HTMLDivElement>()
 
 function render() {
-  TextlayerREF.value!.replaceChildren?.()
+  layer.value!.replaceChildren?.()
 
   const page = props.page
   const viewport = props.viewport
@@ -25,7 +25,7 @@ function render() {
   const parameters: TextLayerRenderParameters = {
     textContentSource: textStream!,
     viewport: viewport!,
-    container: TextlayerREF.value!,
+    container: layer.value!,
     isOffscreenCanvasSupported: true,
     textDivs: [],
     textDivProperties: new WeakMap(),
@@ -35,25 +35,25 @@ function render() {
   task.promise.then(() => {
     const endOfContent = document.createElement('div')
     endOfContent.className = 'endOfContent'
-    TextlayerREF.value?.appendChild(endOfContent)
-    EndOfContent.value = endOfContent
+    layer.value?.appendChild(endOfContent)
+    endContent.value = endOfContent
   })
 }
 
 function onMouseDown() {
-  if (!EndOfContent.value)
+  if (!endContent.value)
     return
-  EndOfContent.value.classList.add('active')
+  endContent.value.classList.add('active')
 }
 
 function onMouseUp() {
-  if (!EndOfContent.value)
+  if (!endContent.value)
     return
-  EndOfContent.value.classList.remove('active')
+  endContent.value.classList.remove('active')
 }
 
-watch(() => props.page, (page, _) => {
-  if (page && props.viewport)
+watch(() => props.viewport, (_) => {
+  if (props.page && props.viewport)
     render()
 })
 
@@ -64,10 +64,18 @@ onMounted(() => {
 </script>
 
 <template>
-  <div ref="TextlayerREF" class="textLayer" style="display: block;" @mousedown="onMouseDown" @mouseup="onMouseUp" />
+  <div ref="layer" class="textLayer" style="display: block;" @mousedown="onMouseDown" @mouseup="onMouseUp" />
 </template>
 
 <style>
+.textLayer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+
 .textLayer .endOfContent {
   display: block;
   position: absolute;

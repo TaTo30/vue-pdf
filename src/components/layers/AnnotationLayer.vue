@@ -16,17 +16,18 @@ const props = defineProps<{
   page: PDFPageProxy | null
   viewport: PageViewport | null
   document: PDFDocumentProxy | null
+  filter: string[] | undefined
 }>()
 
 const emit = defineEmits<{
   (event: 'annotation', payload: AnnotationEventPayload): void
 }>()
 
-const AnnotationlayerREF = ref<HTMLDivElement>()
-const Annotations = ref<Object[]>()
+const layer = ref<HTMLDivElement>()
+const annotations = ref<Object[]>()
 
 function annotationsEvents(evt: Event) {
-  const value = annotationEventsHandler(evt, props.document!, Annotations.value!)
+  const value = annotationEventsHandler(evt, props.document!, annotations.value!)
   Promise.resolve(value).then((data) => {
     if (data)
       emit('annotation', data)
@@ -44,17 +45,26 @@ async function getHasJSActions() {
 }
 
 function render() {
-  AnnotationlayerREF.value!.replaceChildren?.()
+  layer.value!.replaceChildren?.()
 
   const page = props.page
   const viewport = props.viewport
 
-  page?.getAnnotations().then(async (annotations) => {
-    Annotations.value = annotations
+  page?.getAnnotations().then(async (annos) => {
+    annotations.value = annos
+
+    if (props.filter) {
+      annos = annos.filter((value) => {
+        const filters = props.filter
+        const subType = value.subtype
+        const fieldType = value.fieldType ? `${subType}.${value.fieldType}` : null
+        return filters?.includes(subType) || (fieldType !== null && filters?.includes(fieldType))
+      })
+    }
 
     // Canvas map for push button widget
     const canvasMap = new Map<string, HTMLCanvasElement>([])
-    for (const anno of annotations) {
+    for (const anno of annos) {
       if (anno.subtype === 'Widget' && anno.fieldType === 'Btn' && anno.pushButton) {
         const canvasWidth = anno.rect[2] - anno.rect[0]
         const canvasHeight = anno.rect[3] - anno.rect[1]
@@ -66,11 +76,11 @@ function render() {
     }
 
     const parameters: AnnotationLayerParameters = {
-      annotations,
+      annotations: annos,
       viewport: viewport?.clone({ dontFlip: true }) as PageViewport,
       linkService: new SimpleLinkService(),
       annotationCanvasMap: canvasMap,
-      div: AnnotationlayerREF.value!,
+      div: layer.value!,
       renderForms: true,
       page,
       enableScripting: true,
@@ -81,12 +91,12 @@ function render() {
     PDFJS.AnnotationLayer.render(parameters)
 
     for (const evtHandler of EVENTS_TO_HANDLER)
-      AnnotationlayerREF.value!.addEventListener(evtHandler, annotationsEvents)
+      layer.value!.addEventListener(evtHandler, annotationsEvents)
   })
 }
 
-watch(() => props.page, (page, _) => {
-  if (page && props.viewport)
+watch(() => props.viewport, () => {
+  if (props.page && props.viewport)
     render()
 })
 
@@ -97,7 +107,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div ref="AnnotationlayerREF" class="annotationLayer" style="display: block;" />
+  <div ref="layer" class="annotationLayer" style="display: block;" />
 </template>
 
 <style>
