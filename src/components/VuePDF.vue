@@ -87,7 +87,7 @@ function setupCanvas(viewport: PageViewport): HTMLCanvasElement {
   }
   else {
     canvas = document.createElement('canvas')
-    canvas.style.display = 'none'
+    canvas.style.display = 'block'
     canvas.setAttribute('dir', 'ltr')
   }
   canvas.width = viewport.width
@@ -105,10 +105,14 @@ function setupCanvas(viewport: PageViewport): HTMLCanvasElement {
   return canvas
 }
 
+function cancelRender() {
+  if (renderTask)
+    renderTask.cancel()
+}
+
 function renderPage(pageNum: number) {
   toRaw(DocumentProxy.value)?.getPage(pageNum).then((page) => {
-    if (renderTask)
-      renderTask.cancel()
+    cancelRender()
 
     const viewportParams: GetViewportParameters = {
       scale: computeScale(page),
@@ -119,26 +123,20 @@ function renderPage(pageNum: number) {
     const oldCanvas = getCurrentCanvas()
     const canvas = setupCanvas(viewport)
 
-    if (canvas.getAttribute('role') !== 'main')
-      container.value?.appendChild(canvas)
-
     // Render PDF page into canvas context
     const renderContext: RenderParameters = {
       canvasContext: canvas.getContext('2d')!,
       viewport,
       annotationMode: PDFJS.AnnotationMode.ENABLE_FORMS,
     }
-    setTimeout(() => {
-      if (canvas?.getAttribute('role') !== 'main') {
-        if (oldCanvas) {
-          oldCanvas.remove()
-          canvas.style.display = 'block'
-        }
-      }
-      else {
-        canvas.removeAttribute('role')
-      }
-    }, 1)
+
+    if (canvas?.getAttribute('role') !== 'main') {
+      if (oldCanvas)
+        container.value?.replaceChild(canvas, oldCanvas)
+    }
+    else {
+      canvas.removeAttribute('role')
+    }
 
     renderTask = page.render(renderContext)
     renderTask.promise.then(() => {
@@ -178,13 +176,18 @@ function reload() {
   renderPage(props.page)
 }
 
+function cancel() {
+  cancelRender()
+}
+
 defineExpose({
   reload,
+  cancel,
 })
 </script>
 
 <template>
-  <div ref="container" style="position: relative; display: inline-block;">
+  <div ref="container" style="position: relative; display: inline-block; overflow: hidden;">
     <canvas dir="ltr" style="display: block" role="main" />
     <AnnotationLayer v-show="annotationLayer" :page="PageProxy as PDFPageProxy" :viewport="InternalViewport" :document="DocumentProxy as PDFDocumentProxy" :filter="annotationsFilter!" @annotation="emitAnnotation($event)" />
     <TextLayer v-show="textLayer" :page="PageProxy as PDFPageProxy" :viewport="InternalViewport" />

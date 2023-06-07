@@ -2,9 +2,9 @@
 import { ref } from 'vue';
 import { VuePDF, usePDF } from '../../src';
 
-// import pdflazy from '../pdf/lazy.pdf';
+import pdflazy from '../pdf/lazy.pdf';
 
-const { pdf } = usePDF('https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf')
+const { pdf } = usePDF(pdflazy)
 const scale = ref(1)
 const rotation = ref(0)
 const layer = ref(true)
