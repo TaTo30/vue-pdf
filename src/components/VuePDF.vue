@@ -187,20 +187,12 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="container" style="position: relative; display: inline-block; overflow: hidden;">
+  <div ref="container" style="position: relative; display: block; overflow: hidden;">
     <canvas dir="ltr" style="display: block" role="main" />
     <AnnotationLayer v-show="annotationLayer" :page="PageProxy as PDFPageProxy" :viewport="InternalViewport" :document="DocumentProxy as PDFDocumentProxy" :filter="annotationsFilter!" @annotation="emitAnnotation($event)" />
     <TextLayer v-show="textLayer" :page="PageProxy as PDFPageProxy" :viewport="InternalViewport" />
-    <div v-show="loading" ref="loadingLayer" style="display: block;" class="loadingLayer">
+    <div v-show="loading" ref="loadingLayer" style="display: block; position: absolute">
       <slot />
     </div>
   </div>
 </template>
-
-<style>
-.loadingLayer {
-  position: absolute;
-  left: 0;
-  top: 0;
-}
-</style>
