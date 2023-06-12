@@ -17,6 +17,7 @@ const props = defineProps<{
   viewport: PageViewport | null
   document: PDFDocumentProxy | null
   filter: string[] | undefined
+  map: Function | undefined
 }>()
 
 const emit = defineEmits<{
@@ -24,7 +25,7 @@ const emit = defineEmits<{
 }>()
 
 const layer = ref<HTMLDivElement>()
-const annotations = ref<Object[]>()
+const annotations = ref<any[]>()
 
 function annotationsEvents(evt: Event) {
   const value = annotationEventsHandler(evt, props.document!, annotations.value!)
@@ -44,55 +45,71 @@ async function getHasJSActions() {
   return hasJSActions
 }
 
-function render() {
+async function getAnnotations() {
+  const page = props.page
+
+  let annotations = await page?.getAnnotations()
+  if (props.filter) {
+    const filters = props.filter
+    annotations = annotations!.filter((value) => {
+      const subType = value.subtype
+      const fieldType = value.fieldType ? `${subType}.${value.fieldType}` : null
+      return filters?.includes(subType) || (fieldType !== null && filters?.includes(fieldType))
+    })
+  }
+  if (props.map && typeof props.map === 'function') {
+    const mappedAnnotations = []
+    for (const annotation of annotations!) {
+      const mappedAnnotation = props.map(annotation)
+      if (mappedAnnotation)
+        mappedAnnotations.push(mappedAnnotation)
+    }
+    annotations = mappedAnnotations
+  }
+
+  return annotations
+}
+
+async function render() {
   layer.value!.replaceChildren?.()
 
+  const pdf = toRaw(props.document)
   const page = props.page
   const viewport = props.viewport
 
-  page?.getAnnotations().then(async (annos) => {
-    annotations.value = annos
+  annotations.value = await getAnnotations()
 
-    if (props.filter) {
-      annos = annos.filter((value) => {
-        const filters = props.filter
-        const subType = value.subtype
-        const fieldType = value.fieldType ? `${subType}.${value.fieldType}` : null
-        return filters?.includes(subType) || (fieldType !== null && filters?.includes(fieldType))
-      })
+  // Canvas map for push button widget
+  const canvasMap = new Map<string, HTMLCanvasElement>([])
+  for (const anno of annotations.value!) {
+    if (anno.subtype === 'Widget' && anno.fieldType === 'Btn' && anno.pushButton) {
+      const canvasWidth = anno.rect[2] - anno.rect[0]
+      const canvasHeight = anno.rect[3] - anno.rect[1]
+      const subCanvas = document.createElement('canvas')
+      subCanvas.setAttribute('width', (canvasWidth * viewport!.scale).toString())
+      subCanvas.setAttribute('height', (canvasHeight * viewport!.scale).toString())
+      canvasMap.set(anno.id, subCanvas)
     }
+  }
 
-    // Canvas map for push button widget
-    const canvasMap = new Map<string, HTMLCanvasElement>([])
-    for (const anno of annos) {
-      if (anno.subtype === 'Widget' && anno.fieldType === 'Btn' && anno.pushButton) {
-        const canvasWidth = anno.rect[2] - anno.rect[0]
-        const canvasHeight = anno.rect[3] - anno.rect[1]
-        const subCanvas = document.createElement('canvas')
-        subCanvas.setAttribute('width', (canvasWidth * viewport!.scale).toString())
-        subCanvas.setAttribute('height', (canvasHeight * viewport!.scale).toString())
-        canvasMap.set(anno.id, subCanvas)
-      }
-    }
+  const parameters: AnnotationLayerParameters = {
+    annotations: annotations.value!,
+    viewport: viewport?.clone({ dontFlip: true }) as PageViewport,
+    linkService: new SimpleLinkService(),
+    annotationCanvasMap: canvasMap,
+    div: layer.value!,
+    annotationStorage: pdf!.annotationStorage,
+    renderForms: true,
+    page: page!,
+    enableScripting: true,
+    hasJSActions: await getHasJSActions(),
+    fieldObjects: await getFieldObjects(),
+    downloadManager: null,
+  }
+  PDFJS.AnnotationLayer.render(parameters)
 
-    const parameters: AnnotationLayerParameters = {
-      annotations: annos,
-      viewport: viewport?.clone({ dontFlip: true }) as PageViewport,
-      linkService: new SimpleLinkService(),
-      annotationCanvasMap: canvasMap,
-      div: layer.value!,
-      renderForms: true,
-      page,
-      enableScripting: true,
-      hasJSActions: await getHasJSActions(),
-      fieldObjects: await getFieldObjects(),
-      downloadManager: null,
-    }
-    PDFJS.AnnotationLayer.render(parameters)
-
-    for (const evtHandler of EVENTS_TO_HANDLER)
-      layer.value!.addEventListener(evtHandler, annotationsEvents)
-  })
+  for (const evtHandler of EVENTS_TO_HANDLER)
+    layer.value!.addEventListener(evtHandler, annotationsEvents)
 }
 
 watch(() => props.viewport, () => {

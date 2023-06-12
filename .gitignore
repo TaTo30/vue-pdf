@@ -12,8 +12,8 @@ node_modules
 .cache
 .temp
 .vscode
-public/*
-!public/example_*.pdf
+playground/pdf/*
+!playground/pdf/example_*.pdf
 cjs
 esm
 .DS_Store

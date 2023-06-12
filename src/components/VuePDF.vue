@@ -17,9 +17,10 @@ const props = withDefaults(defineProps<{
   scale?: number
   rotation?: number
   fitParent?: boolean
-  annotationsFilter?: string[]
   textLayer?: boolean
   annotationLayer?: boolean
+  annotationsFilter?: string[]
+  annotationsMap?: Function
 }>(), {
   page: 1,
   scale: 1,
@@ -180,17 +181,29 @@ function cancel() {
   cancelRender()
 }
 
+function getAnnotationStorage() {
+  const pdf = toRaw(DocumentProxy.value)
+  return pdf?.annotationStorage
+}
+
 defineExpose({
   reload,
   cancel,
+  getAnnotationStorage,
 })
 </script>
 
 <template>
   <div ref="container" style="position: relative; display: block; overflow: hidden;">
     <canvas dir="ltr" style="display: block" role="main" />
-    <AnnotationLayer v-show="annotationLayer" :page="PageProxy as PDFPageProxy" :viewport="InternalViewport" :document="DocumentProxy as PDFDocumentProxy" :filter="annotationsFilter!" @annotation="emitAnnotation($event)" />
     <TextLayer v-show="textLayer" :page="PageProxy as PDFPageProxy" :viewport="InternalViewport" />
+    <AnnotationLayer
+      v-show="annotationLayer" :page="PageProxy as PDFPageProxy" :viewport="InternalViewport"
+      :document="DocumentProxy as PDFDocumentProxy"
+      :filter="annotationsFilter!"
+      :map="annotationsMap"
+      @annotation="emitAnnotation($event)"
+    />
     <div v-show="loading" ref="loadingLayer" style="display: block; position: absolute">
       <slot />
     </div>

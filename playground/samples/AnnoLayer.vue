@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { VuePDF, usePDF } from '../../src';
 
-import pdf014 from '../pdf/_pdf4.pdf';
+import pdf014 from '../pdf/example_014.pdf';
 
 const { pdf } = usePDF(pdf014)
 const scale = ref(1)
@@ -20,6 +20,17 @@ const selectedFilter = ref(['Widget'])
 function onAnnotation(value) {
   console.log(value)
 }
+
+function annotationMap(annotation) {
+  if (annotation.id === '7R')
+    annotation.fieldValue = 'Modified value'
+  return annotation
+}
+
+function getAnnotations() {
+  const st = vuePDFRef.value.getAnnotationStorage()
+  console.log(st.getAll())
+}
 </script>
 
 <template>
@@ -36,13 +47,26 @@ function onAnnotation(value) {
     <button @click="rotation = rotation + 90">
       + Rotation
     </button>
+    <button @click="getAnnotations">
+      get annotations
+    </button>
+    <button @click="reloadPage">
+      reload
+    </button>
     <select v-model="selectedFilter[0]" class="select-example" @change="reloadPage">
       <option v-for="flt in filters" :key="flt" :value="flt">
         {{ flt }}
       </option>
     </select>
     <div style="text-align: center;">
-      <VuePDF ref="vuePDFRef" :pdf="pdf" text-layer annotation-layer :scale="scale" :rotation="rotation" :annotations-filter="selectedFilter" @annotation="onAnnotation" />
+      <VuePDF
+        ref="vuePDFRef" :pdf="pdf" text-layer annotation-layer
+        :scale="scale"
+        :rotation="rotation"
+        :annotations-filter="selectedFilter"
+        :annotations-map="annotationMap"
+        @annotation="onAnnotation"
+      />
     </div>
   </div>
 </template>
