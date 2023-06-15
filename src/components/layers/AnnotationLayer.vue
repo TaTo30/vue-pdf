@@ -113,12 +113,12 @@ async function render() {
 }
 
 watch(() => props.viewport, () => {
-  if (props.page && props.viewport)
+  if (props.page && props.viewport && layer.value)
     render()
 })
 
 onMounted(() => {
-  if (props.page && props.viewport)
+  if (props.page && props.viewport && layer.value)
     render()
 })
 </script>

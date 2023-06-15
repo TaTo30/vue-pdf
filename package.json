@@ -1,6 +1,6 @@
 {
   "name": "@tato30/vue-pdf",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "PDF viewer for Vue 3",
   "author": {
     "name": "Aldo Hernandez",

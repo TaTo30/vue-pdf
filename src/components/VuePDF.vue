@@ -51,7 +51,7 @@ function emitAnnotation(data: AnnotationEventPayload) {
 }
 
 function computeRotation(rotation: number): number {
-  if (!(typeof props.rotation === 'number' && props.rotation % 90 === 0))
+  if (!(typeof rotation === 'number' && rotation % 90 === 0))
     return 0
   const factor = rotation / 90
   if (factor > 4)
@@ -115,9 +115,10 @@ function renderPage(pageNum: number) {
   toRaw(DocumentProxy.value)?.getPage(pageNum).then((page) => {
     cancelRender()
 
+    const defaultViewport = page.getViewport()
     const viewportParams: GetViewportParameters = {
       scale: computeScale(page),
-      rotation: computeRotation(props.rotation!),
+      rotation: computeRotation((props.rotation || 0) + defaultViewport.rotation),
     }
     const viewport = page.getViewport(viewportParams)
 
@@ -139,10 +140,10 @@ function renderPage(pageNum: number) {
       canvas.removeAttribute('role')
     }
 
+    PageProxy.value = page
+    InternalViewport.value = viewport
     renderTask = page.render(renderContext)
     renderTask.promise.then(() => {
-      PageProxy.value = page
-      InternalViewport.value = viewport
       loading.value = false
       emitLoaded(InternalViewport.value!)
     }).catch(() => {

@@ -53,12 +53,12 @@ function onMouseUp() {
 }
 
 watch(() => props.viewport, (_) => {
-  if (props.page && props.viewport)
+  if (props.page && props.viewport && layer.value)
     render()
 })
 
 onMounted(() => {
-  if (props.page && props.viewport)
+  if (props.page && props.viewport && layer.value)
     render()
 })
 </script>
