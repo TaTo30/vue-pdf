@@ -17,13 +17,13 @@ function fitParentWidth(pxs) {
 </script>
 
 <template>
-  <div style="text-align: center">
+  <div>
     <div>
-      <button class="button-example" @click="fitParentWidth(-50)">
+      <button @click="fitParentWidth(-50)">
         Remove 50px
       </button>
       <span>Parent width: {{ parentWidth }}px</span>
-      <button class="button-example" @click="fitParentWidth(50)">
+      <button @click="fitParentWidth(50)">
         Add 50px
       </button>
     </div>
@@ -48,7 +48,7 @@ function fitParentWidth(pxs) {
 }
 </script>
 
-<div style="text-align: center">
+<div class="container">
     <div>
         <button class="button-example" @click="fitParentWidth(-50)">Remove 50px</button>
         <span>Parent width: {{parentWidth}}px</span>

@@ -10,7 +10,7 @@ const { pdf, pages } = usePDF('https://mozilla.github.io/pdf.js/web/compressed.t
 </script>
 
 <template>
-  <div style="text-align: center">
+  <div>
     <div>
       <button @click="page = page > 1 ? page - 1 : page">
         Prev
@@ -32,7 +32,7 @@ const page = ref(1)
 const { pdf, pages } = usePDF('https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf')
 </script>
 
-<div style='text-align: center'>
+<div class="container">
     <div>
       <button class="button-example" @click="page = page > 1? page - 1 : page">PREV</button>
       <span>{{page}}/{{pages}}</span>

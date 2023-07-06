@@ -125,6 +125,18 @@ async function linkAnnotation(annotation: {
   }
 }
 
+function mergePopupArgs(annotation: HTMLElement) {
+  for (const spanElement of annotation.getElementsByTagName('span')) {
+    let content = spanElement.textContent
+    const args = JSON.parse(spanElement.dataset.l10nArgs ?? '{}') as PopupArgs
+    if (content) {
+      for (const key in args)
+        content = content.replace(`{{${key}}}`, args[key])
+    }
+    spanElement.textContent = content
+  }
+}
+
 // Use this function to handle annotation events
 function annotationEventsHandler(evt: Event, PDFDoc: PDFDocumentProxy, Annotations: Object[]) {
   let annotation = (evt.target as HTMLInputElement).parentNode! as HTMLElement
@@ -138,35 +150,28 @@ function annotationEventsHandler(evt: Event, PDFDoc: PDFDocumentProxy, Annotatio
     if (id)
       return linkAnnotation(getAnnotationsByKey('id', id, Annotations)[0] as LinkAnnotation, PDFDoc)
   }
-  else if (['popupAnnotation', 'textAnnotation', 'fileAttachmentAnnotation'].includes(annotation.className)) {
-    for (const spanElement of annotation.getElementsByTagName('span')) {
-      let content = spanElement.textContent
-      const args = JSON.parse(spanElement.dataset.l10nArgs ?? '{}') as PopupArgs
-      if (content) {
-        for (const key in args)
-          content = content.replace(`{{${key}}}`, args[key])
-      }
-      spanElement.textContent = content
-    }
-    if (annotation.className === 'fileAttachmentAnnotation' && evt.type === 'dblclick') {
-      const id = annotation.dataset.annotationId
-      if (id)
-        return fileAnnotation(getAnnotationsByKey('id', id, Annotations)[0])
-    }
+  else if (annotation.className.includes('popupAnnotation') || annotation.className.includes('textAnnotation')) {
+    mergePopupArgs(annotation)
   }
-  else if (annotation.className === 'textWidgetAnnotation' && evt.type === 'input') {
+  else if (annotation.className.includes('fileAttachmentAnnotation')) {
+    mergePopupArgs(annotation)
+    const id = annotation.dataset.annotationId
+    if (id && evt.type === 'dblclick')
+      return fileAnnotation(getAnnotationsByKey('id', id, Annotations)[0])
+  }
+  else if (annotation.className.includes('textWidgetAnnotation') && evt.type === 'input') {
     let inputElement: HTMLInputElement | HTMLTextAreaElement = annotation.getElementsByTagName('input')[0]
     if (!inputElement)
       inputElement = annotation.getElementsByTagName('textarea')[0]
     return inputAnnotation(inputElement)
   }
-  else if (annotation.className === 'choiceWidgetAnnotation' && evt.type === 'input') {
+  else if (annotation.className.includes('choiceWidgetAnnotation') && evt.type === 'input') {
     return inputAnnotation(annotation.getElementsByTagName('select')[0])
   }
-  else if (annotation.className === 'buttonWidgetAnnotation checkBox' && evt.type === 'change') {
+  else if (annotation.className.includes('buttonWidgetAnnotation checkBox') && evt.type === 'change') {
     return inputAnnotation(annotation.getElementsByTagName('input')[0])
   }
-  else if (annotation.className === 'buttonWidgetAnnotation radioButton' && evt.type === 'change') {
+  else if (annotation.className.includes('buttonWidgetAnnotation radioButton') && evt.type === 'change') {
     const id = annotation.dataset.annotationId
     if (id) {
       const anno = getAnnotationsByKey('id', id, Annotations)[0]
@@ -182,7 +187,7 @@ function annotationEventsHandler(evt: Event, PDFDoc: PDFDocumentProxy, Annotatio
       })
     }
   }
-  else if (annotation.className === 'linkAnnotation buttonWidgetAnnotation pushButton' && evt.type === 'click') {
+  else if (annotation.className.includes('buttonWidgetAnnotation pushButton') && evt.type === 'click') {
     const id = annotation.dataset.annotationId
     if (id) {
       const anno = getAnnotationsByKey('id', id, Annotations)[0]
@@ -203,6 +208,7 @@ function annotationEventsHandler(evt: Event, PDFDoc: PDFDocumentProxy, Annotatio
 }
 
 export {
-  annotationEventsHandler,
   EVENTS_TO_HANDLER,
+  annotationEventsHandler
 }
+

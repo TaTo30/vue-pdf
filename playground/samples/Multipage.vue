@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { VuePDF, usePDF } from '../../src';
-import pdflazy from '../pdf/lazy.pdf';
+import pdflazy from '../pdf/qpdfRotated.pdf';
 
 const { pdf, pages } = usePDF(pdflazy)
 </script>

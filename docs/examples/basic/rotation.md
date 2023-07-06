@@ -10,7 +10,7 @@ const { pdf } = usePDF('https://raw.githubusercontent.com/mozilla/pdf.js/ba2edea
 </script>
 
 <template>
-  <div style="text-align: center">
+  <div>
     <div>
       <button @click="rotation = rotation - 90">
         -90
@@ -32,7 +32,7 @@ const rotation = ref(0)
 const { pdf } = usePDF('https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf')
 </script>
 
-<div style="text-align: center">
+<div class="container">
   <div>
     <button class="button-example" @click="rotation = rotation - 90">
       - 90°

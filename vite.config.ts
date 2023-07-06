@@ -15,7 +15,6 @@ export default defineConfig({
       external: [
         'vue',
         'pdfjs-dist',
-        'pdfjs-dist/web/pdf_viewer.css',
       ],
       output: {
         exports: 'named',

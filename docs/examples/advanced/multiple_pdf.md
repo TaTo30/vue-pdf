@@ -33,9 +33,9 @@ function nextPdf() {
 </script>
 
 <template>
-  <div style="text-align: center">
+  <div>
     <div>
-      <button class="button-example" @click="nextPdf">
+      <button @click="nextPdf">
         Next PDF
       </button>
     </div>
@@ -75,7 +75,7 @@ function nextPdf() {
 }
 </script>
 
-<div style='text-align: center'>
+<div style='text-align: center; left: 50%'>
     <div>
         <button class="button-example" @click="nextPdf">Next PDF</button>
     </div>

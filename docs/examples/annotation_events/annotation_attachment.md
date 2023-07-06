@@ -11,9 +11,11 @@ function onAnnotation(value) {
 }
 </script>
 
-<div style="text-align: center">
-  <VuePDF :pdf="pdf" annotation-layer @annotation="onAnnotation" />
-</div>
+<template>
+  <div>
+    <VuePDF :pdf="pdf" annotation-layer @annotation="onAnnotation" />
+  </div>
+</template>
 ```
 <div class="language-json" data-ext="json">
     <pre class="language-json"><code>// "content" is a uint8Array<br/>{{ eventValue }}</code></pre>
@@ -32,6 +34,6 @@ function onAnnotation(value) {
 }
 </script>
 
-<div style="text-align: center">
+<div class="container">
   <VuePDF :pdf="pdf" annotation-layer @annotation="onAnnotation" />
 </div>
