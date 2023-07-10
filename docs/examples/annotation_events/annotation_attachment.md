@@ -13,7 +13,7 @@ function onAnnotation(value) {
 
 <template>
   <div>
-    <VuePDF :pdf="pdf" annotation-layer @annotation="onAnnotation" />
+    <VuePDF :pdf="pdf" annotation-layer image-resources-path="https://unpkg.com/pdfjs-dist@latest/web/images/" @annotation="onAnnotation" />
   </div>
 </template>
 ```
@@ -35,5 +35,5 @@ function onAnnotation(value) {
 </script>
 
 <div class="container">
-  <VuePDF :pdf="pdf" annotation-layer @annotation="onAnnotation" />
+  <VuePDF :pdf="pdf" annotation-layer @annotation="onAnnotation" image-resources-path="https://unpkg.com/pdfjs-dist@latest/web/images/" />
 </div>

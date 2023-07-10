@@ -8,7 +8,7 @@ This package provides a default composable named `usePDF` that loads and prepare
 <script setup>
 import { VuePDF, usePDF } from '@tato30/vue-pdf'
 
-const { pdf } = usePDF('document.pdf')
+const { pdf, pages, info } = usePDF('sample.pdf')
 </script>
 
 <template>
@@ -26,7 +26,7 @@ Required: `True`
 This parameter is the same `src`  of [pdf.js](https://github.com/mozilla/pdf.js/blob/38287d943532eee939ceffbe6861163f93805ca7/src/display/api.js#L145)
 
 ```js
-const { pdf, pages, info } = usePDF('document.pdf')
+const { pdf, pages, info } = usePDF('sample.pdf')
 ```
 
 #### options
@@ -42,7 +42,7 @@ An object with the following properties:
 ```js
 function onPassword(updatePassword, reason) {
   console.log(`Reason for callback: ${reason}`)
-  updatePassword('documentpassword1234')
+  updatePassword('password1234')
 }
 
 function onProgress({ loaded, total }) {
@@ -53,14 +53,14 @@ function onError(reason) {
   console.error(`PDF loading error: ${reason}`)
 }
 
-const { pdf, pages, info } = usePDF('document.pdf', {
+const { pdf, pages, info } = usePDF('sample.pdf', {
   onPassword,
   onProgress,
   onError
 })
 ```
 
-### Values
+### Properties
 
 > All values returned by [`usePDF`](#usepdf-composable) are [`shallowRef`](https://vuejs.org/api/reactivity-advanced.html#shallowref) objects.
 
@@ -68,13 +68,13 @@ const { pdf, pages, info } = usePDF('document.pdf', {
 
 Type: `PDFDocumentLoadingTask`
 
-The loading task of document, see [PDFDocumentLoadingTask](https://mozilla.github.io/pdf.js/api/draft/module-pdfjsLib-PDFDocumentLoadingTask.html) for more details.
+Document loading task, see [PDFDocumentLoadingTask](https://mozilla.github.io/pdf.js/api/draft/module-pdfjsLib-PDFDocumentLoadingTask.html) for more details.
 
 #### pages
 
 Type: `int`
 
-Number of document pages.
+Document number pages.
 
 #### info
 
@@ -90,19 +90,19 @@ Document information object.
 }
 ```
 
-### PDFDocumentProxy
+### Document API
 
-You can access to [PDFDocumentProxy](https://mozilla.github.io/pdf.js/api/draft/module-pdfjsLib-PDFDocumentProxy.html) through [pdf](#pdf)'s promise property and use its methods to get more document's info or use functions like `saveDocument`
+You can access to [PDFDocumentProxy](https://mozilla.github.io/pdf.js/api/draft/module-pdfjsLib-PDFDocumentProxy.html) through [pdf's](#pdf) promise property and use its API methods to get more document's info like `annotationStorage` or use functions like `saveDocument`, `cleanup`, etc.
 
 ```js
 const { pdf } = usePDF('document.pdf')
 
 function doSomething() {
   pdf.value.promise.then((doc) => {
+    // doc.annotationsStorage
     // doc.saveDocument()
     // doc.cleanup()
     // doc.getData()
-    // doc.annotationsStorage
     // ...
   })
 }
@@ -110,19 +110,23 @@ function doSomething() {
 
 ## Custom
 
-Using usePDF it's not required, you can build your own composable and use the pdf.js API by yourself. Just need to ensure send on [`pdf`](./props.md#pdf) prop a `shallowRef` (or `ref`) a [PDFDocumentLoadingTask](https://mozilla.github.io/pdf.js/api/draft/module-pdfjsLib-PDFDocumentLoadingTask.html) object.
+Using usePDF it's not required, you can build your own composable (or in the component) and use the pdf.js API by yourself. Just need to ensure send on [`pdf`](./props.md#pdf) prop a `shallowRef | ref` [PDFDocumentLoadingTask](https://mozilla.github.io/pdf.js/api/draft/module-pdfjsLib-PDFDocumentLoadingTask.html) object.
 
 ```vue
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import * as PDFJS from 'pdfjs-dist'
 
 const pdf = ref()
 
-function loadPDF(){
+function loadPDF() {
   const loadingTask = PDFJS.getDocument('https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf')
   pdf.value = loadingTask
 }
+
+onMounted(() => {
+  loadPDF()
+})
 </script>
 
 <template>

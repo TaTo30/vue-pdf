@@ -27,7 +27,7 @@ function fitParentWidth(pxs) {
         Add 50px
       </button>
     </div>
-    <div :style="`width: ${parentWidth}px; display: inline-block`">
+    <div :style="`width: ${parentWidth}px`">
       <VuePDF ref="vuePDFRef" :pdf="pdf" fit-parent />
     </div>
   </div>
@@ -54,7 +54,7 @@ function fitParentWidth(pxs) {
         <span>Parent width: {{parentWidth}}px</span>
         <button class="button-example" @click="fitParentWidth(50)">Add 50px</button>
     </div>
-    <div :style="`width: ${parentWidth}px; display: inline-block`">
+    <div :style="`width: ${parentWidth}px`">
         <VuePDF ref="vuePDFRef" :pdf="pdf" fit-parent />
     </div>
 </div>

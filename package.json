@@ -49,7 +49,7 @@
     "vue": "^3.2.33"
   },
   "dependencies": {
-    "pdfjs-dist": "^3.7.107"
+    "pdfjs-dist": "3.7.107"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.38.5",

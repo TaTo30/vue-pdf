@@ -14,7 +14,7 @@ export default defineUserConfig({
     navbar: [
       {
         text: 'Docs',
-        link: '/guide/'
+        link: '/guide/introduction.md'
       },
       {
         text: 'Examples',
@@ -37,9 +37,9 @@ export default defineUserConfig({
     sidebar: {
       '/guide/': [
         {
-          text: 'Getting Started',
+          text: 'Guide',
           children: [
-            '/guide/getting_started.md',
+            '/guide/introduction.md',
             '/guide/composables.md',
           ],
         },
