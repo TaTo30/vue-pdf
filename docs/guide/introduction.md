@@ -1,8 +1,3 @@
-
-![Latest version](https://img.shields.io/npm/v/@tato30/vue-pdf?style=flat-square)
-![Downloads](https://img.shields.io/npm/dw/@tato30/vue-pdf?style=flat-square)
-![License](https://img.shields.io/npm/l/@tato30/vue-pdf?style=flat-square)
-
 # Introduction
 
 VuePDF is a **Vue 3** client-side component for pdf.js that allows you to flexibly display PDF pages within your project.

@@ -1,17 +1,15 @@
-# Multiples PDF
-
-```vue
 <script setup>
-import { ref, watch } from 'vue'
-import { VuePDF, usePDF } from '@tato30/vue-pdf'
+import { VuePDF, usePDF } from '@tato30/vue-pdf';
+import { withBase } from '@vuepress/client';
+import { ref, watch } from 'vue';
 
 const currentPdfIndex = ref(0)
 const pdfSources = [
-  '/example_014.pdf',
-  '/example_036.pdf',
-  '/example_041.pdf',
-  '/example_045.pdf',
-  'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf'
+  withBase('/example_014.pdf'),
+  withBase('/example_036.pdf'),
+  withBase('/example_041.pdf'),
+  withBase('/example_045.pdf'),
+  'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf',
 ]
 
 // Setting the first (or default) PDF
@@ -32,17 +30,12 @@ function nextPdf() {
 </script>
 
 <template>
-  <div>
+  <div class="container">
     <div>
-      <button @click="nextPdf">
+      <button class="button-example" @click="nextPdf">
         Next PDF
       </button>
     </div>
     <VuePDF :pdf="pdf" />
   </div>
 </template>
-```
-
-<ClientOnly>
-  <MultiplePDF />
-</ClientOnly>

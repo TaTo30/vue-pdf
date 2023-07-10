@@ -1,9 +1,6 @@
-# Fit parent
-
-```vue
 <script setup>
-import { ref } from 'vue'
-import { VuePDF, usePDF } from '@tato30/vue-pdf'
+import { VuePDF, usePDF } from '@tato30/vue-pdf';
+import { ref } from 'vue';
 
 const { pdf } = usePDF('https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf')
 
@@ -17,13 +14,13 @@ function fitParentWidth(pxs) {
 </script>
 
 <template>
-  <div>
+  <div class="container">
     <div>
-      <button @click="fitParentWidth(-50)">
+      <button class="button-example" @click="fitParentWidth(-50)">
         Remove 50px
       </button>
       <span>Parent width: {{ parentWidth }}px</span>
-      <button @click="fitParentWidth(50)">
+      <button class="button-example" @click="fitParentWidth(50)">
         Add 50px
       </button>
     </div>
@@ -32,8 +29,3 @@ function fitParentWidth(pxs) {
     </div>
   </div>
 </template>
-```
-
-<ClientOnly>
-  <FitParent />
-</ClientOnly>

@@ -8,7 +8,10 @@ import type { OnPasswordCallback, UsePDFInfo, UsePDFOptions } from './types'
 
 // Could not find a way to make this work with vite, importing the worker entry bundle the whole worker to the the final output
 // https://erindoyle.dev/using-pdfjs-with-vite/
-PDFJS.GlobalWorkerOptions.workerSrc = PDFWorker
+// PDFJS.GlobalWorkerOptions.workerSrc = PDFWorker
+function configWorker(wokerSrc: string) {
+  PDFJS.GlobalWorkerOptions.workerSrc = wokerSrc
+}
 
 /**
  * @typedef {Object} UsePDFParameters
@@ -35,6 +38,9 @@ export function usePDF(src: string | URL | TypedArray | PDFDataRangeTransport | 
   onError: undefined,
   password: '',
 }) {
+  if (!PDFJS.GlobalWorkerOptions?.workerSrc)
+    configWorker(PDFWorker)
+
   const pdf = shallowRef<PDFDocumentLoadingTask>()
   const pages = shallowRef(0)
   const info = shallowRef<UsePDFInfo | {}>({})

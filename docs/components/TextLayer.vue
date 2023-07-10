@@ -1,26 +1,19 @@
-# Text-layer
-
-```vue
 <script setup>
-import { ref } from 'vue'
-import { VuePDF, usePDF } from '@tato30/vue-pdf'
-import '@tato30/vue-pdf/style.css'
+import { VuePDF, usePDF } from '@tato30/vue-pdf';
+import '@tato30/vue-pdf/style.css';
+import { ref } from 'vue';
 
 const text_layer = ref(false)
 const { pdf } = usePDF('https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf')
 </script>
 
 <template>
-  <div>
+  <div class="container">
     <div>
-      <button @click="text_layer = !text_layer">
-        Change to {{ !text_layer }}
+      <button class="button-example" @click="text_layer = !text_layer">
+        Change to <strong>{{ !text_layer }}</strong>
       </button>
     </div>
     <VuePDF :pdf="pdf" :text-layer="text_layer" />
   </div>
 </template>
-```
-<ClientOnly>
-  <TextLayer />
-</ClientOnly>
