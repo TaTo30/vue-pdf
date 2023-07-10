@@ -23,7 +23,8 @@
   "exports": {
     ".": {
       "require": "./dist/index.umd.js",
-      "import": "./dist/index.mjs"
+      "import": "./dist/index.mjs",
+      "types": "./dist/types/index.d.ts"
     },
     "./**/*.css": "./dist/*.css",
     "./src/*": "./src/*"
