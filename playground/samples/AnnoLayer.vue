@@ -2,7 +2,9 @@
 import { ref } from 'vue';
 import { VuePDF, usePDF } from '../../src';
 
-import pdf014 from '../pdf/example_014.pdf';
+import 'pdfjs-dist/web/pdf_viewer.css';
+
+import pdf014 from '../pdf/_pdf4.pdf';
 
 const { pdf } = usePDF(pdf014)
 const scale = ref(1)
@@ -30,6 +32,12 @@ function annotationMap(annotation) {
 function getAnnotations() {
   const st = vuePDFRef.value.getAnnotationStorage()
   console.log(st.getAll())
+  const storedData = st.getValue('17R', {
+    value: 'alo',
+  })
+
+  console.log(storedData)
+  console.log(storedData.formattedValue)
 }
 </script>
 
@@ -63,8 +71,7 @@ function getAnnotations() {
         ref="vuePDFRef" :pdf="pdf" text-layer annotation-layer
         :scale="scale"
         :rotation="rotation"
-        :annotations-filter="selectedFilter"
-        :annotations-map="annotationMap"
+        image-resources-path="https://unpkg.com/pdfjs-dist@3.7.107/web/images/"
         @annotation="onAnnotation"
       />
     </div>

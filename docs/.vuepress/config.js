@@ -13,8 +13,8 @@ export default defineUserConfig({
     docsDir: 'docs',
     navbar: [
       {
-        text: 'Guide',
-        link: '/guide/'
+        text: 'Docs',
+        link: '/guide/introduction.md'
       },
       {
         text: 'Examples',
@@ -39,12 +39,18 @@ export default defineUserConfig({
         {
           text: 'Guide',
           children: [
-            '/guide/README.md',
+            '/guide/introduction.md',
+            '/guide/composables.md',
+          ],
+        },
+        {
+          text: 'VuePDF Component',
+          children: [
             '/guide/props.md',
             '/guide/events.md',
             '/guide/methods.md',
             '/guide/slots.md',
-          ],
+          ]
         }
       ],
       '/examples/': [

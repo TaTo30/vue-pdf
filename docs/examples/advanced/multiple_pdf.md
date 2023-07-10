@@ -4,7 +4,6 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { VuePDF, usePDF } from '@tato30/vue-pdf'
-import { withBase } from '@vuepress/client'
 
 const currentPdfIndex = ref(0)
 const pdfSources = [
@@ -33,9 +32,9 @@ function nextPdf() {
 </script>
 
 <template>
-  <div style="text-align: center">
+  <div>
     <div>
-      <button class="button-example" @click="nextPdf">
+      <button @click="nextPdf">
         Next PDF
       </button>
     </div>
@@ -75,7 +74,7 @@ function nextPdf() {
 }
 </script>
 
-<div style='text-align: center'>
+<div class="container">
     <div>
         <button class="button-example" @click="nextPdf">Next PDF</button>
     </div>

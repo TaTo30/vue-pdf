@@ -2,8 +2,6 @@
 import * as PDFJS from 'pdfjs-dist'
 import { onMounted, ref, toRaw, watch } from 'vue'
 
-import 'pdfjs-dist/web/pdf_viewer.css'
-
 import type { PDFDocumentProxy, PDFPageProxy, PageViewport } from 'pdfjs-dist'
 import type { AnnotationLayerParameters } from 'pdfjs-dist/types/src/display/annotation_layer'
 
@@ -16,8 +14,11 @@ const props = defineProps<{
   page: PDFPageProxy | null
   viewport: PageViewport | null
   document: PDFDocumentProxy | null
-  filter: string[] | undefined
-  map: Function | undefined
+  filter?: string[]
+  map?: Function
+  imageResourcesPath?: string
+  hideForms?: boolean
+  enableScripting?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -72,6 +73,8 @@ async function getAnnotations() {
 
 async function render() {
   layer.value!.replaceChildren?.()
+  for (const evtHandler of EVENTS_TO_HANDLER)
+    layer.value!.removeEventListener(evtHandler, annotationsEvents)
 
   const pdf = toRaw(props.document)
   const page = props.page
@@ -99,12 +102,13 @@ async function render() {
     annotationCanvasMap: canvasMap,
     div: layer.value!,
     annotationStorage: pdf!.annotationStorage,
-    renderForms: true,
+    renderForms: !props.hideForms,
     page: page!,
-    enableScripting: true,
+    enableScripting: false,
     hasJSActions: await getHasJSActions(),
     fieldObjects: await getFieldObjects(),
     downloadManager: null,
+    imageResourcesPath: props.imageResourcesPath,
   }
   PDFJS.AnnotationLayer.render(parameters)
 
@@ -129,9 +133,6 @@ onMounted(() => {
 
 <style>
 .annotationLayer {
-  position: absolute;
-  left: 0;
-  top: 0;
   right: 0;
   bottom: 0;
 }

@@ -11,9 +11,11 @@ function onLoaded(value) {
 }
 </script>
 
-<div style="text-align: center">
-  <VuePDF :pdf="pdf"  @loaded="onLoaded" />
-</div>
+<template>
+  <div>
+    <VuePDF :pdf="pdf" @loaded="onLoaded" />
+  </div>
+</template>
 ```
 <div class="language-json" data-ext="json">
     <pre class="language-json"><code>{{ eventValue }}</code></pre>
@@ -32,6 +34,6 @@ function onLoaded(value) {
 }
 </script>
 
-<div style="text-align: center">
+<div class="container">
   <VuePDF :pdf="pdf" @loaded="onLoaded" />
 </div>

@@ -4,13 +4,14 @@
 <script setup>
 import { ref } from 'vue'
 import { VuePDF, usePDF } from '@tato30/vue-pdf'
+import '@tato30/vue-pdf/style.css'
 
 const annotation_layer = ref(false)
 const { pdf } = usePDF('example_014.pdf')
 </script>
 
 <template>
-  <div style="text-align: center">
+  <div>
     <div>
       <button @click="annotation_layer = !annotation_layer">
         Change to {{ !annotation_layer }}
@@ -29,7 +30,7 @@ const annotation_layer = ref(false)
 const { pdf } = usePDF(withBase('/example_014.pdf'))
 </script>
 
-<div style="text-align: center">
+<div class="container">
   <div>
     <button class="button-example" @click="annotation_layer = !annotation_layer">
       Change to <strong>{{ !annotation_layer }}</strong>

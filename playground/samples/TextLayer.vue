@@ -2,9 +2,9 @@
 import { ref } from 'vue';
 import { VuePDF, usePDF } from '../../src';
 
-import pdflazy from '../pdf/lazy.pdf';
+import pdfFile from '../pdf/qpdfRotated.pdf';
 
-const { pdf } = usePDF(pdflazy)
+const { pdf } = usePDF(pdfFile)
 const scale = ref(1)
 const rotation = ref(0)
 const layer = ref(true)
@@ -33,7 +33,7 @@ function onLoaded(value) {
     <button @click="layer = !layer">
       Layer {{ layer }}
     </button>
-    <div style="text-align: center;">
+    <div style="text-align: center; border: 1px solid black;">
       <VuePDF :pdf="pdf" :text-layer="layer" :scale="scale" :rotation="rotation" @loaded="onLoaded">
         <span>Loading</span>
       </VuePDF>

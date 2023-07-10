@@ -17,7 +17,7 @@ function reloadPage() {
 </script>
 
 <template>
-  <div style="text-align: center">
+  <div>
     <div>
       <select v-model="selectedFilter[0]" class="select-example" @change="reloadPage">
         <option v-for="flt in filters" :key="flt" :value="flt">
@@ -45,7 +45,7 @@ function reloadPage() {
 }
 </script>
 
-<div style="text-align: center">
+<div class="container">
   <div>
     <select v-model="selectedFilter[0]" class="select-example" @change="reloadPage">
       <option v-for="flt in filters" :key="flt" :value="flt">

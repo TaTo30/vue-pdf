@@ -1,8 +1,9 @@
 <!-- eslint-disable no-case-declarations -->
-// import { SimpleLinkService } from 'pdfjs-dist/web/pdf_viewer'
 <script setup lang="ts">
 import * as PDFJS from 'pdfjs-dist'
 import { onMounted, ref, toRaw, watch } from 'vue'
+
+import 'pdfjs-dist/web/pdf_viewer.css'
 
 import type { PDFDocumentLoadingTask, PDFDocumentProxy, PDFPageProxy, PageViewport, RenderTask } from 'pdfjs-dist'
 import type { GetViewportParameters, RenderParameters } from 'pdfjs-dist/types/src/display/api'
@@ -18,6 +19,8 @@ const props = withDefaults(defineProps<{
   rotation?: number
   fitParent?: boolean
   textLayer?: boolean
+  imageResourcesPath?: string
+  hideForms?: boolean
   annotationLayer?: boolean
   annotationsFilter?: string[]
   annotationsMap?: Function
@@ -129,7 +132,7 @@ function renderPage(pageNum: number) {
     const renderContext: RenderParameters = {
       canvasContext: canvas.getContext('2d')!,
       viewport,
-      annotationMode: PDFJS.AnnotationMode.ENABLE_FORMS,
+      annotationMode: props.hideForms ? PDFJS.AnnotationMode.ENABLE : PDFJS.AnnotationMode.ENABLE_FORMS,
     }
 
     if (canvas?.getAttribute('role') !== 'main') {
@@ -165,7 +168,7 @@ watch(() => props.pdf, (pdf) => {
     initDoc(pdf)
 })
 
-watch(() => [props.scale, props.rotation, props.page], () => {
+watch(() => [props.scale, props.rotation, props.page, props.hideForms], () => {
   renderPage(props.page)
 })
 
@@ -199,10 +202,14 @@ defineExpose({
     <canvas dir="ltr" style="display: block" role="main" />
     <TextLayer v-show="textLayer" :page="PageProxy as PDFPageProxy" :viewport="InternalViewport" />
     <AnnotationLayer
-      v-show="annotationLayer" :page="PageProxy as PDFPageProxy" :viewport="InternalViewport"
-      :document="DocumentProxy as PDFDocumentProxy"
+      v-show="annotationLayer"
       :filter="annotationsFilter!"
       :map="annotationsMap"
+      :viewport="InternalViewport"
+      :image-resources-path="imageResourcesPath"
+      :hide-forms="hideForms"
+      :page="PageProxy as PDFPageProxy"
+      :document="DocumentProxy as PDFDocumentProxy"
       @annotation="emitAnnotation($event)"
     />
     <div v-show="loading" ref="loadingLayer" style="display: block; position: absolute">

@@ -6,7 +6,7 @@ import pdf014 from '../pdf/_pdf4.pdf';
 
 const { pdf } = usePDF(pdf014)
 
-const width = ref(600)
+const width = ref(1000)
 const vuePDFRef = ref(null)
 
 function reloadPage() {
@@ -21,7 +21,7 @@ function reloadPage() {
   </button>
 
   <div :style="`width: ${width}px;`">
-    <VuePDF ref="vuePDFRef" :pdf="pdf" fit-parent text-layer annotation-layer />
+    <VuePDF ref="vuePDFRef" :pdf="pdf" fit-parent text-layer annotation-layer image-resources-path="https://unpkg.com/pdfjs-dist@3.7.107/web/images/" />
   </div>
 </template>
 
