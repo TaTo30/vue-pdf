@@ -4,10 +4,10 @@
 </div>
 
 <p>
-  <a href="www.npmjs.com/package/@tato30/vue-pdf">
+  <a href="https://www.npmjs.com/package/@tato30/vue-pdf" target="_blank">
     <img src="https://img.shields.io/npm/v/@tato30/vue-pdf?style=flat-square" />
   </a>
-  <a href="www.npmjs.com/package/@tato30/vue-pdf">
+  <a href="https://www.npmjs.com/package/@tato30/vue-pdf" target="_blank" >
     <img src="https://img.shields.io/npm/dw/@tato30/vue-pdf?style=flat-square" />
   </a>
   <a href="./LICENSE">
