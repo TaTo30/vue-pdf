@@ -3,10 +3,17 @@
   <h1>VuePDF</h1>
 </div>
 
-
-![Latest version](https://img.shields.io/npm/v/@tato30/vue-pdf?style=flat-square)
-![Downloads](https://img.shields.io/npm/dw/@tato30/vue-pdf?style=flat-square)
-![License](https://img.shields.io/npm/l/@tato30/vue-pdf?style=flat-square)
+<p>
+  <a href="www.npmjs.com/package/@tato30/vue-pdf">
+    <img src="https://img.shields.io/npm/v/@tato30/vue-pdf?style=flat-square" />
+  </a>
+  <a href="www.npmjs.com/package/@tato30/vue-pdf">
+    <img src="https://img.shields.io/npm/dw/@tato30/vue-pdf?style=flat-square" />
+  </a>
+  <a href="./LICENSE">
+    <img src="https://img.shields.io/npm/l/@tato30/vue-pdf?style=flat-square" />
+  </a>
+</p>
 
 <div align="center">
   <h2><a href="https://tato30.github.io/VuePDF/">📖Documentation</a></h2>
