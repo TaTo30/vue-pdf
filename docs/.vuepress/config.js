@@ -1,5 +1,6 @@
 import { defineUserConfig } from '@vuepress/cli';
 import { defaultTheme } from '@vuepress/theme-default';
+import { searchPlugin } from '@vuepress/plugin-search'
 
 export default defineUserConfig({
   title: 'VuePDF',
@@ -74,7 +75,7 @@ export default defineUserConfig({
           ]
         },
         {
-          text: 'Events playground',
+          text: 'Events',
           children: [
             '/examples/loaded_events/loaded.md',
             {
@@ -90,4 +91,13 @@ export default defineUserConfig({
       ],
     },
   }),
+  plugins: [
+    searchPlugin({
+      locales: {
+        '/': {
+          placeholder: 'Search',
+        }
+      },
+    })
+  ]
 });

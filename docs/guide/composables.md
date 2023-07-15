@@ -110,7 +110,7 @@ function doSomething() {
 
 ## Custom
 
-Using usePDF it's not required, you can build your own composable (or in the component) and use the pdf.js API by yourself. Just need to ensure send on [`pdf`](./props.md#pdf) prop a `shallowRef | ref` [PDFDocumentLoadingTask](https://mozilla.github.io/pdf.js/api/draft/module-pdfjsLib-PDFDocumentLoadingTask.html) object.
+Using `usePDF` it's not required, you can use the pdf.js API in the component or build your own composable by yourself. Just need to ensure send on [`pdf`](./props.md#pdf) prop a `shallowRef | ref` [PDFDocumentLoadingTask](https://mozilla.github.io/pdf.js/api/draft/module-pdfjsLib-PDFDocumentLoadingTask.html) object.
 
 ```vue
 <script setup>

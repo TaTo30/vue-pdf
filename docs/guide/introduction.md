@@ -57,4 +57,22 @@ You can also create your own custom styles and set them in your project, use thi
 
 ## Server-Side Rendering
 
-`VuePDF` is a client-side library, so if you are working with SSR frameworks like `nuxt` is necessary to find a way to ensure that `VuePDF` will be running in browser instead server.
+`VuePDF` is a client-side library, so if you are working with SSR frameworks like `nuxt`, surely will throw error during building stage, if that the case, you could wrap library in some "client only" directive or component, also `usePDF` should be wrapped.
+
+## Contributing
+
+Any idea, suggestion or contribution to the code or documentation are very welcome.
+
+```sh
+# Clone the repository
+git clone https://github.com/TaTo30/VuePDF.git
+
+# Change to code folder
+cd VuePDF
+
+# Install node_modules
+npm install
+
+# Run code with hot reload
+npm run dev
+```
