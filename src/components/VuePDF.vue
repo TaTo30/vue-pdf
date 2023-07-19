@@ -11,6 +11,7 @@ import type { AnnotationEventPayload, LoadedEventPayload } from './types'
 
 import AnnotationLayer from './layers/AnnotationLayer.vue'
 import TextLayer from './layers/TextLayer.vue'
+import XFALayer from './layers/XFALayer.vue'
 
 const props = withDefaults(defineProps<{
   pdf?: PDFDocumentLoadingTask
@@ -41,9 +42,9 @@ const loading = ref(false)
 let renderTask: RenderTask
 
 // PDF Refs
-const DocumentProxy = ref<PDFDocumentProxy | null>(null)
-const PageProxy = ref<PDFPageProxy | null>(null)
-const InternalViewport = ref<PageViewport | null>(null)
+const DocumentProxy = ref<PDFDocumentProxy>()
+const PageProxy = ref<PDFPageProxy>()
+const InternalViewport = ref<PageViewport>()
 
 function emitLoaded(data: LoadedEventPayload) {
   emit('loaded', data)
@@ -200,16 +201,17 @@ defineExpose({
 <template>
   <div ref="container" style="position: relative; display: block; overflow: hidden;">
     <canvas dir="ltr" style="display: block" role="main" />
-    <TextLayer v-show="textLayer" :page="PageProxy as PDFPageProxy" :viewport="InternalViewport" />
+    <XFALayer :page="PageProxy!" :viewport="InternalViewport!" :document="DocumentProxy!" />
+    <TextLayer v-show="textLayer" :page="PageProxy!" :viewport="InternalViewport!" />
     <AnnotationLayer
       v-show="annotationLayer"
       :filter="annotationsFilter!"
       :map="annotationsMap"
-      :viewport="InternalViewport"
+      :viewport="InternalViewport!"
       :image-resources-path="imageResourcesPath"
       :hide-forms="hideForms"
-      :page="PageProxy as PDFPageProxy"
-      :document="DocumentProxy as PDFDocumentProxy"
+      :page="PageProxy!"
+      :document="DocumentProxy!"
       @annotation="emitAnnotation($event)"
     />
     <div v-show="loading" ref="loadingLayer" style="display: block; position: absolute">
