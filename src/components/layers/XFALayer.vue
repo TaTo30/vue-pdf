@@ -8,44 +8,31 @@ import type { XfaLayerParameters } from 'pdfjs-dist/types/src/display/xfa_layer'
 import { SimpleLinkService } from '../utils/link_service'
 
 const props = defineProps<{
-  page: PDFPageProxy
-  document: PDFDocumentProxy
-  viewport: PageViewport
+  page?: PDFPageProxy
+  document?: PDFDocumentProxy
+  viewport?: PageViewport
 }>()
-
-// if (pdfPage.isPureXfa) {
-//       if (!this.xfaLayer) {
-//         const { annotationStorage, linkService } = this.#layerProperties();
-
-//         this.xfaLayer = new XfaLayerBuilder({
-//           pageDiv: div,
-//           pdfPage,
-//           annotationStorage,
-//           linkService,
-//         });
-//       } else if (this.xfaLayer.div) {
-//         // The xfa layer needs to stay on top.
-//         div.append(this.xfaLayer.div);
-//       }
-//       this.#renderXfaLayer();
-//     }
 
 const layer = ref<HTMLDivElement>()
 
-function render() {
+async function render() {
   layer.value!.replaceChildren?.()
-  const pdf = toRaw(props.document)
 
-  props.page?.getXfa().then((xfahtml) => {
+  const pdf = toRaw(props.document)
+  const page = props.page
+  const viewport = props.viewport
+
+  if (pdf!.isPureXfa) {
+    const xfaHTML = await page!.getXfa()
     const parameters: XfaLayerParameters = {
-      div: layer.value as HTMLDivElement,
-      viewport: props.viewport!.clone({ dontFlip: true }),
+      div: layer.value!,
+      viewport: viewport!.clone({ dontFlip: true }),
       linkService: new SimpleLinkService(),
       annotationStorage: pdf?.annotationStorage,
-      xfaHtml: xfahtml!,
+      xfaHtml: xfaHTML!,
     }
     PDFJS.XfaLayer.render(parameters)
-  })
+  }
 }
 
 watch(() => props.viewport, (_) => {
@@ -62,3 +49,10 @@ onMounted(() => {
 <template>
   <div ref="layer" />
 </template>
+
+<style>
+/* Make this layer over other layers */
+.xfaLayer {
+  z-index: 5;
+}
+</style>

@@ -11,9 +11,9 @@ import { SimpleLinkService } from '../utils/link_service'
 import type { AnnotationEventPayload } from '../types'
 
 const props = defineProps<{
-  page: PDFPageProxy | null
-  viewport: PageViewport | null
-  document: PDFDocumentProxy | null
+  page?: PDFPageProxy
+  viewport?: PageViewport
+  document?: PDFDocumentProxy
   filter?: string[]
   map?: Function
   imageResourcesPath?: string
@@ -97,7 +97,7 @@ async function render() {
 
   const parameters: AnnotationLayerParameters = {
     annotations: annotations.value!,
-    viewport: viewport?.clone({ dontFlip: true }) as PageViewport,
+    viewport: viewport!.clone({ dontFlip: true }),
     linkService: new SimpleLinkService(),
     annotationCanvasMap: canvasMap,
     div: layer.value!,

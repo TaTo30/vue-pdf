@@ -201,8 +201,6 @@ defineExpose({
 <template>
   <div ref="container" style="position: relative; display: block; overflow: hidden;">
     <canvas dir="ltr" style="display: block" role="main" />
-    <XFALayer :page="PageProxy!" :viewport="InternalViewport!" :document="DocumentProxy!" />
-    <TextLayer v-show="textLayer" :page="PageProxy!" :viewport="InternalViewport!" />
     <AnnotationLayer
       v-show="annotationLayer"
       :filter="annotationsFilter!"
@@ -214,6 +212,8 @@ defineExpose({
       :document="DocumentProxy!"
       @annotation="emitAnnotation($event)"
     />
+    <TextLayer v-show="textLayer" :page="PageProxy!" :viewport="InternalViewport!" />
+    <XFALayer :page="PageProxy!" :viewport="InternalViewport!" :document="DocumentProxy!" />
     <div v-show="loading" ref="loadingLayer" style="display: block; position: absolute">
       <slot />
     </div>

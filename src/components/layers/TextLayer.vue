@@ -6,8 +6,8 @@ import type { PDFPageProxy, PageViewport } from 'pdfjs-dist'
 import type { TextLayerRenderParameters } from 'pdfjs-dist/types/src/display/text_layer'
 
 const props = defineProps<{
-  page: PDFPageProxy | null
-  viewport: PageViewport | null
+  page?: PDFPageProxy
+  viewport?: PageViewport
 }>()
 
 const layer = ref<HTMLDivElement>()
