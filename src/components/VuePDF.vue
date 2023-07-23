@@ -24,6 +24,7 @@ const props = withDefaults(defineProps<{
   annotationLayer?: boolean
   annotationsFilter?: string[]
   annotationsMap?: object
+  watermarkText?: string
 }>(), {
   page: 1,
   scale: 1,
@@ -72,6 +73,31 @@ function computeScale(page: PDFPageProxy): number {
     fscale = parentWidth / scale1Width
   }
   return fscale
+}
+
+function paintWatermark(canvas: HTMLCanvasElement, baseFontSize = 18, zoomRatio = 1.0) {
+  if (!props.watermarkText)
+    return
+
+  const ctx: CanvasRenderingContext2D | null = canvas.getContext('2d')
+  if (!ctx)
+    return
+
+  ctx.font = `${baseFontSize * zoomRatio}px Trebuchet MS`
+  ctx.fillStyle = 'rgba(211, 210, 211, 0.3)'
+
+  const numWatermarks = 50 // Adjust the number of watermarks as desired
+
+  for (let i = 0; i < numWatermarks; i++) {
+    const x = (i % 5) * (canvas.width / 5) + canvas.width / 10
+    const y = Math.floor(i / 5) * (canvas.height / 5) + canvas.height / 10
+
+    ctx.save()
+    ctx.translate(x, y)
+    ctx.rotate(-(Math.PI / 4))
+    ctx.fillText(props.watermarkText, 0, 0)
+    ctx.restore()
+  }
 }
 
 function getCurrentCanvas(): HTMLCanvasElement | null {
@@ -147,6 +173,7 @@ function renderPage(pageNum: number) {
     InternalViewport.value = viewport
     renderTask = page.render(renderContext)
     renderTask.promise.then(() => {
+      paintWatermark(canvas, 18, viewport.scale)
       loading.value = false
       emitLoaded(InternalViewport.value!)
     }).catch(() => {
