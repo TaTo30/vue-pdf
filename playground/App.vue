@@ -1,9 +1,9 @@
 <script setup lang="ts">
 // import { ref } from 'vue'
 
-import Custom from './samples/Custom.vue';
+import AnnoLayer from './samples/AnnoLayer.vue';
 
-// import AnnoLayer from './samples/AnnoLayer.vue';
+// import Custom from './samples/Custom.vue';
 // import Pages from './samples/Pages.vue';
 // import Multipage from './samples/Multipage.vue';
 // import FitParent from './samples/FitParent.vue';
@@ -12,6 +12,6 @@ import Custom from './samples/Custom.vue';
 
 <template>
   <div>
-    <Custom />
+    <AnnoLayer />
   </div>
 </template>
