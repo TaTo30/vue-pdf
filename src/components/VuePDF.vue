@@ -23,7 +23,7 @@ const props = withDefaults(defineProps<{
   hideForms?: boolean
   annotationLayer?: boolean
   annotationsFilter?: string[]
-  annotationsMap?: Function
+  annotationsMap?: object
 }>(), {
   page: 1,
   scale: 1,
