@@ -229,10 +229,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@tato30/vue-pdf@1.6.2":
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/@tato30/vue-pdf/-/vue-pdf-1.6.2.tgz#4e459e948760a1b9f59d445ee1eb393568c1e122"
-  integrity sha512-ziB+1w5Y68MF37iDiaKoSfvX50z/C6OTG/SaDQlaiXYGeaWYkEOOLR2EcKGcICOUy0bwtU3PcVwj2Q/1iLP1xQ==
+"@tato30/vue-pdf@1.7.0":
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@tato30/vue-pdf/-/vue-pdf-1.7.0.tgz#b7506da8575c6e6e49b3f66ce5d9f216975af52c"
+  integrity sha512-OdEqZNxEMIqsajReZ41s8ncODbuQ/4AwJ8jlccAkwee2nVrtD/fq+p5j29wTHTvzmSZHLd3/KDb6j1KjAmnU5w==
   dependencies:
     pdfjs-dist "3.7.107"
 

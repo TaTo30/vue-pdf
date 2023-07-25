@@ -83,7 +83,19 @@ Enable document annotations like links, popups, widgets, etc.
 <VuePDF :pdf="pdf" annotation-layer />
 ```
 
-## image-resources-path
+## watermark-text <badge type="tip" text="v1.7" vertical="middle" />
+
+Type: `string` <br />
+Required: `false` <br />
+Default: `null`
+
+Prints a watermark pattern over canvas.
+
+```vue
+<VuePDF :pdf="pdf" watermark-text="Sample" />
+```
+
+## image-resources-path <badge type="tip" text="v1.6" vertical="middle" />
 
 Type: `string` <br />
 Required: `false` <br />
@@ -95,7 +107,7 @@ Path to image resources needed to render some graphics when required.
 <VuePDF :pdf="pdf" image-resources-path="https://unpkg.com/pdfjs-dist@latest/web/images/" />
 ```
 
-## hide-forms
+## hide-forms <badge type="tip" text="v1.6" vertical="middle" />
 
 Type: `boolean` <br />
 Required: `false` <br />
@@ -149,31 +161,20 @@ const filter = ref(['Link', 'Text', 'Widget'])
 <VuePDF :pdf="pdf" annotation-layer :annotations-filter="filter" />
 ```
 
-## annotations-map
+## annotations-map <badge type="tip" text="v1.6" vertical="middle" />
 
-Type: `function` <br />
+Type: `object` <br />
 Required: `false` <br />
 Default: `null` <br />
 
-Allows to map annotations, useful for edit annotations data before rendering, also can be used as a filter by returning null in map function.
+Allows to map values to annotation's storage, useful for edit annotation's data before rendering.
 
 ```vue
 <script setup>
-function annotationMap(annotation) {
-  if (annotation.id === 'ID1') {
-    annotation.fieldValue = 'Modified value'
-    return annotation // return a modified annotation
-  }
-  else if (annotations.id === 'ID2') {
-    return null // return null to discard the annotation
-  }
-  else {
-    return annotation // return annotation as is
-  }
-}
+const annotationMap = ref({ '7R': { value: 'Modified value' } })
 </script>
 
 <VuePDF :pdf="pdf" annotation-layer :annotations-map="annotationMap" />
 ```
 
-> NOTE: `annotations-filter` has more precedence than `annotations-map`, so if both used, annotations will be first filter and then mapped.
+<!-- > NOTE: `annotations-filter` has more precedence than `annotations-map`, so if both used, annotations will be first filter and then mapped. -->

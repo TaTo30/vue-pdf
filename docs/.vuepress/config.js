@@ -29,7 +29,7 @@ export default defineUserConfig({
             link: '/examples/advanced/fit_parent.md'
           },
           {
-            text: 'Events playground',
+            text: 'Events',
             link: '/examples/loaded_events/loaded.md'
           },
         ]
@@ -64,6 +64,8 @@ export default defineUserConfig({
             '/examples/basic/rotation.md',
             '/examples/basic/text_layer.md',
             '/examples/basic/annotation_layer.md',
+            '/examples/basic/xfa_layer.md',
+            '/examples/basic/watermark.md',
           ],
         },
         {

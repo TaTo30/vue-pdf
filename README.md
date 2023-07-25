@@ -60,6 +60,8 @@ console.log(`Document info: ${info}`)
 
 ## Working With Layers
 
+### Text and Annotations
+
 This component supports text-selection and annotation-interaction by enabling them with `text-layer` and `annotation-layer` props respectively, but for this layers renders correctly is necessary setting `css` styles, it can be done by importing default styles from `@tato30/vue-pdf/style.css`.
 
 ```vue
@@ -75,15 +77,30 @@ const { pdf } = usePDF('sample.pdf')
 </template>
 ```
 
-Check the follow examples:
-
-- [Text-Layer](../examples/basic/text_layer.md)
-- [Annotation-Layer](../examples/basic/annotation_layer.md.md)
-
 You can also create your own custom styles and set them in your project, use this examples as guide:
 
 - [text-layer styles](https://github.com/mozilla/pdf.js/blob/master/web/text_layer_builder.css)
 - [annotation-layer styles](https://github.com/mozilla/pdf.js/blob/master/web/annotation_layer_builder.css)
+
+### XFA Forms <badge type="tip" text="v1.7" vertical="middle" />
+
+XFA forms also can be supported by enabling them from `usePDF`.
+
+```vue
+<script setup>
+import { VuePDF, usePDF } from '@tato30/vue-pdf'
+import '@tato30/vue-pdf/style.css'
+
+const { pdf } = usePDF({
+  url: '/example_xfa.pdf',
+  enableXfa: true,
+})
+</script>
+
+<template>
+  <VuePDF :pdf="pdf" />
+</template>
+```
 
 ## Server-Side Rendering
 

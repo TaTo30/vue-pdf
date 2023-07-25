@@ -1,4 +1,4 @@
-# Text-layer
+# Text Layer
 
 ```vue
 <script setup>

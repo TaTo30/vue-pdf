@@ -14,16 +14,20 @@ import OnePage from '../components/OnePage.vue'
 import Rotation from '../components/Rotation.vue'
 import Scale from '../components/Scale.vue'
 import TextLayer from '../components/TextLayer.vue'
+import XFALayer from '../components/XFALayer.vue'
+import Watermark from '../components/Watermark.vue'
 
 
 export default defineClientConfig({
     enhance({app}) {
         app.component('OnePage', OnePage)
+        app.component('Watermark', Watermark)
         app.component('AllPages', AllPages)
         app.component('Scale', Scale)
         app.component('Rotation', Rotation)
         app.component('TextLayer', TextLayer)
         app.component('AnnotationLayer', AnnotationLayer)
+        app.component('XFALayer', XFALayer)
         app.component('FitParent', FitParent)
         app.component('AnnotationFilter', AnnotationFilter)
         app.component('MultiplePDF', MultiplePDF)
