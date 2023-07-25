@@ -209,6 +209,5 @@ function annotationEventsHandler(evt: Event, PDFDoc: PDFDocumentProxy, Annotatio
 
 export {
   EVENTS_TO_HANDLER,
-  annotationEventsHandler
+  annotationEventsHandler,
 }
-

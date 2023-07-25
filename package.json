@@ -1,6 +1,6 @@
 {
   "name": "@tato30/vue-pdf",
-  "version": "1.6.2",
+  "version": "1.7.0",
   "description": "PDF viewer for Vue 3",
   "author": {
     "name": "Aldo Hernandez",
@@ -37,7 +37,7 @@
     "src"
   ],
   "scripts": {
-    "dev": "vite --config vite.playground.ts",
+    "dev": "vite --force --config vite.playground.ts",
     "build": "npm run build:lib && npm run build:dts",
     "build:lib": "vite build",
     "build:dts": "vue-tsc --declaration --emitDeclarationOnly -p tsconfig.build.json",
