@@ -15,7 +15,7 @@ const props = defineProps<{
   viewport: PageViewport | null
   document: PDFDocumentProxy | null
   filter?: string[]
-  map?: Function
+  map?: object
   imageResourcesPath?: string
   hideForms?: boolean
   enableScripting?: boolean
@@ -58,15 +58,6 @@ async function getAnnotations() {
       return filters?.includes(subType) || (fieldType !== null && filters?.includes(fieldType))
     })
   }
-  if (props.map && typeof props.map === 'function') {
-    const mappedAnnotations = []
-    for (const annotation of annotations!) {
-      const mappedAnnotation = props.map(annotation)
-      if (mappedAnnotation)
-        mappedAnnotations.push(mappedAnnotation)
-    }
-    annotations = mappedAnnotations
-  }
 
   return annotations
 }
@@ -94,14 +85,18 @@ async function render() {
       canvasMap.set(anno.id, subCanvas)
     }
   }
-
+  const annotationStorage = pdf!.annotationStorage
+  if (props.map) {
+    for (const [key, value] of Object.entries(props.map))
+      annotationStorage.setValue(key, value)
+  }
   const parameters: AnnotationLayerParameters = {
     annotations: annotations.value!,
     viewport: viewport?.clone({ dontFlip: true }) as PageViewport,
     linkService: new SimpleLinkService(),
     annotationCanvasMap: canvasMap,
     div: layer.value!,
-    annotationStorage: pdf!.annotationStorage,
+    annotationStorage,
     renderForms: !props.hideForms,
     page: page!,
     enableScripting: false,
