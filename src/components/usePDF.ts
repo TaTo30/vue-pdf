@@ -1,5 +1,5 @@
 import * as PDFJS from 'pdfjs-dist'
-import PDFWorker from 'pdfjs-dist/build/pdf.worker?url'
+import PDFWorker from 'pdfjs-dist/build/pdf.worker.min?url'
 import { shallowRef } from 'vue'
 
 import type { PDFDocumentLoadingTask } from 'pdfjs-dist'

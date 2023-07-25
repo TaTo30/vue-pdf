@@ -23,10 +23,16 @@ function onAnnotation(value) {
   console.log(value)
 }
 
-function annotationMap(annotation) {
-  if (annotation.id === '7R')
-    annotation.fieldValue = 'Modified value'
-  return annotation
+function annotationMap() {
+  if (true)
+    return { '7R': { value: 'Modified value' } }
+  // or use Map
+  const annotations = new Map()
+  annotations.set('7R', 'Modified value')
+
+  return Object.fromEntries(
+    Array.from(annotations, ([key, value]) => [key, { value }] as [string, any]),
+  )
 }
 
 function getAnnotations() {
@@ -71,6 +77,7 @@ function getAnnotations() {
         ref="vuePDFRef" :pdf="pdf" text-layer annotation-layer
         :scale="scale"
         :rotation="rotation"
+        :annotations-map="annotationMap()"
         image-resources-path="https://unpkg.com/pdfjs-dist@3.7.107/web/images/"
         @annotation="onAnnotation"
       />
