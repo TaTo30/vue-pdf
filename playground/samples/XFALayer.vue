@@ -1,11 +1,11 @@
 <!-- eslint-disable no-console -->
 <script setup lang="ts">
-import type { DocumentInitParameters } from 'pdfjs-dist/types/src/display/api'
-import { ref } from 'vue'
+import type { DocumentInitParameters } from 'pdfjs-dist/types/src/display/api';
+import { ref } from 'vue';
 
-import { VuePDF, usePDF } from '../../src'
+import { VuePDF, usePDF } from '../../src';
 
-import pdf014 from '../pdf/_xfa.pdf'
+import pdf014 from '../pdf/_xfa.pdf';
 
 const docinit: DocumentInitParameters = {
   url: pdf014,
