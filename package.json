@@ -42,6 +42,7 @@
     "build:lib": "vite build",
     "build:dts": "vue-tsc --declaration --emitDeclarationOnly -p tsconfig.build.json",
     "publish": "npm publish --access public",
+    "publish:beta": "npm publish --tag beta --access public",
     "preview": "vite preview --port 5050",
     "lint": "eslint .",
     "lint:fix": "eslint --fix ."

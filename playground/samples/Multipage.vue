@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { VuePDF, usePDF } from '../../src';
-import pdflazy from '../pdf/qpdfRotated.pdf';
 
-const { pdf, pages } = usePDF(pdflazy)
+const { pdf, pages } = usePDF('https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf')
 </script>
 
 <template>

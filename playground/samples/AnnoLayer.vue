@@ -1,3 +1,4 @@
+<!-- eslint-disable no-console -->
 <script setup lang="ts">
 import { ref } from 'vue';
 import { VuePDF, usePDF } from '../../src';
@@ -24,7 +25,7 @@ function onAnnotation(value) {
 }
 
 function annotationMap() {
-  if (true)
+  if (false)
     return { '7R': { value: 'Modified value' } }
   // or use Map
   const annotations = new Map()
@@ -78,6 +79,8 @@ function getAnnotations() {
         :scale="scale"
         :rotation="rotation"
         :annotations-map="annotationMap()"
+        :annotations-filter="selectedFilter"
+        watermark-text="Only Examples"
         image-resources-path="https://unpkg.com/pdfjs-dist@3.7.107/web/images/"
         @annotation="onAnnotation"
       />

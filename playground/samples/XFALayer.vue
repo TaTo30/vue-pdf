@@ -9,7 +9,7 @@ import pdf014 from '../pdf/_xfa.pdf';
 
 const docinit: DocumentInitParameters = {
   url: pdf014,
-  enableXfa: true,
+  enableXfa: false,
 }
 
 const { pdf } = usePDF(docinit)
