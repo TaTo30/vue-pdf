@@ -121,17 +121,19 @@ function setupCanvas(viewport: PageViewport): HTMLCanvasElement {
     canvas.style.display = 'block'
     canvas.setAttribute('dir', 'ltr')
   }
-  canvas.width = viewport.width
-  canvas.height = viewport.height
 
-  canvas.style.width = `${viewport.width}px`
-  canvas.style.height = `${viewport.height}px`
+  const outputScale = window.devicePixelRatio || 1
+  canvas.width = Math.floor(viewport.width * outputScale)
+  canvas.height = Math.floor(viewport.height * outputScale)
+
+  canvas.style.width = `${Math.floor(viewport.width)}px`
+  canvas.style.height = `${Math.floor(viewport.height)}px`
 
   // --scale-factor property
   container.value?.style.setProperty('--scale-factor', `${viewport.scale}`)
   // Also setting dimension properties for load layer
-  loadingLayer.value!.style.width = `${viewport.width}px`
-  loadingLayer.value!.style.height = `${viewport.height}px`
+  loadingLayer.value!.style.width = `${Math.floor(viewport.width)}px`
+  loadingLayer.value!.style.height = `${Math.floor(viewport.height)}px`
   loading.value = true
   return canvas
 }
@@ -155,11 +157,15 @@ function renderPage(pageNum: number) {
     const oldCanvas = getCurrentCanvas()
     const canvas = setupCanvas(viewport)
 
+    const outputScale = window.devicePixelRatio || 1
+    const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : undefined
+
     // Render PDF page into canvas context
     const renderContext: RenderParameters = {
       canvasContext: canvas.getContext('2d')!,
       viewport,
       annotationMode: props.hideForms ? PDFJS.AnnotationMode.ENABLE : PDFJS.AnnotationMode.ENABLE_FORMS,
+      transform,
     }
 
     if (canvas?.getAttribute('role') !== 'main') {
