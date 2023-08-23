@@ -47,7 +47,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div ref="layer" />
+  <div ref="layer" style="display: block;" />
 </template>
 
 <style>
