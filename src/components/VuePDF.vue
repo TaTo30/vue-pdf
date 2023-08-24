@@ -134,6 +134,8 @@ function setupCanvas(viewport: PageViewport): HTMLCanvasElement {
   // Also setting dimension properties for load layer
   loadingLayer.value!.style.width = `${Math.floor(viewport.width)}px`
   loadingLayer.value!.style.height = `${Math.floor(viewport.height)}px`
+  loadingLayer.value!.style.top = '0'
+  loadingLayer.value!.style.left = '0'
   loading.value = true
   return canvas
 }
@@ -247,7 +249,7 @@ defineExpose({
     />
     <TextLayer v-show="textLayer" :page="PageProxy!" :viewport="InternalViewport!" />
     <XFALayer :page="PageProxy!" :viewport="InternalViewport!" :document="DocumentProxy!" />
-    <div v-show="loading" ref="loadingLayer" style="display: block; position: absolute">
+    <div v-show="loading" ref="loadingLayer" style="position: absolute;">
       <slot />
     </div>
   </div>
