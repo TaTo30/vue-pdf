@@ -1,6 +1,6 @@
 {
   "name": "@tato30/vue-pdf",
-  "version": "1.7.1",
+  "version": "1.7.4",
   "description": "PDF viewer for Vue 3",
   "author": {
     "name": "Aldo Hernandez",
@@ -26,7 +26,7 @@
       "import": "./dist/index.mjs",
       "types": "./dist/types/index.d.ts"
     },
-    "./**/*.css": "./dist/*.css",
+    "./*.css": "./dist/*.css",
     "./src/*": "./src/*"
   },
   "main": "./dist/index.umd.js",
