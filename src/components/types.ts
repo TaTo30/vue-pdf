@@ -1,5 +1,10 @@
 import type { PageViewport } from 'pdfjs-dist'
-import type { OnProgressParameters } from 'pdfjs-dist/types/src/display/api'
+import type {
+  DocumentInitParameters,
+  OnProgressParameters,
+  PDFDataRangeTransport,
+  TypedArray,
+} from 'pdfjs-dist/types/src/display/api'
 import type { Metadata } from 'pdfjs-dist/types/src/display/metadata'
 
 export type LoadedEventPayload = PageViewport
@@ -13,6 +18,13 @@ export type OnProgressCallback = (progressData: OnProgressParameters) => void
 export type UpdatePasswordFn = (newPassword: string) => void
 export type OnPasswordCallback = (updatePassword: UpdatePasswordFn, reason: any) => void
 export type OnErrorCallback = (error: any) => void
+
+export type UsePDFSrc =
+  | string
+  | URL
+  | TypedArray
+  | PDFDataRangeTransport
+  | DocumentInitParameters
 
 export interface UsePDFOptions {
   onProgress?: OnProgressCallback
