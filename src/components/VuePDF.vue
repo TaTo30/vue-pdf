@@ -7,7 +7,7 @@ import 'pdfjs-dist/web/pdf_viewer.css'
 
 import type { PDFDocumentLoadingTask, PDFDocumentProxy, PDFPageProxy, PageViewport, RenderTask } from 'pdfjs-dist'
 import type { GetViewportParameters, RenderParameters } from 'pdfjs-dist/types/src/display/api'
-import type { AnnotationEventPayload, LoadedEventPayload } from './types'
+import type { AnnotationEventPayload, LoadedEventPayload, WatermarkOptions } from './types'
 
 import AnnotationLayer from './layers/AnnotationLayer.vue'
 import TextLayer from './layers/TextLayer.vue'
@@ -26,6 +26,7 @@ const props = withDefaults(defineProps<{
   annotationsFilter?: string[]
   annotationsMap?: object
   watermarkText?: string
+  watermarkOptions?: WatermarkOptions
 }>(), {
   page: 1,
   scale: 1,
@@ -55,6 +56,16 @@ function emitAnnotation(data: AnnotationEventPayload) {
   emit('annotation', data)
 }
 
+function getWatermarkOptionsWithDefaults(): WatermarkOptions {
+  return Object.assign({}, {
+    columns: 4,
+    rows: 4,
+    rotation: 45,
+    fontSize: 18,
+    color: 'rgba(211, 210, 211, 0.4)',
+  }, props.watermarkOptions)
+}
+
 function computeRotation(rotation: number): number {
   if (!(typeof rotation === 'number' && rotation % 90 === 0))
     return 0
@@ -76,27 +87,38 @@ function computeScale(page: PDFPageProxy): number {
   return fscale
 }
 
-function paintWatermark(canvas: HTMLCanvasElement, baseFontSize = 18, zoomRatio = 1.0) {
+function paintWatermark(zoomRatio = 1.0) {
   if (!props.watermarkText)
     return
 
-  const ctx: CanvasRenderingContext2D | null = canvas.getContext('2d')
+  const canvas = getCurrentCanvas()
+  if (!canvas)
+    return
+
+  const ctx = canvas.getContext('2d')
   if (!ctx)
     return
 
-  ctx.font = `${baseFontSize * zoomRatio}px Trebuchet MS`
-  ctx.fillStyle = 'rgba(211, 210, 211, 0.3)'
+  const mergeOptions = getWatermarkOptionsWithDefaults()
 
-  const numWatermarks = 50 // Adjust the number of watermarks as desired
+  const text = props.watermarkText
+  const columns = mergeOptions.columns!
+  const rows = mergeOptions.rows!
+  const numWatermarks = columns * rows
+  const rotation = mergeOptions.rotation!
+  const pixels = mergeOptions.fontSize! * zoomRatio
+  ctx.font = `${pixels}px Trebuchet MS`
+  ctx.fillStyle = mergeOptions.color!
 
   for (let i = 0; i < numWatermarks; i++) {
-    const x = (i % 5) * (canvas.width / 5) + canvas.width / 10
-    const y = Math.floor(i / 5) * (canvas.height / 5) + canvas.height / 10
+    const x = (i % columns) * (canvas.width / columns) + canvas.width / (columns * 2)
+    const y = Math.floor(i / columns) * (canvas.height / rows) + canvas.height / (rows * 2)
 
+    const textWidth = ctx.measureText(text).width
     ctx.save()
     ctx.translate(x, y)
-    ctx.rotate(-(Math.PI / 4))
-    ctx.fillText(props.watermarkText, 0, 0)
+    ctx.rotate(-rotation * (Math.PI / 180))
+    ctx.fillText(text, -textWidth / 2, pixels / 2)
     ctx.restore()
   }
 }
@@ -182,7 +204,7 @@ function renderPage(pageNum: number) {
     InternalViewport.value = viewport
     renderTask = page.render(renderContext)
     renderTask.promise.then(() => {
-      paintWatermark(canvas, 18, viewport.scale)
+      paintWatermark(viewport.scale)
       loading.value = false
       emitLoaded(InternalViewport.value!)
     }).catch(() => {
@@ -204,7 +226,7 @@ watch(() => props.pdf, (pdf) => {
     initDoc(pdf)
 })
 
-watch(() => [props.scale, props.rotation, props.page, props.hideForms, props.watermarkText], () => {
+watch(() => [props.scale, props.rotation, props.page, props.hideForms, props.watermarkText, props.watermarkOptions], () => {
   renderPage(props.page)
 })
 
