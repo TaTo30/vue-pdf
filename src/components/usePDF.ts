@@ -1,10 +1,10 @@
 import * as PDFJS from 'pdfjs-dist'
 import PDFWorker from 'pdfjs-dist/build/pdf.worker.min?url'
-import { shallowRef } from 'vue'
+import { isRef, shallowRef, watch } from 'vue'
 
 import type { PDFDocumentLoadingTask } from 'pdfjs-dist'
-import type { DocumentInitParameters, PDFDataRangeTransport, TypedArray } from 'pdfjs-dist/types/src/display/api'
-import type { OnPasswordCallback, UsePDFInfo, UsePDFOptions } from './types'
+import type { Ref } from 'vue'
+import type { OnPasswordCallback, UsePDFInfo, UsePDFOptions, UsePDFSrc } from './types'
 
 // Could not find a way to make this work with vite, importing the worker entry bundle the whole worker to the the final output
 // https://erindoyle.dev/using-pdfjs-with-vite/
@@ -32,12 +32,14 @@ function configWorker(wokerSrc: string) {
  * @param {UsePDFParameters} options
  * UsePDF object parameters
  */
-export function usePDF(src: string | URL | TypedArray | PDFDataRangeTransport | DocumentInitParameters, options: UsePDFOptions = {
-  onProgress: undefined,
-  onPassword: undefined,
-  onError: undefined,
-  password: '',
-}) {
+export function usePDF(src: UsePDFSrc | Ref<UsePDFSrc>,
+  options: UsePDFOptions = {
+    onProgress: undefined,
+    onPassword: undefined,
+    onError: undefined,
+    password: '',
+  },
+) {
   if (!PDFJS.GlobalWorkerOptions?.workerSrc)
     configWorker(PDFWorker)
 
@@ -45,38 +47,51 @@ export function usePDF(src: string | URL | TypedArray | PDFDataRangeTransport | 
   const pages = shallowRef(0)
   const info = shallowRef<UsePDFInfo | {}>({})
 
-  const loadingTask = PDFJS.getDocument(src)
-  if (options.onProgress)
-    loadingTask.onProgress = options.onProgress
+  function processLoadingTask(source: UsePDFSrc) {
+    const loadingTask = PDFJS.getDocument(source)
+    if (options.onProgress)
+      loadingTask.onProgress = options.onProgress
 
-  if (options.onPassword) {
-    loadingTask.onPassword = options.onPassword
-  }
-  else if (options.password) {
-    const onPassword: OnPasswordCallback = (updatePassword, _) => {
-      updatePassword(options.password ?? '')
+    if (options.onPassword) {
+      loadingTask.onPassword = options.onPassword
     }
-    loadingTask.onPassword = onPassword
+    else if (options.password) {
+      const onPassword: OnPasswordCallback = (updatePassword, _) => {
+        updatePassword(options.password ?? '')
+      }
+      loadingTask.onPassword = onPassword
+    }
+
+    loadingTask.promise.then(
+      async (doc) => {
+        pdf.value = doc.loadingTask
+        pages.value = doc.numPages
+
+        const metadata = await doc.getMetadata()
+        const attachments = (await doc.getAttachments()) as Record<string, unknown>
+        const javascript = await doc.getJavaScript()
+
+        info.value = {
+          metadata,
+          attachments,
+          javascript,
+        }
+      },
+      (error) => {
+        // PDF loading error
+        if (typeof options.onError === 'function')
+          options.onError(error)
+      },
+    )
   }
 
-  loadingTask.promise.then(async (doc) => {
-    pdf.value = doc.loadingTask
-    pages.value = doc.numPages
-
-    const metadata = await doc.getMetadata()
-    const attachments = (await doc.getAttachments()) as Record<string, unknown>
-    const javascript = await doc.getJavaScript()
-
-    info.value = {
-      metadata,
-      attachments,
-      javascript,
-    }
-  }, (error) => {
-    // PDF loading error
-    if (typeof options.onError === 'function')
-      options.onError(error)
-  })
+  if (isRef(src)) {
+    processLoadingTask(src.value)
+    watch(src, () => processLoadingTask(src.value))
+  }
+  else {
+    processLoadingTask(src)
+  }
 
   return {
     pdf,
