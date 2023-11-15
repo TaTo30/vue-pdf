@@ -9,6 +9,14 @@ export interface AnnotationEventPayload {
   data: any
 }
 
+export interface WatermarkOptions {
+  columns?: number
+  rows?: number
+  rotation?: number
+  fontSize?: number
+  color?: string
+}
+
 export type OnProgressCallback = (progressData: OnProgressParameters) => void
 export type UpdatePasswordFn = (newPassword: string) => void
 export type OnPasswordCallback = (updatePassword: UpdatePasswordFn, reason: any) => void
