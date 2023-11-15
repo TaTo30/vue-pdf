@@ -4,6 +4,7 @@
 
 import Custom from './samples/Custom.vue';
 import AnnoLayer from './samples/AnnoLayer.vue';
+import TextLayer from './samples/TextLayer.vue';
 import Pages from './samples/Pages.vue';
 import Multipage from './samples/Multipage.vue';
 import FitParent from './samples/FitParent.vue';
@@ -12,6 +13,6 @@ import XFALayer from './samples/XFALayer.vue';
 
 <template>
   <div>
-    <XFALayer />
+    <Pages />
   </div>
 </template>

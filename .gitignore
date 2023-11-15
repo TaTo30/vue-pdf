@@ -13,7 +13,7 @@ node_modules
 .temp
 .vscode
 playground/pdf/*
-!playground/pdf/example_*.pdf
+playground/samples/*
 cjs
 esm
 .DS_Store
