@@ -1,9 +1,8 @@
 <script setup>
-import { VuePDF, usePDF } from '@tato30/vue-pdf';
-import { withBase } from '@vuepress/client';
-import { ref, watch } from 'vue';
+import { VuePDF, usePDF } from '@tato30/vue-pdf'
+import { withBase } from '@vuepress/client'
+import { ref } from 'vue'
 
-const currentPdfIndex = ref(0)
 const pdfSources = [
   withBase('/example_014.pdf'),
   withBase('/example_036.pdf'),
@@ -11,21 +10,17 @@ const pdfSources = [
   withBase('/example_045.pdf'),
   'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf',
 ]
+const pdfSourceIdx = ref(0)
+const pdfSource = ref(pdfSources[0])
 
 // Setting the first (or default) PDF
-const { pdf } = usePDF(pdfSources[currentPdfIndex.value])
+const { pdf } = usePDF(pdfSource)
 
 function nextPdf() {
-  let sourceIndex = currentPdfIndex.value + 1
-  if (sourceIndex >= pdfSources.length)
-    sourceIndex = 0
-
-  const { pdf: newPDFToLoad } = usePDF(pdfSources[sourceIndex]) // Loads the new pdf
-  watch(newPDFToLoad, () => {
-    // How usePDF returns a promised values, we must wait (watch) for a resolved value before reassign the main pdf ref
-    pdf.value = newPDFToLoad.value
-    currentPdfIndex.value = sourceIndex
-  })
+  pdfSourceIdx.value += 1
+  if (pdfSourceIdx.value >= pdfSources.length)
+    pdfSourceIdx.value = 0
+  pdfSource.value = pdfSources[pdfSourceIdx.value]
 }
 </script>
 
@@ -33,7 +28,7 @@ function nextPdf() {
   <div class="container">
     <div>
       <button class="button-example" @click="nextPdf">
-        Next PDF
+        Next PDF (Current index: {{ pdfSourceIdx }})
       </button>
     </div>
     <VuePDF :pdf="pdf" />

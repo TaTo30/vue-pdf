@@ -65,12 +65,12 @@ export default defineUserConfig({
             '/examples/basic/text_layer.md',
             '/examples/basic/annotation_layer.md',
             '/examples/basic/xfa_layer.md',
-            '/examples/basic/watermark.md',
           ],
         },
         {
           text: 'Advanced usages',
           children: [
+            '/examples/advanced/watermark.md',
             '/examples/advanced/fit_parent.md',
             '/examples/advanced/annotation_filter.md',
             '/examples/advanced/multiple_pdf.md',

@@ -226,7 +226,7 @@ watch(() => props.pdf, (pdf) => {
     initDoc(pdf)
 })
 
-watch(() => [props.scale, props.rotation, props.page, props.hideForms, props.watermarkText, props.watermarkOptions], () => {
+watch(() => [props.scale, props.rotation, props.page, props.hideForms], () => {
   renderPage(props.page)
 })
 

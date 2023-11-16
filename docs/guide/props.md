@@ -83,7 +83,7 @@ Enable document annotations like links, popups, widgets, etc.
 <VuePDF :pdf="pdf" annotation-layer />
 ```
 
-## watermark-text <badge type="tip" text="v1.7" vertical="middle" />
+## watermark-text 
 
 Type: `string` <br />
 Required: `false` <br />
@@ -95,7 +95,38 @@ Prints a watermark pattern over canvas.
 <VuePDF :pdf="pdf" watermark-text="Sample" />
 ```
 
-## image-resources-path <badge type="tip" text="v1.6" vertical="middle" />
+## watermark-options <badge type="tip" text="v1.8" vertical="middle" />
+
+Type: `object` <br />
+Required: `false` <br />
+Default: 
+```
+{
+  columns: 4,
+  rows: 4,
+  rotation: 45,
+  fontSize: 18,
+  color: 'rgba(211, 210, 211, 0.4)',
+}
+```
+
+Customize how watermark is printed over canvas.
+
+```vue
+<script setup>
+const watermarkOptions = ref({
+  columns: 1,
+  rows: 1,
+  color: '#23FFFF',
+  rotation: 45,
+  fontSize: 20,
+})
+</script>
+
+<VuePDF :pdf="pdf" watermark-text="Sample" :watermark-options="watermarkOptions" />
+```
+
+## image-resources-path 
 
 Type: `string` <br />
 Required: `false` <br />
@@ -107,7 +138,7 @@ Path to image resources needed to render some graphics when required.
 <VuePDF :pdf="pdf" image-resources-path="https://unpkg.com/pdfjs-dist@latest/web/images/" />
 ```
 
-## hide-forms <badge type="tip" text="v1.6" vertical="middle" />
+## hide-forms 
 
 Type: `boolean` <br />
 Required: `false` <br />
@@ -161,7 +192,7 @@ const filter = ref(['Link', 'Text', 'Widget'])
 <VuePDF :pdf="pdf" annotation-layer :annotations-filter="filter" />
 ```
 
-## annotations-map <badge type="tip" text="v1.6" vertical="middle" />
+## annotations-map 
 
 Type: `object` <br />
 Required: `false` <br />

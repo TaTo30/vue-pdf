@@ -12,6 +12,19 @@
   background-color: var(--c-brand-light);
 }
 
+.input-example {
+  appearance: none;
+  padding: 7px 15px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  outline: none;
+  
+}
+.input-example:focus{
+  cursor: auto;
+  border-color: var(--search-accent-color);
+}
+
 .select-example {
   background-color: var(--c-brand);
   color: white;
