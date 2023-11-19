@@ -27,6 +27,8 @@ jobs:
           version: 8
           # install deps with pnpm
           run_install: true
+          # specify where package.json is located
+          package_json_file: docs/package.json
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -38,6 +40,7 @@ jobs:
 
       # run build script
       - name: Build VuePress site
+        working-directory: docs
         run: pnpm docs:build
 
       # please check out the docs of the workflow for more details
