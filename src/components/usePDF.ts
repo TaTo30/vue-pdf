@@ -70,11 +70,14 @@ export function usePDF(src: UsePDFSrc | Ref<UsePDFSrc>,
         const metadata = await doc.getMetadata()
         const attachments = (await doc.getAttachments()) as Record<string, unknown>
         const javascript = await doc.getJavaScript()
+        const outline = await doc.getOutline();
 
         info.value = {
+          document: doc,
           metadata,
           attachments,
           javascript,
+          outline,
         }
       },
       (error) => {

@@ -74,6 +74,7 @@ export default defineUserConfig({
             '/examples/advanced/fit_parent.md',
             '/examples/advanced/annotation_filter.md',
             '/examples/advanced/multiple_pdf.md',
+            '/examples/advanced/toc.md',
           ]
         },
         {
