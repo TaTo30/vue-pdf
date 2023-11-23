@@ -33,6 +33,7 @@ const props = withDefaults(defineProps<{
   annotationsMap?: object
   watermarkText?: string
   watermarkOptions?: WatermarkOptions
+  highlightText?: string
 }>(), {
   page: 1,
   scale: 1,
@@ -265,7 +266,7 @@ defineExpose({
       v-bind="{ ...internalProps, ...alayerProps }"
       @annotation="emit('annotation', $event)"
     />
-    <TextLayer v-show="textLayer" v-bind="internalProps" />
+    <TextLayer v-show="textLayer" :highlight-text="highlightText" v-bind="internalProps" />
     <XFALayer v-bind="internalProps" />
     <div v-show="loading" ref="loadingLayer" style="position: absolute;">
       <slot />

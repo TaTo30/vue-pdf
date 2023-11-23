@@ -16,6 +16,7 @@ import Scale from '../components/Scale.vue'
 import TextLayer from '../components/TextLayer.vue'
 import XFALayer from '../components/XFALayer.vue'
 import Watermark from '../components/Watermark.vue'
+import TOC from '../components/TOC.vue'
 
 
 export default defineClientConfig({
@@ -35,5 +36,6 @@ export default defineClientConfig({
         app.component('AnnoForms', AnnoForms)
         app.component('AnnoLinks', AnnoLinks)
         app.component('Loaded', Loaded)
+        app.component('TOC', TOC)
     }
 })

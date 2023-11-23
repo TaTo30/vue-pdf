@@ -8,5 +8,6 @@ export const VuePDFPlugin: Plugin = {
 }
 
 export * from './components'
+export { getPDFDestination } from './components/utils/destination'
 
 export default VuePDFPlugin
