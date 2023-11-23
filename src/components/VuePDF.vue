@@ -5,13 +5,19 @@ import { onMounted, ref, toRaw, watch } from 'vue'
 
 import 'pdfjs-dist/web/pdf_viewer.css'
 
-import type { PDFDocumentLoadingTask, PDFDocumentProxy, PDFPageProxy, PageViewport, RenderTask } from 'pdfjs-dist'
-import type { GetViewportParameters, RenderParameters } from 'pdfjs-dist/types/src/display/api'
+import type { PDFDocumentLoadingTask, PDFPageProxy, PageViewport, RenderTask } from 'pdfjs-dist'
+import type { GetViewportParameters, PDFDocumentProxy, RenderParameters } from 'pdfjs-dist/types/src/display/api'
 import type { AnnotationEventPayload, LoadedEventPayload, WatermarkOptions } from './types'
 
 import AnnotationLayer from './layers/AnnotationLayer.vue'
 import TextLayer from './layers/TextLayer.vue'
 import XFALayer from './layers/XFALayer.vue'
+
+interface InternalProps {
+  page: PDFPageProxy | undefined
+  document: PDFDocumentProxy | undefined
+  viewport: PageViewport | undefined
+}
 
 const props = withDefaults(defineProps<{
   pdf?: PDFDocumentLoadingTask
@@ -43,17 +49,17 @@ const loadingLayer = ref<HTMLSpanElement>()
 const loading = ref(false)
 let renderTask: RenderTask
 
-// PDF Refs
-const DocumentProxy = ref<PDFDocumentProxy>()
-const PageProxy = ref<PDFPageProxy>()
-const InternalViewport = ref<PageViewport>()
-
-function emitLoaded(data: LoadedEventPayload) {
-  emit('loaded', data)
+const internalProps: InternalProps = {
+  viewport: undefined,
+  document: undefined,
+  page: undefined,
 }
 
-function emitAnnotation(data: AnnotationEventPayload) {
-  emit('annotation', data)
+const alayerProps = {
+  annotationLayer: props.annotationsFilter,
+  annotationsMap: props.annotationsMap,
+  imageResourcePath: props.imageResourcesPath,
+  hideForms: props.hideForms,
 }
 
 function getWatermarkOptionsWithDefaults(): WatermarkOptions {
@@ -66,18 +72,18 @@ function getWatermarkOptionsWithDefaults(): WatermarkOptions {
   }, props.watermarkOptions)
 }
 
-function computeRotation(rotation: number): number {
+function getRotation(rotation: number): number {
   if (!(typeof rotation === 'number' && rotation % 90 === 0))
     return 0
   const factor = rotation / 90
   if (factor > 4)
-    return computeRotation(rotation - 360)
+    return getRotation(rotation - 360)
   else if (factor < 0)
-    return computeRotation(rotation + 360)
+    return getRotation(rotation + 360)
   return rotation
 }
 
-function computeScale(page: PDFPageProxy): number {
+function getScale(page: PDFPageProxy): number {
   let fscale = props.scale
   if (props.fitParent) {
     const parentWidth: number = (container.value!.parentNode! as HTMLElement).clientWidth
@@ -168,13 +174,13 @@ function cancelRender() {
 }
 
 function renderPage(pageNum: number) {
-  toRaw(DocumentProxy.value)?.getPage(pageNum).then((page) => {
+  toRaw(internalProps.document)?.getPage(pageNum).then((page) => {
     cancelRender()
 
     const defaultViewport = page.getViewport()
     const viewportParams: GetViewportParameters = {
-      scale: computeScale(page),
-      rotation: computeRotation((props.rotation || 0) + defaultViewport.rotation),
+      scale: getScale(page),
+      rotation: getRotation((props.rotation || 0) + defaultViewport.rotation),
     }
     const viewport = page.getViewport(viewportParams)
 
@@ -200,13 +206,13 @@ function renderPage(pageNum: number) {
       canvas.removeAttribute('role')
     }
 
-    PageProxy.value = page
-    InternalViewport.value = viewport
+    internalProps.page = page
+    internalProps.viewport = viewport
     renderTask = page.render(renderContext)
     renderTask.promise.then(() => {
-      paintWatermark(viewport.scale)
       loading.value = false
-      emitLoaded(InternalViewport.value!)
+      paintWatermark(viewport.scale)
+      emit('loaded', internalProps.viewport!)
     }).catch(() => {
       // render task cancelled
     })
@@ -214,19 +220,20 @@ function renderPage(pageNum: number) {
 }
 
 function initDoc(proxy: PDFDocumentLoadingTask) {
-  proxy.promise.then(async (doc) => {
-    DocumentProxy.value = doc
+  proxy.promise.then(async (document) => {
+    internalProps.document = document
     renderPage(props.page)
   })
 }
 
 watch(() => props.pdf, (pdf) => {
-  // for any change in pdf proxy, rework all
+  // For any changes on pdf, reinicialize all
   if (pdf !== undefined)
     initDoc(pdf)
 })
 
 watch(() => [props.scale, props.rotation, props.page, props.hideForms], () => {
+  // Props that should dispatch an render task
   renderPage(props.page)
 })
 
@@ -235,6 +242,7 @@ onMounted(() => {
     initDoc(props.pdf)
 })
 
+// Exposed methods
 function reload() {
   renderPage(props.page)
 }
@@ -243,15 +251,9 @@ function cancel() {
   cancelRender()
 }
 
-function getAnnotationStorage() {
-  const pdf = toRaw(DocumentProxy.value)
-  return pdf?.annotationStorage
-}
-
 defineExpose({
   reload,
   cancel,
-  getAnnotationStorage,
 })
 </script>
 
@@ -260,17 +262,11 @@ defineExpose({
     <canvas dir="ltr" style="display: block" role="main" />
     <AnnotationLayer
       v-show="annotationLayer"
-      :filter="annotationsFilter!"
-      :map="annotationsMap"
-      :viewport="InternalViewport!"
-      :image-resources-path="imageResourcesPath"
-      :hide-forms="hideForms"
-      :page="PageProxy!"
-      :document="DocumentProxy!"
-      @annotation="emitAnnotation($event)"
+      v-bind="{ ...internalProps, ...alayerProps }"
+      @annotation="emit('annotation', $event)"
     />
-    <TextLayer v-show="textLayer" :page="PageProxy!" :viewport="InternalViewport!" />
-    <XFALayer :page="PageProxy!" :viewport="InternalViewport!" :document="DocumentProxy!" />
+    <TextLayer v-show="textLayer" v-bind="internalProps" />
+    <XFALayer v-bind="internalProps" />
     <div v-show="loading" ref="loadingLayer" style="position: absolute;">
       <slot />
     </div>

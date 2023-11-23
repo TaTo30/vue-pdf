@@ -14,8 +14,8 @@ const props = defineProps<{
   page?: PDFPageProxy
   viewport?: PageViewport
   document?: PDFDocumentProxy
-  filter?: string[]
-  map?: object
+  annotationsFilter?: string[]
+  annotationsMap?: object
   imageResourcesPath?: string
   hideForms?: boolean
   enableScripting?: boolean
@@ -50,8 +50,8 @@ async function getAnnotations() {
   const page = props.page
 
   let annotations = await page?.getAnnotations()
-  if (props.filter) {
-    const filters = props.filter
+  if (props.annotationsFilter) {
+    const filters = props.annotationsFilter
     annotations = annotations!.filter((value) => {
       const subType = value.subtype
       const fieldType = value.fieldType ? `${subType}.${value.fieldType}` : null
@@ -86,8 +86,8 @@ async function render() {
     }
   }
   const annotationStorage = pdf!.annotationStorage
-  if (props.map) {
-    for (const [key, value] of Object.entries(props.map))
+  if (props.annotationsMap) {
+    for (const [key, value] of Object.entries(props.annotationsMap))
       annotationStorage.setValue(key, value)
   }
   const parameters: AnnotationLayerParameters = {
