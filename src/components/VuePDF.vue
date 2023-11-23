@@ -27,6 +27,7 @@ const props = withDefaults(defineProps<{
   annotationsMap?: object
   watermarkText?: string
   watermarkOptions?: WatermarkOptions
+  highlightText?: string
 }>(), {
   page: 1,
   scale: 1,
@@ -269,7 +270,7 @@ defineExpose({
       :document="DocumentProxy!"
       @annotation="emitAnnotation($event)"
     />
-    <TextLayer v-show="textLayer" :page="PageProxy!" :viewport="InternalViewport!" />
+    <TextLayer v-show="textLayer" :highlight-text="highlightText" :page="PageProxy!" :viewport="InternalViewport!" />
     <XFALayer :page="PageProxy!" :viewport="InternalViewport!" :document="DocumentProxy!" />
     <div v-show="loading" ref="loadingLayer" style="position: absolute;">
       <slot />
