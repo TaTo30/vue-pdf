@@ -63,6 +63,10 @@ const alayerProps = {
   hideForms: props.hideForms,
 }
 
+const tlayerProps = {
+  highlightText: props.highlightText,
+}
+
 function getWatermarkOptionsWithDefaults(): WatermarkOptions {
   return Object.assign({}, {
     columns: 4,
@@ -266,7 +270,7 @@ defineExpose({
       v-bind="{ ...internalProps, ...alayerProps }"
       @annotation="emit('annotation', $event)"
     />
-    <TextLayer v-show="textLayer" :highlight-text="highlightText" v-bind="internalProps" />
+    <TextLayer v-show="textLayer" v-bind="{ ...internalProps, ...tlayerProps }" />
     <XFALayer v-bind="internalProps" />
     <div v-show="loading" ref="loadingLayer" style="position: absolute;">
       <slot />

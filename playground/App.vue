@@ -1,18 +1,13 @@
 <!-- eslint-disable unused-imports/no-unused-imports -->
+<!-- Use this component to play with the main components -->
 <script setup lang="ts">
-// import { ref } from 'vue'
+import { VuePDF, usePDF } from '../src';
 
-import Custom from './samples/Custom.vue';
-import AnnoLayer from './samples/AnnoLayer.vue';
-import TextLayer from './samples/TextLayer.vue';
-import Pages from './samples/Pages.vue';
-import Multipage from './samples/Multipage.vue';
-import FitParent from './samples/FitParent.vue';
-import XFALayer from './samples/XFALayer.vue';
+const { pdf } = usePDF('https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf')
 </script>
 
 <template>
   <div>
-    <Pages />
+    <VuePDF :pdf="pdf" />
   </div>
 </template>
