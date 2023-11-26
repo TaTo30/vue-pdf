@@ -7,7 +7,7 @@ import 'pdfjs-dist/web/pdf_viewer.css'
 
 import type { PDFDocumentLoadingTask, PDFPageProxy, PageViewport, RenderTask } from 'pdfjs-dist'
 import type { GetViewportParameters, PDFDocumentProxy, RenderParameters } from 'pdfjs-dist/types/src/display/api'
-import type { AnnotationEventPayload, LoadedEventPayload, WatermarkOptions } from './types'
+import type { AnnotationEventPayload, HighlightEventPayload, HighlightOptions, LoadedEventPayload, WatermarkOptions } from './types'
 
 import AnnotationLayer from './layers/AnnotationLayer.vue'
 import TextLayer from './layers/TextLayer.vue'
@@ -34,6 +34,7 @@ const props = withDefaults(defineProps<{
   watermarkText?: string
   watermarkOptions?: WatermarkOptions
   highlightText?: string
+  highlightOptions?: HighlightOptions
 }>(), {
   page: 1,
   scale: 1,
@@ -41,6 +42,7 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
   (event: 'annotation', payload: AnnotationEventPayload): void
+  (event: 'highlight', payload: HighlightEventPayload): void
   (event: 'loaded', payload: LoadedEventPayload): void
 }>()
 
@@ -68,6 +70,7 @@ const alayerProps = computed(() => {
 const tlayerProps = computed(() => {
   return {
     highlightText: props.highlightText,
+    highlightOptions: props.highlightOptions,
   }
 })
 
@@ -274,7 +277,11 @@ defineExpose({
       v-bind="{ ...internalProps, ...alayerProps }"
       @annotation="emit('annotation', $event)"
     />
-    <TextLayer v-show="textLayer" v-bind="{ ...internalProps, ...tlayerProps }" />
+    <TextLayer
+      v-show="textLayer"
+      v-bind="{ ...internalProps, ...tlayerProps }"
+      @highlight="emit('highlight', $event)"
+    />
     <XFALayer v-bind="internalProps" />
     <div v-show="loading" ref="loadingLayer" style="position: absolute;">
       <slot />
