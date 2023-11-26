@@ -1,7 +1,7 @@
 <!-- eslint-disable no-case-declarations -->
 <script setup lang="ts">
 import * as PDFJS from 'pdfjs-dist'
-import { onMounted, ref, toRaw, watch } from 'vue'
+import { computed, onMounted, ref, toRaw, watch } from 'vue'
 
 import 'pdfjs-dist/web/pdf_viewer.css'
 
@@ -50,22 +50,26 @@ const loadingLayer = ref<HTMLSpanElement>()
 const loading = ref(false)
 let renderTask: RenderTask
 
-const internalProps: InternalProps = {
-  viewport: undefined,
-  document: undefined,
-  page: undefined,
-}
-
-const alayerProps = {
-  annotationLayer: props.annotationsFilter,
-  annotationsMap: props.annotationsMap,
-  imageResourcePath: props.imageResourcesPath,
-  hideForms: props.hideForms,
-}
-
-const tlayerProps = {
-  highlightText: props.highlightText,
-}
+const internalProps = computed(() => {
+  return {
+    viewport: undefined,
+    document: undefined,
+    page: undefined,
+  } as InternalProps
+})
+const alayerProps = computed(() => {
+  return {
+    annotationLayer: props.annotationsFilter,
+    annotationsMap: props.annotationsMap,
+    imageResourcePath: props.imageResourcesPath,
+    hideForms: props.hideForms,
+  }
+})
+const tlayerProps = computed(() => {
+  return {
+    highlightText: props.highlightText,
+  }
+})
 
 function getWatermarkOptionsWithDefaults(): WatermarkOptions {
   return Object.assign({}, {
@@ -179,7 +183,7 @@ function cancelRender() {
 }
 
 function renderPage(pageNum: number) {
-  toRaw(internalProps.document)?.getPage(pageNum).then((page) => {
+  toRaw(internalProps.value.document)?.getPage(pageNum).then((page) => {
     cancelRender()
 
     const defaultViewport = page.getViewport()
@@ -211,13 +215,13 @@ function renderPage(pageNum: number) {
       canvas.removeAttribute('role')
     }
 
-    internalProps.page = page
-    internalProps.viewport = viewport
+    internalProps.value.page = page
+    internalProps.value.viewport = viewport
     renderTask = page.render(renderContext)
     renderTask.promise.then(() => {
       loading.value = false
       paintWatermark(viewport.scale)
-      emit('loaded', internalProps.viewport!)
+      emit('loaded', internalProps.value.viewport!)
     }).catch(() => {
       // render task cancelled
     })
@@ -226,7 +230,7 @@ function renderPage(pageNum: number) {
 
 function initDoc(proxy: PDFDocumentLoadingTask) {
   proxy.promise.then(async (document) => {
-    internalProps.document = document
+    internalProps.value.document = document
     renderPage(props.page)
   })
 }
