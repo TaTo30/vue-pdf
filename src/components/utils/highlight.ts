@@ -1,36 +1,34 @@
 import type { TextItem } from 'pdfjs-dist/types/src/display/api'
 import type { TextContent } from 'pdfjs-dist/types/src/display/text_layer'
+import type { HighlightOptions, Match } from '../types'
 
-interface Match {
-  start: {
-    idx: number
-    offset: number
-  }
-  end: {
-    idx: number
-    offset: number
-  }
+function getTextItems(textContent: TextContent) {
+  return textContent.items.map(val => (val as TextItem).str)
 }
 
-function searchQuery(textItems: string[], query: string, ignoreCase = false) {
+function searchQuery(textItems: string[], query: string, options: HighlightOptions) {
   const textJoined = textItems.join(' ')
   const regexFlags = ['g']
-  if (ignoreCase)
+  if (options.ignoreCase)
     regexFlags.push('i')
 
-  const regex = new RegExp(query, regexFlags.join(''))
+  let fquery = query.trim()
+  if (options.completeWords)
+    fquery = `\\b${fquery}\\b`
+
+  const regex = new RegExp(fquery, regexFlags.join(''))
 
   const matches = []
   let match
 
   // eslint-disable-next-line no-cond-assign
   while ((match = regex.exec(textJoined)) !== null)
-    matches.push([match.index, match[0].length])
+    matches.push([match.index, match[0].length, match[0]])
 
   return matches
 }
 
-function convertMatches(matches: number[][], textItems: string[]): Match[] {
+function convertMatches(matches: (number | string)[][], textItems: string[]): Match[] {
   let index = 0
   let tindex = 0
   const end = textItems.length - 1
@@ -39,22 +37,19 @@ function convertMatches(matches: number[][], textItems: string[]): Match[] {
 
   // iterate over all matches
   for (let m = 0; m < matches.length; m++) {
-    let mindex = matches[m][0]
+    let mindex = matches[m][0] as number
 
     while (index !== end && mindex >= tindex + textItems[index].length) {
       tindex += textItems[index].length + 1
       index++
     }
 
-    if (index === end)
-      console.warn('Matches could not be found in textItemss')
-
     const divStart = {
       idx: index,
       offset: mindex - tindex,
     }
 
-    mindex += matches[m][1]
+    mindex += matches[m][1] as number
 
     while (index !== end && mindex > tindex + textItems[index].length) {
       tindex += textItems[index].length + 1
@@ -68,9 +63,10 @@ function convertMatches(matches: number[][], textItems: string[]): Match[] {
     convertedMatches.push({
       start: divStart,
       end: divEnd,
+      str: matches[m][2] as string,
+      oindex: matches[m][0] as number,
     })
   }
-
   return convertedMatches
 }
 
@@ -84,6 +80,9 @@ function highlightMatches(matches: Match[], textContent: TextContent, textDivs: 
     let nextContent = ''
 
     let div = textDivs[idx]
+
+    if (!div)
+      return // don't process if div is undefinied
 
     if (div.nodeType === Node.TEXT_NODE) {
       const span = document.createElement('span')
@@ -140,11 +139,23 @@ function highlightMatches(matches: Match[], textContent: TextContent, textDivs: 
   }
 }
 
-function findMatches(query: string, textContent: TextContent, ignoreCase = true) {
-  const textItems = textContent.items.map(val => (val as TextItem).str)
-  const matches = searchQuery(textItems, query, ignoreCase)
+function resetDivs(textContent: TextContent, textDivs: HTMLElement[]) {
+  const textItems = getTextItems(textContent)
+  for (let idx = 0; idx < textDivs.length; idx++) {
+    const div = textDivs[idx]
+
+    if (div && div.nodeType !== Node.TEXT_NODE) {
+      const textNode = document.createTextNode(textItems[idx])
+      div.replaceChildren(textNode)
+    }
+  }
+}
+
+function findMatches(query: string, textContent: TextContent, options: HighlightOptions) {
+  const textItems = getTextItems(textContent)
+  const matches = searchQuery(textItems, query, options)
   return convertMatches(matches, textItems)
 }
 
-export { findMatches, highlightMatches }
+export { findMatches, highlightMatches, resetDivs }
 

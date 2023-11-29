@@ -4,12 +4,18 @@ import { onMounted, ref, watch } from 'vue'
 
 import type { PDFPageProxy, PageViewport } from 'pdfjs-dist'
 import type { TextLayerRenderParameters } from 'pdfjs-dist/types/src/display/text_layer'
-import { findMatches, highlightMatches } from '../utils/highlight'
+import type { HighlightEventPayload, HighlightOptions } from '../types'
+import { findMatches, highlightMatches, resetDivs } from '../utils/highlight'
 
 const props = defineProps<{
   page?: PDFPageProxy
   viewport?: PageViewport
   highlightText?: string
+  highlightOptions?: HighlightOptions
+}>()
+
+const emit = defineEmits<{
+  (event: 'highlight', payload: HighlightEventPayload): void
 }>()
 
 const layer = ref<HTMLDivElement>()
@@ -17,17 +23,37 @@ const endContent = ref<HTMLDivElement>()
 
 const textDivs: HTMLElement[] = []
 
-async function findAndHighlight() {
+function getHighlightOptionsWithDefaults(): HighlightOptions {
+  return Object.assign({}, {
+    ignoreCase: true,
+    completeWords: false,
+  }, props.highlightOptions)
+}
+
+async function findAndHighlight(reset = false) {
+  const page = props.page
+  const textContent = await page?.getTextContent()
+
+  if (!textContent)
+    return
+
+  if (reset)
+    resetDivs(textContent, textDivs)
+
   if (props.highlightText) {
-    const page = props.page
-    const textContent = await page?.getTextContent()
-    const matches = findMatches(props.highlightText, textContent!)
+    const matches = findMatches(props.highlightText, textContent!, getHighlightOptionsWithDefaults())
     highlightMatches(matches, textContent!, textDivs)
+    emit('highlight', {
+      matches,
+      textContent,
+      page: page?.pageNumber || 1,
+    })
   }
 }
 
 function render() {
   layer.value!.replaceChildren?.()
+  textDivs.splice(0, textDivs.length)
 
   const page = props.page
   const viewport = props.viewport
@@ -68,6 +94,10 @@ watch(() => props.viewport, (_) => {
   if (props.page && props.viewport && layer.value)
     render()
 })
+
+watch(() => [props.highlightText, props.highlightOptions], (_) => {
+  findAndHighlight(true)
+}, { deep: true })
 
 onMounted(() => {
   if (props.page && props.viewport && layer.value)

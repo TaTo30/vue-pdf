@@ -3,9 +3,23 @@ import type {
   DocumentInitParameters,
   OnProgressParameters,
   PDFDataRangeTransport,
+  TextContent,
   TypedArray,
 } from 'pdfjs-dist/types/src/display/api'
 import type { Metadata } from 'pdfjs-dist/types/src/display/metadata'
+
+export interface Match {
+  start: {
+    idx: number
+    offset: number
+  }
+  end: {
+    idx: number
+    offset: number
+  }
+  str: string
+  oindex: number
+}
 
 export type LoadedEventPayload = PageViewport
 
@@ -14,12 +28,23 @@ export interface AnnotationEventPayload {
   data: any
 }
 
+export interface HighlightEventPayload {
+  matches: Match[]
+  page: number
+  textContent: TextContent
+}
+
 export interface WatermarkOptions {
   columns?: number
   rows?: number
   rotation?: number
   fontSize?: number
   color?: string
+}
+
+export interface HighlightOptions {
+  ignoreCase?: boolean
+  completeWords?: boolean
 }
 
 export type OnProgressCallback = (progressData: OnProgressParameters) => void
