@@ -23,12 +23,12 @@ function searchQuery(textItems: string[], query: string, options: HighlightOptio
 
   // eslint-disable-next-line no-cond-assign
   while ((match = regex.exec(textJoined)) !== null)
-    matches.push([match.index, match[0].length])
+    matches.push([match.index, match[0].length, match[0]])
 
   return matches
 }
 
-function convertMatches(matches: number[][], textItems: string[]): Match[] {
+function convertMatches(matches: (number | string)[][], textItems: string[]): Match[] {
   let index = 0
   let tindex = 0
   const end = textItems.length - 1
@@ -37,7 +37,7 @@ function convertMatches(matches: number[][], textItems: string[]): Match[] {
 
   // iterate over all matches
   for (let m = 0; m < matches.length; m++) {
-    let mindex = matches[m][0]
+    let mindex = matches[m][0] as number
 
     while (index !== end && mindex >= tindex + textItems[index].length) {
       tindex += textItems[index].length + 1
@@ -49,7 +49,7 @@ function convertMatches(matches: number[][], textItems: string[]): Match[] {
       offset: mindex - tindex,
     }
 
-    mindex += matches[m][1]
+    mindex += matches[m][1] as number
 
     while (index !== end && mindex > tindex + textItems[index].length) {
       tindex += textItems[index].length + 1
@@ -63,9 +63,10 @@ function convertMatches(matches: number[][], textItems: string[]): Match[] {
     convertedMatches.push({
       start: divStart,
       end: divEnd,
+      str: matches[m][2] as string,
+      oindex: matches[m][0] as number,
     })
   }
-
   return convertedMatches
 }
 

@@ -17,6 +17,8 @@ export interface Match {
     idx: number
     offset: number
   }
+  str: string
+  oindex: number
 }
 
 export type LoadedEventPayload = PageViewport
