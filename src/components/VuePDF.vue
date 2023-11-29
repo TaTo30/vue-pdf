@@ -61,8 +61,8 @@ const internalProps = computed(() => {
 })
 const alayerProps = computed(() => {
   return {
-    annotationLayer: props.annotationsFilter,
     annotationsMap: props.annotationsMap,
+    annotationsFilter: props.annotationsFilter,
     imageResourcePath: props.imageResourcesPath,
     hideForms: props.hideForms,
   }
@@ -273,16 +273,16 @@ defineExpose({
   <div ref="container" style="position: relative; display: block; overflow: hidden;">
     <canvas dir="ltr" style="display: block" role="main" />
     <AnnotationLayer
-      v-show="annotationLayer"
+      v-if="annotationLayer"
       v-bind="{ ...internalProps, ...alayerProps }"
       @annotation="emit('annotation', $event)"
     />
     <TextLayer
-      v-show="textLayer"
+      v-if="textLayer"
       v-bind="{ ...internalProps, ...tlayerProps }"
       @highlight="emit('highlight', $event)"
     />
-    <XFALayer v-bind="internalProps" />
+    <XFALayer v-bind="{ ...internalProps }" />
     <div v-show="loading" ref="loadingLayer" style="position: absolute;">
       <slot />
     </div>
