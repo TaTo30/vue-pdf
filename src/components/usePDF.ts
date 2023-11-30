@@ -4,7 +4,8 @@ import { isRef, shallowRef, watch } from 'vue'
 
 import type { PDFDocumentLoadingTask } from 'pdfjs-dist'
 import type { Ref } from 'vue'
-import type { OnPasswordCallback, UsePDFInfo, UsePDFOptions, UsePDFSrc } from './types'
+import type { OnPasswordCallback, PDFDestination, PDFInfo, PDFOptions, PDFSrc } from './types'
+import { getDestinationArray, getDestinationRef, getLocation, isSpecLike } from './utils/destination'
 
 // Could not find a way to make this work with vite, importing the worker entry bundle the whole worker to the the final output
 // https://erindoyle.dev/using-pdfjs-with-vite/
@@ -32,8 +33,8 @@ function configWorker(wokerSrc: string) {
  * @param {UsePDFParameters} options
  * UsePDF object parameters
  */
-export function usePDF(src: UsePDFSrc | Ref<UsePDFSrc>,
-  options: UsePDFOptions = {
+export function usePDF(src: PDFSrc | Ref<PDFSrc>,
+  options: PDFOptions = {
     onProgress: undefined,
     onPassword: undefined,
     onError: undefined,
@@ -45,9 +46,9 @@ export function usePDF(src: UsePDFSrc | Ref<UsePDFSrc>,
 
   const pdf = shallowRef<PDFDocumentLoadingTask>()
   const pages = shallowRef(0)
-  const info = shallowRef<UsePDFInfo | {}>({})
+  const info = shallowRef<PDFInfo | {}>({})
 
-  function processLoadingTask(source: UsePDFSrc) {
+  function processLoadingTask(source: PDFSrc) {
     const loadingTask = PDFJS.getDocument(source)
     if (options.onProgress)
       loadingTask.onProgress = options.onProgress
@@ -70,10 +71,9 @@ export function usePDF(src: UsePDFSrc | Ref<UsePDFSrc>,
         const metadata = await doc.getMetadata()
         const attachments = (await doc.getAttachments()) as Record<string, unknown>
         const javascript = await doc.getJavaScript()
-        const outline = await doc.getOutline();
+        const outline = await doc.getOutline()
 
         info.value = {
-          document: doc,
           metadata,
           attachments,
           javascript,
@@ -88,6 +88,26 @@ export function usePDF(src: UsePDFSrc | Ref<UsePDFSrc>,
     )
   }
 
+  async function getPDFDestination(destination: string | any[] | null): Promise<PDFDestination | null> {
+    const document = await pdf.value?.promise
+    if (!document)
+      return null
+
+    const destArray = await getDestinationArray(document, destination)
+    const destRef = await getDestinationRef(document, destArray)
+    if (!destRef || !destArray)
+      return null
+
+    const pageIndex = await document.getPageIndex(destRef)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    const name = destArray[1].name
+    const rest = destArray.slice(2)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const location = isSpecLike(rest) ? getLocation(name, rest) : null
+
+    return { pageIndex, location: location ?? { type: 'Fit', spec: [] } }
+  }
+
   if (isRef(src)) {
     processLoadingTask(src.value)
     watch(src, () => processLoadingTask(src.value))
@@ -100,5 +120,6 @@ export function usePDF(src: UsePDFSrc | Ref<UsePDFSrc>,
     pdf,
     pages,
     info,
+    getPDFDestination,
   }
 }
