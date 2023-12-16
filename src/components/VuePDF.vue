@@ -25,6 +25,8 @@ const props = withDefaults(defineProps<{
   scale?: number
   rotation?: number
   fitParent?: boolean
+  width?: number
+  height?: number
   textLayer?: boolean
   imageResourcesPath?: string
   hideForms?: boolean
@@ -101,6 +103,14 @@ function getScale(page: PDFPageProxy): number {
     const parentWidth: number = (container.value!.parentNode! as HTMLElement).clientWidth
     const scale1Width = page.getViewport({ scale: 1 }).width
     fscale = parentWidth / scale1Width
+  }
+  else if (props.width) {
+    const scale1Width = page.getViewport({ scale: 1 }).width
+    fscale = props.width / scale1Width
+  }
+  else if (props.height) {
+    const scale1Height = page.getViewport({ scale: 1 }).height
+    fscale = props.height / scale1Height
   }
   return fscale
 }
@@ -244,7 +254,14 @@ watch(() => props.pdf, (pdf) => {
     initDoc(pdf)
 })
 
-watch(() => [props.scale, props.rotation, props.page, props.hideForms], () => {
+watch(() => [
+  props.scale,
+  props.width,
+  props.height,
+  props.rotation,
+  props.page,
+  props.hideForms,
+], () => {
   // Props that should dispatch an render task
   renderPage(props.page)
 })
