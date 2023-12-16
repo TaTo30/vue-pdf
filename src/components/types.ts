@@ -32,6 +32,7 @@ export interface HighlightEventPayload {
   matches: Match[]
   page: number
   textContent: TextContent
+  textDivs: HTMLElement[]
 }
 
 export interface WatermarkOptions {

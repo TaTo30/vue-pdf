@@ -46,6 +46,7 @@ async function findAndHighlight(reset = false) {
     emit('highlight', {
       matches,
       textContent,
+      textDivs,
       page: page?.pageNumber || 1,
     })
   }
