@@ -117,7 +117,8 @@ export function usePDF(src: PDFSrc | Ref<PDFSrc>,
     })
   }
   else {
-    processLoadingTask(src)
+    if (src !== undefined)
+      processLoadingTask(src)
   }
 
   return {
