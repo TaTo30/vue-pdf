@@ -109,8 +109,12 @@ export function usePDF(src: PDFSrc | Ref<PDFSrc>,
   }
 
   if (isRef(src)) {
-    processLoadingTask(src.value)
-    watch(src, () => processLoadingTask(src.value))
+    if (src.value !== undefined)
+      processLoadingTask(src.value)
+    watch(src, () => {
+      if (src.value !== undefined)
+        processLoadingTask(src.value)
+    })
   }
   else {
     processLoadingTask(src)
