@@ -4,13 +4,23 @@ VuePDF is a **Vue 3** client-side component for pdf.js that allows you to flexib
 
 ## Installation
 
-```console
+<CodeGroup>
+  <CodeGroupItem title="NPM">
+
+```bash:no-line-numbers
 npm i @tato30/vue-pdf
 ```
 
-```console
+  </CodeGroupItem>
+  <CodeGroupItem title="YARN">
+
+```bash:no-line-numbers
 yarn add @tato30/vue-pdf
 ```
+
+  </CodeGroupItem>
+</CodeGroup>
+
 
 ## Basic Usage
 
