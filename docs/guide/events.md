@@ -22,6 +22,18 @@ Value example:
 }
 ```
 
+## highlight
+
+```vue
+<VuePDF :pdf="pdf" @highlight="onHighlight" />
+```
+
+Emitted when a text has been searched in page using [highlight-text](/guide/props.md#highlight-text) and [highlight-options](/guide/props.md#highlight-options), this event return a list of matches and the page where the text was found with its `textDivs` and `textContent`.
+
+Check the example: [Highlight Event](/examples/text_events/text_highlight.md)
+
+
+
 ## annotation
 
 ```vue

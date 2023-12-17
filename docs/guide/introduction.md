@@ -57,8 +57,7 @@ You can also create your own custom styles and set them in your project, use thi
 - [text-layer styles](https://github.com/mozilla/pdf.js/blob/master/web/text_layer_builder.css)
 - [annotation-layer styles](https://github.com/mozilla/pdf.js/blob/master/web/annotation_layer_builder.css)
 
-### XFA Forms <badge type="tip" text="v1.7" vertical="middle" />
-
+### XFA Forms
 XFA forms also can be supported by enabling them from `usePDF`.
 
 ```vue

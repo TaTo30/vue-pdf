@@ -71,6 +71,7 @@ export default defineUserConfig({
           text: 'Advanced usages',
           children: [
             '/examples/advanced/watermark.md',
+            '/examples/advanced/highlight_text.md',
             '/examples/advanced/fit_parent.md',
             '/examples/advanced/annotation_filter.md',
             '/examples/advanced/multiple_pdf.md',
@@ -81,6 +82,7 @@ export default defineUserConfig({
           text: 'Events',
           children: [
             '/examples/loaded_events/loaded.md',
+            '/examples/text_events/text_highlight.md',
             {
               text: 'Annotation Events',
               children: [

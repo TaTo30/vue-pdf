@@ -17,6 +17,8 @@ import TextLayer from '../components/TextLayer.vue'
 import XFALayer from '../components/XFALayer.vue'
 import Watermark from '../components/Watermark.vue'
 import TOC from '../components/TOC.vue'
+import HighlightText from "../components/HighlightText.vue";
+import TextHighlight from "../components/TextHighlight.vue";
 
 
 export default defineClientConfig({
@@ -37,5 +39,7 @@ export default defineClientConfig({
         app.component('AnnoLinks', AnnoLinks)
         app.component('Loaded', Loaded)
         app.component('TOC', TOC)
+        app.component("HighlightText", HighlightText);
+        app.component("TextHighlight", TextHighlight);
     }
 })

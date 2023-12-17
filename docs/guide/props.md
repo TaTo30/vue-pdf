@@ -41,10 +41,34 @@ Type: `boolean` <br />
 Required: `false` <br />
 Default: `false`
 
-Fit page with parent width, this prop replace `scale` in width calculation
+Fit page with the parent width. This prop replace [scale](#scale) in size calculation and has more precedence than [width](#width)
 
 ```vue
 <VuePDF :pdf="pdf" fit-parent />
+```
+
+## width
+
+Type: `number` <br /> 
+Required: `false` <br />
+Default: `null`
+
+Scale the page with a `width` in px. This prop replace [scale](#scale) in size calculation and has more precedence than [height](#height)
+
+```vue
+<VuePDF :pdf="pdf" :width="500" />
+```
+
+## height
+
+Type: `number` <br /> 
+Required: `false` <br />
+Default: `null`
+
+Scale the page with a `height` in px. This prop replace [scale](#scale) in size calculation.
+
+```vue
+<VuePDF :pdf="pdf" :height="500" />
 ```
 
 ## rotation
@@ -71,6 +95,40 @@ Enable text selection in page
 <VuePDF :pdf="pdf" text-layer />
 ```
 
+## highlight-text  <badge type="tip" text="v1.9" vertical="middle" />
+
+Type: `string` <br />
+Required: `false` <br />
+Default: `null`
+
+Highlight on the page the searched text
+
+```vue
+<VuePDF :pdf="pdf" text-layer hightlight-text="javascript" />
+```
+
+## highlight-options  <badge type="tip" text="v1.9" vertical="middle" />
+
+Type: `object` <br />
+Required: `false` <br />
+Default: 
+```
+{
+  completeWords: false,
+  ignoreCase: true
+}
+```
+
+Settings for how to search the [highlight-text](#highlight-text)
+
+```vue
+<VuePDF :pdf="pdf" text-layer hightlight-text="javascript" :highlight-options="{
+    completeWords: true,
+    ignoreCase: false
+  }"
+/>
+```
+
 ## annotation-layer
 
 Type: `boolean` <br />
@@ -95,7 +153,7 @@ Prints a watermark pattern over canvas.
 <VuePDF :pdf="pdf" watermark-text="Sample" />
 ```
 
-## watermark-options <badge type="tip" text="v1.8" vertical="middle" />
+## watermark-options
 
 Type: `object` <br />
 Required: `false` <br />
