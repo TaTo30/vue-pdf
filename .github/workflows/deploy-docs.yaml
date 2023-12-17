@@ -1,4 +1,4 @@
-name: docs
+name: docs-build-deployment
 
 on:
   # trigger deployment on every push to master branch when docs folder contents are pushed
