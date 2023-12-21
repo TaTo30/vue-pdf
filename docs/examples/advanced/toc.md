@@ -3,11 +3,11 @@
 ```vue
 <script setup>
   import { ref, triggerRef, watchEffect } from 'vue';
-  import { VuePDF, getPDFDestination, usePDF } from '@tato30/vue-pdf';
+  import { VuePDF, usePDF } from '@tato30/vue-pdf';
   import { withBase } from '@vuepress/client';
   import ChaptersList from './ChaptersList.vue';
 
-  const { pdf, info } = usePDF(withBase('/example_045.pdf'))
+  const { pdf, info, getPDFDestination } = usePDF(withBase('/example_045.pdf'))
   const outlineTree = ref([])
 
   watchEffect(() => {
