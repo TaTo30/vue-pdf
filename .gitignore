@@ -9,8 +9,8 @@ lerna-debug.log*
 
 node_modules
 .ghpages
-.cache
-.temp
+cache
+temp
 .vscode
 playground/pdf/*
 playground/samples/*

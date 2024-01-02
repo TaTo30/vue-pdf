@@ -1,6 +1,6 @@
 <script setup>
 import { VuePDF, usePDF } from '@tato30/vue-pdf';
-import { withBase } from '@vuepress/client';
+import { withBase } from 'vitepress/client';
 import { ref } from 'vue';
 
 const { pdf } = usePDF(withBase('/example_014.pdf'))
@@ -16,7 +16,7 @@ function onAnnotation(value) {
     <pre class="language-json"><code>{{ eventValue }}</code></pre>
   </div>
 
-  <div class="container">
+  <div class="vue-pdf-container">
     <VuePDF :pdf="pdf" annotation-layer @annotation="onAnnotation" />
   </div>
 </template>

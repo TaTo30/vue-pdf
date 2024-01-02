@@ -1,6 +1,6 @@
 <script setup>
 import { VuePDF, usePDF } from '@tato30/vue-pdf'
-import { withBase } from '@vuepress/client'
+import { withBase } from 'vitepress/client'
 import { ref } from 'vue'
 
 const pdfSources = [
@@ -25,7 +25,7 @@ function nextPdf() {
 </script>
 
 <template>
-  <div class="container">
+  <div class="vue-pdf-container">
     <div>
       <button class="button-example" @click="nextPdf">
         Next PDF (Current index: {{ pdfSourceIdx }})

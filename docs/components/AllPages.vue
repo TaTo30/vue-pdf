@@ -5,7 +5,7 @@ const { pdf, pages } = usePDF('https://raw.githubusercontent.com/mozilla/pdf.js/
 </script>
 
 <template>
-  <div v-for="page in pages" :key="page" class="container">
+  <div v-for="page in pages" :key="page" class="vue-pdf-container">
     <VuePDF :pdf="pdf" :page="page" />
   </div>
 </template>

@@ -1,5 +1,5 @@
 .button-example {
-  background-color: var(--c-brand);
+  background-color: var(--vp-c-brand-2);
   color: white;
   padding: 10px;
   margin: 7px;
@@ -9,7 +9,7 @@
 }
 
 .button-example:hover {
-  background-color: var(--c-brand-light);
+  background-color: var(--vp-c-brand-1);
 }
 
 .checkbox-example {
@@ -27,11 +27,11 @@
 }
 .input-example:focus{
   cursor: auto;
-  border-color: var(--search-accent-color);
+  border-color: var(--vp-c-brand-1);
 }
 
 .select-example {
-  background-color: var(--c-brand);
+  background-color: var(--vp-c-brand-2);
   color: white;
   padding: 10px;
   margin: 7px;
@@ -39,7 +39,7 @@
   border: none;
 }
 
-.container {
+.vue-pdf-container {
   display: flex; 
   align-items:center; 
   flex-direction: column

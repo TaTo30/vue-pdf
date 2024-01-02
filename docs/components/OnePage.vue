@@ -7,7 +7,7 @@ const { pdf, pages } = usePDF('https://raw.githubusercontent.com/mozilla/pdf.js/
 </script>
 
 <template>
-  <div class="container">
+  <div class="vue-pdf-container">
     <div>
       <button class="button-example" @click="page = page > 1 ? page - 1 : page">
         PREV

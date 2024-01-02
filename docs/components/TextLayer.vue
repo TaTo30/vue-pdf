@@ -8,7 +8,7 @@ const { pdf } = usePDF('https://raw.githubusercontent.com/mozilla/pdf.js/ba2edea
 </script>
 
 <template>
-  <div class="container">
+  <div class="vue-pdf-container">
     <div>
       <button class="button-example" @click="text_layer = !text_layer">
         Change to <strong>{{ !text_layer }}</strong>

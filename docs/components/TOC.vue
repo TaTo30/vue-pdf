@@ -1,7 +1,7 @@
 <script setup>
 import { ref, triggerRef, watchEffect } from 'vue';
 import { VuePDF, usePDF } from '@tato30/vue-pdf';
-import { withBase } from '@vuepress/client';
+import { withBase } from 'vitepress/client';
 import ChaptersList from './ChaptersList.vue';
 
 const { pdf, info, getPDFDestination } = usePDF(withBase('/example_045.pdf'))
@@ -45,7 +45,7 @@ function onChapterClick(value) {
         <pre class="language-json"><code>{{ eventValue }}</code></pre>
       </div>
 
-      <div class="container">
+      <div class="vue-pdf-container">
         <VuePDF :pdf="pdf" :scale="0.75" />
       </div>
     </div>

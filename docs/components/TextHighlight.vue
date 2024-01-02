@@ -18,7 +18,7 @@ function onHighlight(value) {
 </script>
 
 <template>
-  <div class="container">
+  <div class="vue-pdf-container">
     <table>
       <tr>
         <td colspan="2">

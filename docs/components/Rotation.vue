@@ -7,7 +7,7 @@ const { pdf } = usePDF('https://raw.githubusercontent.com/mozilla/pdf.js/ba2edea
 </script>
 
 <template>
-  <div class="container">
+  <div class="vue-pdf-container">
     <div>
       <button class="button-example" @click="rotation = rotation - 90">
         - 90°
