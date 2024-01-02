@@ -4,7 +4,7 @@
 <script setup>
   import { ref, triggerRef, watchEffect } from 'vue';
   import { VuePDF, getPDFDestination, usePDF } from '@tato30/vue-pdf';
-  import { withBase } from '@vuepress/client';
+  import { withBase } from 'vitepress/client';
   import ChaptersList from './ChaptersList.vue';
 
   const { pdf, info } = usePDF(withBase('/example_045.pdf'))

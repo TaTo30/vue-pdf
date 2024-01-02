@@ -1,15 +1,23 @@
 ---
-home: true
-heroImage: /logo.png
+layout: home
+sidebar: true
+
 title: Home
-# heroImage: /images/hero.png
-actions:
-  - text: Get started
-    link: /guide/introduction
-    type: primary
-  - text: Examples
-    link: /examples/basic/one_page
-    type: secondary
+titleTemplate: PDF viewer for Vue 3
+
+hero:
+  name: VuePDF
+  text: PDF viewer for Vue 3
+  image:
+    src: /logo.png
+    alt: VuePDF
+  actions:
+    - text: Get started
+      link: /guide/introduction
+      type: primary
+    - text: Examples
+      link: /examples/basic/one_page
+      type: secondary
 # features:
 #   - title: Simplicity First
 #     details: Minimal setup with markdown-centered project structure helps you focus on writing.
@@ -25,7 +33,7 @@ actions:
 #     details: Default bundler is Vite, while Webpack is also supported. Choose the one you like!
 # footer: MIT Licensed | Copyright © 2018-present Evan You
 ---
-
+<!-- 
 <ClientOnly>
   <OnePage />
-</ClientOnly>
+</ClientOnly> -->

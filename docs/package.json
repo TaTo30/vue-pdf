@@ -1,18 +1,17 @@
 {
   "name": "vue-pdf-docs",
-  "version": "1.0.0",
+  "version": "1.9.0",
   "description": "VuePDF Documentation",
   "main": "index.js",
   "repository": "https://github.com/TaTo30/VuePDF",
   "author": "Aldo Hernandez",
   "scripts": {
-    "docs:dev": "vuepress dev .",
-    "docs:build": "vuepress build --clean-temp --clean-cache ."
+    "docs:dev": "vitepress dev .",
+    "docs:build": "vitepress build --clean-temp --clean-cache ."
   },
   "license": "MIT",
   "devDependencies": {
-    "@vuepress/plugin-search": "2.0.0-beta.62",
-    "vuepress": "2.0.0-beta.62"
+    "vitepress": "^1.0.0-rc.34"
   },
   "dependencies": {
     "@tato30/vue-pdf": "^1.9.0"
