@@ -1,7 +1,7 @@
 # Highlight Event
 
 ::: warning
-Highlight event payload has too much data to display on screen, open the console instead.
+Highlight event payload has too many data to display on screen, open the console instead.
 :::
 
 ```vue
