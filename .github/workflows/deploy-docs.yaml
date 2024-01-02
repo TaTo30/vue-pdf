@@ -41,7 +41,7 @@ jobs:
           # deploy to gh-pages branch
           target_branch: gh-pages
           # deploy the default output dir of VuePress
-          build_dir: docs/.vuepress/dist
+          build_dir: docs/.vitepress/dist
         env:
           # @see https://docs.github.com/en/actions/reference/authentication-in-a-workflow#about-the-github_token-secret
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
