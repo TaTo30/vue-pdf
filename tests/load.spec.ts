@@ -12,7 +12,7 @@ beforeAll(async () => {
   await vi.waitUntil(() => pdf.value, { timeout: 5000 })
 })
 
-test('mount component', () => {
+test('Load/Mount component', () => {
   expect(pdf.value).toBeTruthy()
   expect(pages.value).toBe(14)
 
