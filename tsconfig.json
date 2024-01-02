@@ -10,6 +10,6 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
-  "include": ["src/**/*", "vite.config.ts", "vite.playground.ts", "playground/**/*", "shims.d.ts"],
+  "include": ["src/**/*", "vite.config.ts", "vite.playground.ts", "playground/**/*", "shims.d.ts", "tests/**/*"],
   "exclude": ["node_modules", "dist"]
 }

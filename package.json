@@ -46,7 +46,8 @@
     "preview": "vite preview --port 5050",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "tests": "npm run test"
   },
   "peerDependencies": {
     "vue": "^3.2.33"
