@@ -1,3 +1,5 @@
+/// <reference types="vitest" />
+
 import { resolve } from 'node:path'
 
 import vue from '@vitejs/plugin-vue'
@@ -5,6 +7,13 @@ import { defineConfig } from 'vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  test: {
+    browser: {
+      enabled: true,
+      name: 'firefox',
+      headless: true,
+    },
+  },
   build: {
     lib: {
       entry: resolve(__dirname, './src/index.ts'),
@@ -12,10 +21,7 @@ export default defineConfig({
       fileName: 'index',
     },
     rollupOptions: {
-      external: [
-        'vue',
-        'pdfjs-dist',
-      ],
+      external: ['vue', 'pdfjs-dist'],
       output: {
         exports: 'named',
         globals: {
@@ -25,7 +31,5 @@ export default defineConfig({
       },
     },
   },
-  plugins: [
-    vue(),
-  ],
+  plugins: [vue()],
 })
