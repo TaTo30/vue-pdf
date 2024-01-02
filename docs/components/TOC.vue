@@ -45,7 +45,7 @@ function onChapterClick(value) {
         <pre class="language-json"><code>{{ eventValue }}</code></pre>
       </div>
 
-      <div class="container">
+      <div class="vue-pdf-container">
         <VuePDF :pdf="pdf" :scale="0.75" />
       </div>
     </div>

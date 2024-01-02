@@ -5,10 +5,8 @@ on:
   push:
     branches: 
       - 'master'
-    path: 
-      - 'docs/**'
-  # trigger deployment manually
-  workflow_dispatch:
+    paths: 
+      - 'docs/**/*'
 
 jobs:
   docs:
@@ -31,7 +29,7 @@ jobs:
         run: npm install
 
       # run build script
-      - name: Build VuePress site
+      - name: Build VitePress site
         working-directory: docs
         run: npm run docs:build
 

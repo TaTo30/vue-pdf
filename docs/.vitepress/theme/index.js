@@ -1,4 +1,5 @@
 import DefaultTheme from 'vitepress/theme'
+import '../styles/index.scss'
 
 import AllPages from '../../components/AllPages.vue'
 import AnnoAttachment from '../../components/AnnoAttachment.vue'

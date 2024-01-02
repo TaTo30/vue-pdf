@@ -15,7 +15,7 @@ function onLoaded(value) {
     <pre class="language-json"><code>{{ eventValue }}</code></pre>
   </div>
 
-  <div class="container">
+  <div class="vue-pdf-container">
     <VuePDF :pdf="pdf" @loaded="onLoaded" />
   </div>
 </template>

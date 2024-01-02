@@ -8,7 +8,7 @@ const { pdf } = usePDF(withBase('/example_014.pdf'))
 </script>
 
 <template>
-  <div class="container">
+  <div class="vue-pdf-container">
     <div>
       <button class="button-example" @click="annotation_layer = !annotation_layer">
         Change to <strong>{{ !annotation_layer }}</strong>

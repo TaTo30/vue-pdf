@@ -15,7 +15,7 @@ function reloadPage() {
 </script>
 
 <template>
-  <div class="container">
+  <div class="vue-pdf-container">
     <div>
       <select v-model="selectedFilter[0]" class="select-example" @change="reloadPage">
         <option v-for="flt in filters" :key="flt" :value="flt">

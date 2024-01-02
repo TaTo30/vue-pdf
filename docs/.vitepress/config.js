@@ -1,43 +1,43 @@
-import { version } from "../package.json";
+import { version } from '../package.json'
 
 export default {
-  title: "VuePDF",
-  description: "PDF Viewer for Vue 3",
-  base: "/VuePDF/",
+  title: 'VuePDF',
+  description: 'PDF Viewer for Vue 3',
+  base: '/VuePDF/',
   lastUpdated: true,
   themeConfig: {
-    logo: "/logo.png",
+    logo: '/logo.png',
     editLink: {
-      pattern: "https://github.com/TaTo30/VuePDF/edit/master/docs/:path",
+      pattern: 'https://github.com/TaTo30/VuePDF/edit/master/docs/:path',
     },
     socialLinks: [
       {
-        icon: "github",
-        link: "https://github.com/TaTo30/VuePDF",
+        icon: 'github',
+        link: 'https://github.com/TaTo30/VuePDF',
       },
     ],
     search: {
-      provider: "local",
+      provider: 'local',
     },
     nav: [
       {
-        text: "Guide",
-        link: "/guide/introduction.md",
+        text: 'Guide',
+        link: '/guide/introduction.md',
       },
       {
-        text: "Examples",
+        text: 'Examples',
         items: [
           {
-            text: "Basic usages",
-            link: "/examples/basic/one_page.md",
+            text: 'Basic usages',
+            link: '/examples/basic/one_page.md',
           },
           {
-            text: "Advanced usages",
-            link: "/examples/advanced/fit_parent.md",
+            text: 'Advanced usages',
+            link: '/examples/advanced/fit_parent.md',
           },
           {
-            text: "Events",
-            link: "/examples/loaded_events/loaded.md",
+            text: 'Events',
+            link: '/examples/loaded_events/loaded.md',
           },
         ],
       },
@@ -45,145 +45,145 @@ export default {
         text: `v${version}`,
         items: [
           {
-            text: "Changelog",
-            link: "https://github.com/TaTo30/VuePDF/releases",
+            text: 'Changelog',
+            link: 'https://github.com/TaTo30/VuePDF/releases',
           },
           {
-            text: "Contributing",
-            link: "https://github.com/TaTo30/VuePDF#contributing",
+            text: 'Contributing',
+            link: 'https://github.com/TaTo30/VuePDF#contributing',
           },
         ],
       },
     ],
     sidebar: {
-      "/guide/": {
-        base: "/guide/",
+      '/guide/': {
+        base: '/guide/',
         items: [
           {
-            text: "Guide",
+            text: 'Guide',
             items: [
               {
-                text: "Introduction",
-                link: "introduction",
+                text: 'Introduction',
+                link: 'introduction',
               },
               {
-                text: "Composables",
-                link: "composables",
+                text: 'Composables',
+                link: 'composables',
               },
             ],
           },
           {
-            text: "Reference",
+            text: 'Reference',
             items: [
               {
-                text: "Props",
-                link: "props",
+                text: 'Props',
+                link: 'props',
               },
               {
-                text: "Events",
-                link: "events",
+                text: 'Events',
+                link: 'events',
               },
               {
-                text: "Methods",
-                link: "methods",
+                text: 'Methods',
+                link: 'methods',
               },
               {
-                text: "Slots",
-                link: "slots",
+                text: 'Slots',
+                link: 'slots',
               },
             ],
           },
         ],
       },
-      "/examples/": {
+      '/examples/': {
         items: [
           {
-            text: "Basic usages",
-            base: "/examples/basic/",
+            text: 'Basic usages',
+            base: '/examples/basic/',
             items: [
               {
-                text: "One Page",
-                link: "one_page",
+                text: 'One Page',
+                link: 'one_page',
               },
               {
-                text: "All Pages",
-                link: "all_pages",
+                text: 'All Pages',
+                link: 'all_pages',
               },
               {
-                text: "Scale",
-                link: "scale",
+                text: 'Scale',
+                link: 'scale',
               },
               {
-                text: "Rotation",
-                link: "rotation",
+                text: 'Rotation',
+                link: 'rotation',
               },
               {
-                text: "Text Layer",
-                link: "text_layer",
+                text: 'Text Layer',
+                link: 'text_layer',
               },
               {
-                text: "Annotation Layer",
-                link: "annotation_layer",
+                text: 'Annotation Layer',
+                link: 'annotation_layer',
               },
               {
-                text: "XFA Layer",
-                link: "xfa_layer",
+                text: 'XFA Layer',
+                link: 'xfa_layer',
               },
             ],
           },
           {
-            text: "Advanced usages",
-            base: "/examples/advanced/",
+            text: 'Advanced usages',
+            base: '/examples/advanced/',
             items: [
               {
-                text: "Watermark",
-                link: "watermark",
+                text: 'Watermark',
+                link: 'watermark',
               },
               {
-                text: "Highlight Text",
-                link: "highlight_text",
+                text: 'Highlight Text',
+                link: 'highlight_text',
               },
               {
-                text: "Annotation Filter",
-                link: "annotation_filter",
+                text: 'Annotation Filter',
+                link: 'annotation_filter',
               },
               {
-                text: "Multiple PDF",
-                link: "multiple_pdf",
+                text: 'Multiple PDF',
+                link: 'multiple_pdf',
               },
               {
-                text: "TOC",
-                link: "toc",
+                text: 'TOC',
+                link: 'toc',
               },
             ],
           },
           {
-            text: "Events",
-            base: "/examples/",
+            text: 'Events',
+            base: '/examples/',
             items: [
               {
-                text: "Loaded Event",
-                link: "/loaded_events/loaded",
+                text: 'Loaded Event',
+                link: '/loaded_events/loaded',
               },
               {
-                text: "Highlight Event",
-                link: "/text_events/text_highlight",
+                text: 'Highlight Event',
+                link: '/text_events/text_highlight',
               },
               {
-                text: "Annotation Events",
-                base: "/examples/annotation_events/",
+                text: 'Annotation Events',
+                base: '/examples/annotation_events/',
                 items: [
                   {
-                    text: "Form fields",
-                    link: "annotation_forms",
+                    text: 'Form fields',
+                    link: 'annotation_forms',
                   },
                   {
-                    text: "Links",
-                    link: "annotation_links",
+                    text: 'Links',
+                    link: 'annotation_links',
                   },
                   {
-                    text: "Attachment",
-                    link: "annotation_attachment",
+                    text: 'Attachment',
+                    link: 'annotation_attachment',
                   },
                 ],
               },
@@ -193,4 +193,4 @@ export default {
       },
     },
   },
-};
+}

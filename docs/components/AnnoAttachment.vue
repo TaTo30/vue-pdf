@@ -16,7 +16,7 @@ function onAnnotation(value) {
     <pre class="language-json"><code>// "content" is a uint8Array<br>{{ eventValue }}</code></pre>
   </div>
 
-  <div class="container">
+  <div class="vue-pdf-container">
     <VuePDF :pdf="pdf" annotation-layer image-resources-path="https://unpkg.com/pdfjs-dist@latest/web/images/" @annotation="onAnnotation" />
   </div>
 </template>

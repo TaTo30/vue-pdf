@@ -16,7 +16,7 @@ function onAnnotation(value) {
     <pre class="language-json"><code>{{ eventValue }}</code></pre>
   </div>
 
-  <div class="container">
+  <div class="vue-pdf-container">
     <VuePDF :pdf="pdf" annotation-layer @annotation="onAnnotation" />
     <VuePDF :pdf="pdf" :page="6" annotation-layer @annotation="onAnnotation" />
   </div>

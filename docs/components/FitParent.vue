@@ -14,7 +14,7 @@ function fitParentWidth(pxs) {
 </script>
 
 <template>
-  <div class="container">
+  <div class="vue-pdf-container">
     <div>
       <button class="button-example" @click="fitParentWidth(-50)">
         Remove 50px

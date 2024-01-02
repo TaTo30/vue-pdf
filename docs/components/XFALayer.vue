@@ -10,7 +10,7 @@ const { pdf } = usePDF({
 </script>
 
 <template>
-  <div class="container">
+  <div class="vue-pdf-container">
     <VuePDF :pdf="pdf" />
   </div>
 </template>

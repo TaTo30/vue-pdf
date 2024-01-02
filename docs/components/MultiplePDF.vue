@@ -25,7 +25,7 @@ function nextPdf() {
 </script>
 
 <template>
-  <div class="container">
+  <div class="vue-pdf-container">
     <div>
       <button class="button-example" @click="nextPdf">
         Next PDF (Current index: {{ pdfSourceIdx }})
