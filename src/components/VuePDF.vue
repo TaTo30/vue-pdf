@@ -65,7 +65,7 @@ const alayerProps = computed(() => {
   return {
     annotationsMap: props.annotationsMap,
     annotationsFilter: props.annotationsFilter,
-    imageResourcePath: props.imageResourcesPath,
+    imageResourcesPath: props.imageResourcesPath,
     hideForms: props.hideForms,
   }
 })
