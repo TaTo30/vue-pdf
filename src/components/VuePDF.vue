@@ -30,6 +30,7 @@ const props = withDefaults(defineProps<{
   textLayer?: boolean
   imageResourcesPath?: string
   hideForms?: boolean
+  intent?: string
   annotationLayer?: boolean
   annotationsFilter?: string[]
   annotationsMap?: object
@@ -40,6 +41,7 @@ const props = withDefaults(defineProps<{
 }>(), {
   page: 1,
   scale: 1,
+  intent: 'display',
 })
 
 const emit = defineEmits<{
@@ -67,6 +69,7 @@ const alayerProps = computed(() => {
     annotationsFilter: props.annotationsFilter,
     imageResourcesPath: props.imageResourcesPath,
     hideForms: props.hideForms,
+    intent: props.intent,
   }
 })
 const tlayerProps = computed(() => {
@@ -218,6 +221,7 @@ function renderPage(pageNum: number) {
       viewport,
       annotationMode: props.hideForms ? PDFJS.AnnotationMode.ENABLE : PDFJS.AnnotationMode.ENABLE_FORMS,
       transform,
+      intent: props.intent,
     }
 
     if (canvas?.getAttribute('role') !== 'main') {
@@ -261,6 +265,7 @@ watch(() => [
   props.rotation,
   props.page,
   props.hideForms,
+  props.intent,
 ], () => {
   // Props that should dispatch an render task
   renderPage(props.page)

@@ -19,6 +19,7 @@ const props = defineProps<{
   imageResourcesPath?: string
   hideForms?: boolean
   enableScripting?: boolean
+  intent: string
 }>()
 
 const emit = defineEmits<{
@@ -49,7 +50,7 @@ async function getHasJSActions() {
 async function getAnnotations() {
   const page = props.page
 
-  let annotations = await page?.getAnnotations()
+  let annotations = await page?.getAnnotations({ intent: props.intent })
   if (props.annotationsFilter) {
     const filters = props.annotationsFilter
     annotations = annotations!.filter((value) => {
