@@ -7,9 +7,9 @@ import { mount } from '@vue/test-utils'
 import type { HighlightEventPayload } from '../src'
 import { VuePDF, usePDF } from '../src'
 
-import a14PDF from '../docs/.vuepress/public/example_014.pdf'
-import a45PDF from '../docs/.vuepress/public/example_045.pdf'
-import xfaPDF from '../docs/.vuepress/public/example_xfa.pdf'
+import a14PDF from '../docs/public/example_014.pdf'
+import a45PDF from '../docs/public/example_045.pdf'
+import xfaPDF from '../docs/public/example_xfa.pdf'
 
 describe('Text Layer', () => {
   const { pdf } = usePDF(

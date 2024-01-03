@@ -1,5 +1,5 @@
 <div align="center">
-  <img width=250 src="./docs/.vuepress/public/logo.png" />
+  <img width=250 src="./docs/public/logo.png" />
   <h1>VuePDF</h1>
 </div>
 
