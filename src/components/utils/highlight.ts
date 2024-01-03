@@ -109,9 +109,27 @@ function highlightMatches(matches: Match[], textContent: TextContent, textDivs: 
     nodes.push(span)
 
     if (startOffset > 0) {
-      prevContent = textItem.str.substring(0, startOffset)
-      const node = document.createTextNode(prevContent)
-      nodes.unshift(node)
+      if (div.childNodes.length === 1 && div.childNodes[0].nodeType === Node.TEXT_NODE) {
+        prevContent = textItem.str.substring(0, startOffset)
+        const node = document.createTextNode(prevContent)
+        nodes.unshift(node)
+      }
+      else {
+        let alength = 0
+        const prevNodes = []
+        for (const childNode of div.childNodes) {
+          const textValue = childNode.nodeType === Node.TEXT_NODE
+            ? childNode.nodeValue!
+            : childNode.firstChild!.nodeValue!
+          alength += textValue.length
+
+          if (alength <= startOffset)
+            prevNodes.push(childNode)
+          else if (startOffset >= alength - textValue.length && endOffset <= alength)
+            prevNodes.push(document.createTextNode(textValue.substring(0, startOffset - (alength - textValue.length))))
+        }
+        nodes.unshift(...prevNodes)
+      }
     }
     if (endOffset > 0) {
       nextContent = textItem.str.substring(endOffset)
