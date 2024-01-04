@@ -1,6 +1,6 @@
 {
   "name": "@tato30/vue-pdf",
-  "version": "1.9.2",
+  "version": "1.9.3",
   "description": "PDF viewer for Vue 3",
   "author": {
     "name": "Aldo Hernandez",
@@ -41,8 +41,6 @@
     "build": "npm run tests && npm run build:lib && npm run build:dts",
     "build:lib": "vite build",
     "build:dts": "vue-tsc --declaration --emitDeclarationOnly -p tsconfig.build.json",
-    "publish": "npm publish --access public",
-    "publish:beta": "npm publish --tag beta --access public",
     "preview": "vite preview --port 5050",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
