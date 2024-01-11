@@ -7,13 +7,13 @@
     "url": "https://github.com/TaTo30"
   },
   "license": "MIT",
-  "homepage": "https://github.com/TaTo30/VuePDF/",
+  "homepage": "https://github.com/TaTo30/vue-pdf/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TaTo30/VuePDF.git"
+    "url": "git+https://github.com/TaTo30/vue-pdf.git"
   },
   "bugs": {
-    "url": "https://github.com/TaTo30/VuePDF/issues"
+    "url": "https://github.com/TaTo30/vue-pdf/issues"
   },
   "keywords": [
     "pdf",
