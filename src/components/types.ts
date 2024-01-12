@@ -85,6 +85,8 @@ export type PDFSrc =
   | TypedArray
   | PDFDataRangeTransport
   | DocumentInitParameters
+  | undefined
+  | null
 
 export interface PDFOptions {
   onProgress?: OnProgressCallback
