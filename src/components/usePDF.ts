@@ -49,7 +49,7 @@ export function usePDF(src: PDFSrc | Ref<PDFSrc>,
   const info = shallowRef<PDFInfo | {}>({})
 
   function processLoadingTask(source: PDFSrc) {
-    const loadingTask = PDFJS.getDocument(source)
+    const loadingTask = PDFJS.getDocument(source!)
     if (options.onProgress)
       loadingTask.onProgress = options.onProgress
 
