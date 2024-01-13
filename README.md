@@ -16,7 +16,7 @@
 </p>
 
 <div align="center">
-  <h2><a href="https://tato30.github.io/VuePDF/">📖Documentation</a></h2>
+  <h2><a href="https://tato30.github.io/vue-pdf/">📖Documentation</a></h2>
 </div>
 
 ## Introduction
