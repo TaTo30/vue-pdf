@@ -1,19 +1,19 @@
 {
   "name": "@tato30/vue-pdf",
-  "version": "1.9.2",
+  "version": "1.9.4",
   "description": "PDF viewer for Vue 3",
   "author": {
     "name": "Aldo Hernandez",
     "url": "https://github.com/TaTo30"
   },
   "license": "MIT",
-  "homepage": "https://github.com/TaTo30/VuePDF/",
+  "homepage": "https://github.com/TaTo30/vue-pdf/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TaTo30/VuePDF.git"
+    "url": "git+https://github.com/TaTo30/vue-pdf.git"
   },
   "bugs": {
-    "url": "https://github.com/TaTo30/VuePDF/issues"
+    "url": "https://github.com/TaTo30/vue-pdf/issues"
   },
   "keywords": [
     "pdf",
@@ -41,8 +41,6 @@
     "build": "npm run tests && npm run build:lib && npm run build:dts",
     "build:lib": "vite build",
     "build:dts": "vue-tsc --declaration --emitDeclarationOnly -p tsconfig.build.json",
-    "publish": "npm publish --access public",
-    "publish:beta": "npm publish --tag beta --access public",
     "preview": "vite preview --port 5050",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",

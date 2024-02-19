@@ -49,7 +49,7 @@ export function usePDF(src: PDFSrc | Ref<PDFSrc>,
   const info = shallowRef<PDFInfo | {}>({})
 
   function processLoadingTask(source: PDFSrc) {
-    const loadingTask = PDFJS.getDocument(source)
+    const loadingTask = PDFJS.getDocument(source!)
     if (options.onProgress)
       loadingTask.onProgress = options.onProgress
 
@@ -109,15 +109,15 @@ export function usePDF(src: PDFSrc | Ref<PDFSrc>,
   }
 
   if (isRef(src)) {
-    if (src.value !== undefined)
+    if (src.value)
       processLoadingTask(src.value)
     watch(src, () => {
-      if (src.value !== undefined)
+      if (src.value)
         processLoadingTask(src.value)
     })
   }
   else {
-    if (src !== undefined)
+    if (src)
       processLoadingTask(src)
   }
 
