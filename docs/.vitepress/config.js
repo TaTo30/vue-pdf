@@ -2,18 +2,18 @@ import { version } from '../package.json'
 
 export default {
   title: 'VuePDF',
-  description: 'PDF Viewer for Vue 3',
-  base: '/VuePDF/',
+  description: 'PDF component for Vue 3',
+  base: '/vue-pdf/',
   lastUpdated: true,
   themeConfig: {
     logo: '/logo.png',
     editLink: {
-      pattern: 'https://github.com/TaTo30/VuePDF/edit/master/docs/:path',
+      pattern: 'https://github.com/TaTo30/vue-pdf/edit/master/docs/:path',
     },
     socialLinks: [
       {
         icon: 'github',
-        link: 'https://github.com/TaTo30/VuePDF',
+        link: 'https://github.com/TaTo30/vue-pdf',
       },
     ],
     search: {
@@ -33,7 +33,7 @@ export default {
           },
           {
             text: 'Advanced usages',
-            link: '/examples/advanced/fit_parent.md',
+            link: '/examples/advanced/watermark.md',
           },
           {
             text: 'Events',
@@ -46,11 +46,11 @@ export default {
         items: [
           {
             text: 'Changelog',
-            link: 'https://github.com/TaTo30/VuePDF/releases',
+            link: 'https://github.com/TaTo30/vue-pdf/releases',
           },
           {
             text: 'Contributing',
-            link: 'https://github.com/TaTo30/VuePDF#contributing',
+            link: 'https://github.com/TaTo30/vue-pdf#contributing',
           },
         ],
       },

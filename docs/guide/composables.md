@@ -4,6 +4,8 @@
 
 This package provides a default composable named `usePDF` that loads and prepare the PDF Document for it usage with `VuePDF` component, also let you get some basic information and properties about the document.
 
+Keep in mind that `usePDF` use the same [DocumentInitParameter](https://github.com/mozilla/pdf.js/blob/38287d943532eee939ceffbe6861163f93805ca7/src/display/api.js#L145) as `pdf.js`, so you could decide how `pdf.js` should loads your PDF and then make use of more of `pdf.js` features that are not supported by `VuePDF` by default.
+
 ```vue
 <script setup>
 import { VuePDF, usePDF } from '@tato30/vue-pdf'
@@ -68,25 +70,26 @@ const { pdf, pages, info } = usePDF('sample.pdf', {
 
 Type: `PDFDocumentLoadingTask`
 
-Document loading task, see [PDFDocumentLoadingTask](https://mozilla.github.io/pdf.js/api/draft/module-pdfjsLib-PDFDocumentLoadingTask.html) for more details.
+Document's loading task, see [PDFDocumentLoadingTask](https://mozilla.github.io/pdf.js/api/draft/module-pdfjsLib-PDFDocumentLoadingTask.html) for more details.
 
 #### pages
 
 Type: `int`
 
-Document number pages.
+Document's number pages.
 
 #### info
 
 Type: `object`
 
-Document information object.
+Document's information object.
 
 ```json
 {
   "metadata": {...}, // Metadata object
   "attachments": {...}, // File attachments object
   "javascript": [...], // Array of embedded scripts
+  "outline": {...} // Outline objects
 }
 ```
 
@@ -108,9 +111,9 @@ function doSomething() {
 }
 ```
 
-## Custom
+## Make your own composable
 
-Using `usePDF` it's not required, you can use the pdf.js API in the component or build your own composable by yourself. Just need to ensure send on [`pdf`](./props.md#pdf) prop a `shallowRef | ref` [PDFDocumentLoadingTask](https://mozilla.github.io/pdf.js/api/draft/module-pdfjsLib-PDFDocumentLoadingTask.html) object.
+Using `usePDF` it's not required, you can use the `pdf.js` API in the component or build your own composable by yourself. Just need to be sure to send on [`pdf`](./props.md#pdf) prop a `shallowRef | ref` [PDFDocumentLoadingTask](https://mozilla.github.io/pdf.js/api/draft/module-pdfjsLib-PDFDocumentLoadingTask.html) object.
 
 ```vue
 <script setup>

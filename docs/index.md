@@ -3,12 +3,12 @@ layout: home
 sidebar: true
 
 title: Home
-titleTemplate: PDF viewer for Vue 3
+titleTemplate: PDF component for Vue 3
 
 hero:
   name: VuePDF
-  text: Render PDF pages in your website
-  tagline: easy-to-use component for rendering PDF pages in a dynamically and customizable way
+  text: Render PDF pages on your website
+  tagline: An easy-to-use component for rendering PDF pages in a dynamically and customizable way
   image:
     src: /logo.png
     alt: VuePDF
@@ -18,6 +18,9 @@ hero:
       theme: brand
     - text: Examples
       link: /examples/basic/one_page
+      theme: alt
+    - text: View on GitHub
+      link: https://github.com/TaTo30/vue-pdf
       theme: alt
 
 features:
@@ -31,5 +34,5 @@ features:
     title: Watermark
     details: Watermark your pages to protect your content
   - icon: 📖
-    title: Layers
-    details: Render text, annotation and XFA layers
+    title: Content Layers
+    details: Enable text selection, annotations and XFA forms

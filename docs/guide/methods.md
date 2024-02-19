@@ -2,7 +2,7 @@
 
 ## reload
 
-Allows to reload page render task, useful to update parent width when [`fit-parent`](./props.html#fit-parent) prop is used
+Reload page's render task, useful to update some props, for example, the parent width when [`fit-parent`](./props.html#fit-parent) is used
 
 ```vue
 <script setup>
@@ -21,7 +21,7 @@ function someEvent() {
 
 ## cancel
 
-Cancel the render task if page is currently rendering.
+Cancel the render task if the page is currently rendering.
 
 ```vue
 <script setup>

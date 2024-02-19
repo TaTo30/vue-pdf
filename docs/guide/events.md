@@ -1,3 +1,7 @@
+---
+outline: deep
+---
+
 # Events
 
 ## loaded
@@ -36,21 +40,23 @@ Check the example: [Highlight Event](/examples/text_events/text_highlight.md)
 
 ## annotation
 
+
 ```vue
 <VuePDF :pdf="pdf" @annotation="onAnnotation" />
 ```
 
-Emitted when user has interaction with any annotation.
+Emitted when user has an interaction with any annotation.
 
 Annotation event data depends on what type of annotation has triggered the event, in general, the events value follows this structure:
-| Property | Value                                                                                                                                  |
-| -------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`   | Possible values: `internal-link`, `link`, `file-attachment`, `form-text`, `form-select`, `form-checkbox`, `form-radio`, `form-button`   |
-| `data`   | Annotation associated data                                                                                                             |
+| Property | Value                                                                                                                                 |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `type`   | Possible values: `internal-link`, `link`, `file-attachment`, `form-text`, `form-select`, `form-checkbox`, `form-radio`, `form-button` |
+| `data`   | Annotation's associated data                                                                                                            |
+
 
 ### internal-link
 
-`internal-link` emitted when user clicks a link that redirects to another content within the document.
+`internal-link` emitted when the user clicks on a link that redirects to another content within the document.
 
 ```json
 {
@@ -67,7 +73,7 @@ Annotation event data depends on what type of annotation has triggered the event
 
 ### link
 
-`link` emitted when user clicks an external content link.
+`link` emitted when the user clicks on an external link.
 
 ```json
 {
@@ -81,7 +87,7 @@ Annotation event data depends on what type of annotation has triggered the event
 
 ### file-attachment
 
-`file-attachment` emitted when user double-click an attachment annotation.
+`file-attachment` emitted when the user double-clicks an attachment annotation.
 
 ```json
 {
@@ -95,7 +101,7 @@ Annotation event data depends on what type of annotation has triggered the event
 
 ### form-text
 
-`form-text` emitted when user inputs a value in an text-field element.
+`form-text` emitted when the user inputs a value in an text-field element.
 
 ```json
 {
@@ -109,7 +115,7 @@ Annotation event data depends on what type of annotation has triggered the event
 
 ### form-select
 
-`form-select` emitted when user inputs a value in an one-select or multi-select element.
+`form-select` emitted when the user inputs a value in an one-select or multi-select element.
 
 ```json
 {
@@ -142,7 +148,7 @@ Annotation event data depends on what type of annotation has triggered the event
 
 ### form-checkbox
 
-`form-checkbox` emitted when user changes a checkbox field element.
+`form-checkbox` emitted when the user changes a checkbox field element.
 
 ```json
 {
@@ -156,7 +162,7 @@ Annotation event data depends on what type of annotation has triggered the event
 
 ### form-radio
 
-`form-radio` emitted when user changes a radio field.
+`form-radio` emitted when the user changes a radio field.
 
 ```json
 {
@@ -172,7 +178,7 @@ Annotation event data depends on what type of annotation has triggered the event
 
 ### form-button
 
-`form-button` emitted when user click on push button element.
+`form-button` emitted when the user clicks on a push button element.
 
 ```json
 {

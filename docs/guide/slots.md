@@ -2,7 +2,7 @@
 
 ## loading: default
 
-Slot to display when page is rendering
+Content to display when page is rendering
 
 ```vue
 <template>
