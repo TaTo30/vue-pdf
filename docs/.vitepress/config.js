@@ -140,6 +140,10 @@ export default {
                 link: 'watermark',
               },
               {
+                text: 'Fit Parent',
+                link: 'fit_parent',
+              },
+              {
                 text: 'Highlight Text',
                 link: 'highlight_text',
               },

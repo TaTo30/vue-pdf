@@ -24,7 +24,7 @@ yarn add @tato30/vue-pdf
 
 ## Basic Usage
 
-The most basic usage is as simple as import the `VuePDF` and `usePDF` and uses it on your project :)
+The most basic usage is as simple as import the `VuePDF` and `usePDF` and use them on your project :)
 
 ```vue
 <script setup>
@@ -93,6 +93,35 @@ Check the example:
 ## Server-Side Rendering
 
 `VuePDF` is a client-side library, so if you are working with a SSR framework like `nuxt`, surely it will throw an error during the building stage, if that is the case, you could wrap `VuePDF` in some sort of "client only" directive or component, also `usePDF` should be wrapped.
+
+## Supporting Non-Latin characters
+
+If you are looking for display non-latin text or you are getting a warning like:
+> Warning: Error during font loading: CMapReaderFactory not initialized, see the useWorkerFetch parameter
+
+you will probably need to copy the `cmaps` directory from `node_modules/pdfjs-dist` to your project's `public` directory, don't worry about no having `pdfjs-dist` it's installed alongside `vue-pdf` package.
+
+
+```
+.
+├─ node_modules
+│  ├─ pdfjs-dist
+│  │  └─ cmaps    <--- Copy this directory
+├─ src
+├─ public         
+|  ├─ *cmaps*     <--- Paste it here!
+├─ package.json
+|  ...
+```
+
+With that made the `cmaps` will be available on relative path `/cmaps/`, now you need the tell `usePDF` uses that `cmaps` url:
+
+```js
+const { pdf } = usePDF({
+  url: pdfsource,
+  cMapUrl: '/cmaps/',
+})
+```
 
 ## Contributing
 
