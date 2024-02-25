@@ -70,7 +70,7 @@ export function usePDF(src: PDFSrc | Ref<PDFSrc>,
 
         const metadata = await doc.getMetadata()
         const attachments = (await doc.getAttachments()) as Record<string, unknown>
-        const javascript = await doc.getJavaScript()
+        const javascript = await doc.getJSActions()
         const outline = await doc.getOutline()
 
         info.value = {
