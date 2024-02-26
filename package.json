@@ -1,7 +1,7 @@
 {
   "name": "@tato30/vue-pdf",
-  "version": "1.9.4",
-  "description": "PDF viewer for Vue 3",
+  "version": "1.9.5",
+  "description": "PDF component for Vue 3",
   "author": {
     "name": "Aldo Hernandez",
     "url": "https://github.com/TaTo30"
