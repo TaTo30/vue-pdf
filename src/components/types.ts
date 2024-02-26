@@ -35,6 +35,11 @@ export interface HighlightEventPayload {
   textDivs: HTMLElement[]
 }
 
+export interface TextLayerLoadedEventPayload {
+  textDivs: HTMLElement[]
+  textContent: TextContent | undefined
+}
+
 export interface WatermarkOptions {
   columns?: number
   rows?: number

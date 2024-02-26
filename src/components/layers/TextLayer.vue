@@ -4,7 +4,7 @@ import { onMounted, ref, watch } from 'vue'
 
 import type { PDFPageProxy, PageViewport } from 'pdfjs-dist'
 import type { TextLayerRenderParameters } from 'pdfjs-dist/types/src/display/text_layer'
-import type { HighlightEventPayload, HighlightOptions } from '../types'
+import type { HighlightEventPayload, HighlightOptions, TextLayerLoadedEventPayload } from '../types'
 import { findMatches, highlightMatches, resetDivs } from '../utils/highlight'
 
 const props = defineProps<{
@@ -16,6 +16,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (event: 'highlight', payload: HighlightEventPayload): void
+  (event: 'textLoaded', payload: TextLayerLoadedEventPayload): void
 }>()
 
 const layer = ref<HTMLDivElement>()
@@ -70,7 +71,12 @@ function render() {
   }
 
   const task = PDFJS.renderTextLayer(parameters)
-  task.promise.then(() => {
+  task.promise.then(async () => {
+    const textContent = await page?.getTextContent()
+    emit('textLoaded', {
+      textDivs,
+      textContent,
+    })
     const endOfContent = document.createElement('div')
     endOfContent.className = 'endOfContent'
     layer.value?.appendChild(endOfContent)
