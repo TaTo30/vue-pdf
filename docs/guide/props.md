@@ -23,6 +23,18 @@ Page to render, this prop must be a page number starting at 1.
 <VuePDF :pdf="pdf" :page="1" />
 ```
 
+## intent
+
+Type: `string` <br />
+Required: `false` <br />
+Default: `display`
+
+Rendering intent, can be `display`, `print`, or `any`.
+
+```vue
+<VuePDF :pdf="pdf" intent="print" />
+```
+
 ## scale
 
 Type: `int` <br />

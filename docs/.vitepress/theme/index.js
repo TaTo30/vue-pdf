@@ -19,6 +19,9 @@ import Watermark from '../../components/Watermark.vue'
 import TOC from '../../components/TOC.vue'
 import HighlightText from '../../components/HighlightText.vue'
 import TextHighlight from '../../components/TextHighlight.vue'
+import TextLoaded from '../../components/TextLoaded.vue'
+import AnnotationLoaded from '../../components/AnnotationLoaded.vue'
+import XFALoaded from '../../components/XFALoaded.vue'
 
 /** @type {import('vitepress').Theme} */
 export default {
@@ -42,5 +45,8 @@ export default {
     app.component('TOC', TOC)
     app.component('HighlightText', HighlightText)
     app.component('TextHighlight', TextHighlight)
+    app.component('TextLoaded', TextLoaded)
+    app.component('AnnotationLoaded', AnnotationLoaded)
+    app.component('XFALoaded', XFALoaded)
   },
 }

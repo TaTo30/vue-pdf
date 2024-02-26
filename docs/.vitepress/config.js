@@ -170,6 +170,18 @@ export default {
                 link: '/loaded_events/loaded',
               },
               {
+                text: 'Text Loaded Event',
+                link: '/loaded_events/text_loaded',
+              },
+              {
+                text: 'Annotation Loaded Event',
+                link: '/loaded_events/annotation_loaded',
+              },
+              {
+                text: 'XFA Loaded Event',
+                link: '/loaded_events/xfa_loaded',
+              },
+              {
                 text: 'Highlight Event',
                 link: '/text_events/text_highlight',
               },

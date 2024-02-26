@@ -10,9 +10,9 @@ outline: deep
 <VuePDF :pdf="pdf" @loaded="onLoaded" />
 ```
 
-Emitted when page has finished rendering task in view, the value contains page information.
+Emitted when page has finished to render, the payload value contains the page's data.
 
-Value example:
+Payload example:
 ```json
 {
   "viewBox": [0, 0, 595.276, 841.89],
@@ -25,6 +25,71 @@ Value example:
   "height": 595.276
 }
 ```
+
+## text-loaded
+
+```vue
+<VuePDF :pdf="pdf" @text-loaded="onLoaded" />
+```
+
+Emitted when text layer has finished to render, the payload value contains the `textDivs` and `textContent` of the page.
+
+Payload example:
+```json
+{
+  "textContent": {
+    "items": [{
+      "dir": "ltr",
+      "fontName": "g_d3_f1",
+      "hasEOL": true,
+      "height": 17.9328,
+      "str": "Trace-based Just-in-Time Type Specialization for Dynamic",
+      "transform": [17.9328, 0, 0, 17.9328, 90.5159, 700.6706],
+      "width": 449.09111040000033
+    }], // ... more text items
+    "styles": {
+      "g_d3_f1": {
+        "fontFamily": "sans-serif",
+        "ascent": 0.69,
+        "descent": -0.209,
+        "vertical": false
+      } // ... more objects
+    }
+  },
+  "textDivs": ["<SPANElement>", "<SPANElement>", "..."]
+}
+```
+
+## annotation-loaded
+
+```vue
+<VuePDF :pdf="pdf" @annotation-loaded="onLoaded" />
+```
+
+Emitted when annotation layer has finished to render, the payload value contains the `annotations` of the page.
+
+Payload example:
+```json
+[
+  {
+    "annotationFlags": 4,
+    "annotationType": 20,
+    "rotation": 0,
+    "fieldType": "Tx",
+    "subType": "Widget"
+    // more properties...
+  }
+] // more annotations
+```
+
+## xfa-loaded
+
+```vue
+<VuePDF :pdf="pdf" @xfa-loaded="onLoaded" />
+```
+
+Emitted when XFA page has finished to render.
+
 
 ## highlight
 
