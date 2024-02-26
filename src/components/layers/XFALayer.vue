@@ -13,6 +13,10 @@ const props = defineProps<{
   viewport?: PageViewport
 }>()
 
+const emit = defineEmits<{
+  (event: 'xfaLoaded'): void
+}>()
+
 const layer = ref<HTMLDivElement>()
 
 async function render() {
@@ -32,6 +36,7 @@ async function render() {
       xfaHtml: xfaHTML!,
     }
     PDFJS.XfaLayer.render(parameters)
+    emit('xfaLoaded')
   }
 }
 

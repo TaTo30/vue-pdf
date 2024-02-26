@@ -25,6 +25,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (event: 'annotation', payload: AnnotationEventPayload): void
+  (event: 'annotationLoaded', payload: any[]): void
 }>()
 
 const layer = ref<HTMLDivElement>()
@@ -117,7 +118,10 @@ async function render() {
     downloadManager: null as unknown as IDownloadManager,
     imageResourcesPath: props.imageResourcesPath,
   }
-  new PDFJS.AnnotationLayer(layerParameters).render(renderParameters)
+  const task = new PDFJS.AnnotationLayer(layerParameters).render(renderParameters)
+  task.then(async () => {
+    emit('annotationLoaded', (await getAnnotations())!)
+  })
 
   for (const evtHandler of EVENTS_TO_HANDLER)
     layer.value!.addEventListener(evtHandler, annotationsEvents)

@@ -33,6 +33,9 @@ describe('Text Layer', () => {
 
     await wrapper.setProps({ textLayer: true })
     expect(wrapper.get('div.textLayer')).toBeTruthy()
+
+    await vi.waitUntil(() => wrapper.emitted('textLoaded'))
+    expect(wrapper.emitted('textLoaded')).toHaveLength(1)
   })
 
   test('Highlight', async () => {
@@ -106,6 +109,9 @@ describe('Annotation Layer', () => {
 
     await wrapper.setProps({ annotationLayer: true })
     expect(wrapper.get('div.annotationLayer')).toBeTruthy()
+
+    await vi.waitUntil(() => wrapper.emitted('annotationLoaded'))
+    expect(wrapper.emitted('annotationLoaded')).toHaveLength(1)
   })
 
   test('Forms Fields', async () => {
@@ -237,5 +243,8 @@ describe('XFA Layer', () => {
 
     await vi.waitUntil(() => wrapper.vm.internalProps.viewport)
     expect(wrapper.get('div.xfaLayer')).toBeTruthy()
+
+    await vi.waitUntil(() => wrapper.emitted('xfaLoaded'))
+    expect(wrapper.emitted('xfaLoaded')).toHaveLength(1)
   })
 })

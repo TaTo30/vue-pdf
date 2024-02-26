@@ -7,7 +7,7 @@ import 'pdfjs-dist/web/pdf_viewer.css'
 
 import type { PDFDocumentLoadingTask, PDFPageProxy, PageViewport, RenderTask } from 'pdfjs-dist'
 import type { GetViewportParameters, PDFDocumentProxy, RenderParameters } from 'pdfjs-dist/types/src/display/api'
-import type { AnnotationEventPayload, HighlightEventPayload, HighlightOptions, LoadedEventPayload, WatermarkOptions } from './types'
+import type { AnnotationEventPayload, HighlightEventPayload, HighlightOptions, LoadedEventPayload, TextLayerLoadedEventPayload, WatermarkOptions } from './types'
 
 import AnnotationLayer from './layers/AnnotationLayer.vue'
 import TextLayer from './layers/TextLayer.vue'
@@ -48,6 +48,9 @@ const emit = defineEmits<{
   (event: 'annotation', payload: AnnotationEventPayload): void
   (event: 'highlight', payload: HighlightEventPayload): void
   (event: 'loaded', payload: LoadedEventPayload): void
+  (event: 'textLoaded', payload: TextLayerLoadedEventPayload): void
+  (event: 'annotationLoaded', payload: any[]): void
+  (event: 'xfaLoaded'): void
 }>()
 
 // Template Refs
@@ -298,13 +301,18 @@ defineExpose({
       v-if="annotationLayer"
       v-bind="{ ...internalProps, ...alayerProps }"
       @annotation="emit('annotation', $event)"
+      @annotation-loaded="emit('annotationLoaded', $event)"
     />
     <TextLayer
       v-if="textLayer"
       v-bind="{ ...internalProps, ...tlayerProps }"
       @highlight="emit('highlight', $event)"
+      @text-loaded="emit('textLoaded', $event)"
     />
-    <XFALayer v-bind="{ ...internalProps }" />
+    <XFALayer
+      v-bind="{ ...internalProps }"
+      @xfa-loaded="emit('xfaLoaded')"
+    />
     <div v-show="loading" ref="loadingLayer" style="position: absolute;">
       <slot />
     </div>
