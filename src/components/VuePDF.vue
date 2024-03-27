@@ -295,7 +295,7 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="container" style="position: relative; display: block; overflow: hidden;">
+  <div ref="container" style="position: relative; display: block;">
     <canvas dir="ltr" style="display: block" role="main" />
     <AnnotationLayer
       v-if="annotationLayer"
