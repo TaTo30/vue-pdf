@@ -36,7 +36,7 @@ const props = withDefaults(defineProps<{
   annotationsMap?: object
   watermarkText?: string
   watermarkOptions?: WatermarkOptions
-  highlightText?: string
+  highlightText?: string | string[]
   highlightOptions?: HighlightOptions
 }>(), {
   page: 1,
