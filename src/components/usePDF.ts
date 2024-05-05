@@ -2,7 +2,7 @@ import * as PDFJS from 'pdfjs-dist'
 import PDFWorker from 'pdfjs-dist/build/pdf.worker.min?url'
 import { isRef, shallowRef, watch } from 'vue'
 
-import type { PDFDocumentLoadingTask } from 'pdfjs-dist'
+import type { PDFDocumentLoadingTask, PDFDocumentProxy } from 'pdfjs-dist'
 import type { Ref } from 'vue'
 import type { OnPasswordCallback, PDFDestination, PDFInfo, PDFOptions, PDFSrc } from './types'
 import { getDestinationArray, getDestinationRef, getLocation, isSpecLike } from './utils/destination'
@@ -45,10 +45,14 @@ export function usePDF(src: PDFSrc | Ref<PDFSrc>,
     configWorker(PDFWorker)
 
   const pdf = shallowRef<PDFDocumentLoadingTask>()
+  const pdfDoc = shallowRef<PDFDocumentProxy>()
   const pages = shallowRef(0)
   const info = shallowRef<PDFInfo | {}>({})
 
   function processLoadingTask(source: PDFSrc) {
+    if (pdfDoc.value)
+      void pdfDoc.value.destroy()
+
     const loadingTask = PDFJS.getDocument(source!)
     if (options.onProgress)
       loadingTask.onProgress = options.onProgress
@@ -65,6 +69,8 @@ export function usePDF(src: PDFSrc | Ref<PDFSrc>,
 
     loadingTask.promise.then(
       async (doc) => {
+        pdfDoc.value = doc
+
         pdf.value = doc.loadingTask
         pages.value = doc.numPages
 
