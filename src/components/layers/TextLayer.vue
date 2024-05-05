@@ -10,7 +10,7 @@ import { findMatches, highlightMatches, resetDivs } from '../utils/highlight'
 const props = defineProps<{
   page?: PDFPageProxy
   viewport?: PageViewport
-  highlightText?: string
+  highlightText?: string | string[]
   highlightOptions?: HighlightOptions
 }>()
 
@@ -42,7 +42,8 @@ async function findAndHighlight(reset = false) {
     resetDivs(textContent, textDivs)
 
   if (props.highlightText) {
-    const matches = findMatches(props.highlightText, textContent!, getHighlightOptionsWithDefaults())
+    const queries = typeof props.highlightText === 'string' ? [props.highlightText] : props.highlightText
+    const matches = findMatches(queries, textContent!, getHighlightOptionsWithDefaults())
     highlightMatches(matches, textContent!, textDivs)
     emit('highlight', {
       matches,

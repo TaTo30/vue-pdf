@@ -2,12 +2,17 @@ import type { TextItem } from 'pdfjs-dist/types/src/display/api'
 import type { TextContent } from 'pdfjs-dist/types/src/display/text_layer'
 import type { HighlightOptions, Match } from '../types'
 
-function getTextItems(textContent: TextContent) {
-  return textContent.items.map(val => (val as TextItem).str)
-}
+function searchQuery(textContent: TextContent, query: string, options: HighlightOptions) {
+  const strs = []
+  for (const textItem of textContent.items as TextItem[]) {
+    strs.push(textItem.str)
+    if (textItem.hasEOL)
+      strs.push('\n')
+  }
 
-function searchQuery(textItems: string[], query: string, options: HighlightOptions) {
-  const textJoined = textItems.join(' ')
+  // Join the text as is presented in textlayer and then replace newlines (/n) with whitespaces
+  const textJoined = strs.join('').replace(/\n/g, ' ')
+
   const regexFlags = ['g']
   if (options.ignoreCase)
     regexFlags.push('i')
@@ -28,9 +33,10 @@ function searchQuery(textItems: string[], query: string, options: HighlightOptio
   return matches
 }
 
-function convertMatches(matches: (number | string)[][], textItems: string[]): Match[] {
+function convertMatches(matches: (number | string)[][], textContent: TextContent): Match[] {
   let index = 0
   let tindex = 0
+  const textItems = textContent.items as TextItem[]
   const end = textItems.length - 1
 
   const convertedMatches = []
@@ -39,8 +45,8 @@ function convertMatches(matches: (number | string)[][], textItems: string[]): Ma
   for (let m = 0; m < matches.length; m++) {
     let mindex = matches[m][0] as number
 
-    while (index !== end && mindex >= tindex + textItems[index].length) {
-      tindex += textItems[index].length + 1
+    while (index !== end && mindex >= tindex + textItems[index].str.length) {
+      tindex += textItems[index].str.length + (textItems[index].hasEOL ? 1 : 0)
       index++
     }
 
@@ -51,8 +57,8 @@ function convertMatches(matches: (number | string)[][], textItems: string[]): Ma
 
     mindex += matches[m][1] as number
 
-    while (index !== end && mindex > tindex + textItems[index].length) {
-      tindex += textItems[index].length + 1
+    while (index !== end && mindex > tindex + textItems[index].str.length) {
+      tindex += textItems[index].str.length + (textItems[index].hasEOL ? 1 : 0)
       index++
     }
 
@@ -158,7 +164,7 @@ function highlightMatches(matches: Match[], textContent: TextContent, textDivs: 
 }
 
 function resetDivs(textContent: TextContent, textDivs: HTMLElement[]) {
-  const textItems = getTextItems(textContent)
+  const textItems = textContent.items.map(val => (val as TextItem).str)
   for (let idx = 0; idx < textDivs.length; idx++) {
     const div = textDivs[idx]
 
@@ -169,11 +175,13 @@ function resetDivs(textContent: TextContent, textDivs: HTMLElement[]) {
   }
 }
 
-function findMatches(query: string, textContent: TextContent, options: HighlightOptions) {
-  const textItems = getTextItems(textContent)
-  const matches = searchQuery(textItems, query, options)
-  return convertMatches(matches, textItems)
+function findMatches(queries: string[], textContent: TextContent, options: HighlightOptions) {
+  const convertedMatches = []
+  for (const query of queries) {
+    const matches = searchQuery(textContent, query, options)
+    convertedMatches.push(...convertMatches(matches, textContent))
+  }
+  return convertedMatches
 }
 
 export { findMatches, highlightMatches, resetDivs }
-
