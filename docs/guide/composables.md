@@ -1,3 +1,7 @@
+---
+outline: [2,3]
+---
+
 # Composables
 
 ## usePDF
@@ -18,11 +22,29 @@ const { pdf, pages, info } = usePDF('sample.pdf')
 </template>
 ```
 
+### Reactivity
+
+`usePDF` is also reactive if you use a `ref<src>` instead of a plain `src`, when the value of `ref` changes the returned values also chage.
+
+```vue
+<script setup>
+import { VuePDF, usePDF } from '@tato30/vue-pdf'
+
+// Changing currentPdf value will change pdf, pages and info values
+const currentPdf = ref('sample.pdf')
+const { pdf, pages, info } = usePDF(currentPdf)
+</script>
+
+<template>
+  <VuePDF :pdf="pdf" />
+</template>
+```
+
 ### Parameters
 
 #### src
 
-Type: `string | URL | TypedArray | DocumentInitParameters` <br/>
+Type: `string | URL | TypedArray | DocumentInitParameters | ref<string> | ref<URL> | ref<TypedArray> | ref<DocumentInitParameters>` <br/>
 Required: `True`
 
 This parameter is the same `src`  of [pdf.js](https://github.com/mozilla/pdf.js/blob/38287d943532eee939ceffbe6861163f93805ca7/src/display/api.js#L145)

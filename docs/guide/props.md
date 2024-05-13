@@ -109,14 +109,16 @@ Enables text selection.
 
 ## highlight-text  <badge type="tip" text="v1.9" vertical="middle" />
 
-Type: `string` <br />
+Type: `string | string[]` <br />
 Required: `false` <br />
 Default: `null`
 
-Highlight on the page the searched text.
+Highlight on the page the searched text or the searched array of text.
 
 ```vue
 <VuePDF :pdf="pdf" text-layer hightlight-text="javascript" />
+
+<VuePDF :pdf="pdf" text-layer :hightlight-text="['javascript', 'trace-based']" />
 ```
 
 ## highlight-options  <badge type="tip" text="v1.9" vertical="middle" />
