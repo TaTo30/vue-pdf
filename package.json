@@ -1,6 +1,6 @@
 {
   "name": "@tato30/vue-pdf",
-  "version": "1.9.6",
+  "version": "1.9.7",
   "description": "PDF component for Vue 3",
   "author": {
     "name": "Aldo Hernandez",
