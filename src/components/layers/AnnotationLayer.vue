@@ -98,9 +98,9 @@ async function render() {
     accessibilityManager: undefined,
     annotationCanvasMap: canvasMap,
     div: layer.value!,
-    l10n: null,
     page: page!,
     viewport: viewport!.clone({ dontFlip: true }),
+    annotationEditorUIManager: null,
   }
 
   const renderParameters: AnnotationLayerParameters = {
