@@ -8,7 +8,7 @@ outline: [2,3]
 
 This package provides a default composable named `usePDF` that loads and prepare the PDF Document for it usage with `VuePDF` component, also let you get some basic information and properties about the document.
 
-Keep in mind that `usePDF` use the same [DocumentInitParameter](https://github.com/mozilla/pdf.js/blob/38287d943532eee939ceffbe6861163f93805ca7/src/display/api.js#L145) as `pdf.js`, so you could decide how `pdf.js` should loads your PDF and then make use of more of `pdf.js` features that are not supported by `VuePDF` by default.
+Keep in mind that `usePDF` use the same [DocumentInitParameter](https://github.com/mozilla/pdf.js/blob/38287d943532eee939ceffbe6861163f93805ca7/src/display/api.js#L145) as `pdf.js`, so you could decide how `pdf.js` should loads your PDF and then make use of more of `pdf.js` features that are not included in `VuePDF` by default.
 
 ```vue
 <script setup>
@@ -24,7 +24,7 @@ const { pdf, pages, info } = usePDF('sample.pdf')
 
 ### Reactivity
 
-`usePDF` is also reactive if you use a `ref<src>` instead of a plain `src`, when the value of `ref` changes the returned values also chage.
+`usePDF` is also reactive if you use a `ref<src>` instead of a plain `src`, when the value of `ref` changes the returned values also will chage.
 
 ```vue
 <script setup>
@@ -135,7 +135,7 @@ function doSomething() {
 
 ## Make your own composable
 
-Using `usePDF` it's not required, you can use the `pdf.js` API in the component or build your own composable by yourself. Just need to be sure to send on [`pdf`](./props.md#pdf) prop a `shallowRef | ref` [PDFDocumentLoadingTask](https://mozilla.github.io/pdf.js/api/draft/module-pdfjsLib-PDFDocumentLoadingTask.html) object.
+Using `usePDF` it's not required, you can use the `pdf.js` API in your components or build your own composable yourself. Just need to be sure to send on [`pdf`](./props.md#pdf) prop a `shallowRef | ref` [PDFDocumentLoadingTask](https://mozilla.github.io/pdf.js/api/draft/module-pdfjsLib-PDFDocumentLoadingTask.html) object.
 
 ```vue
 <script setup>

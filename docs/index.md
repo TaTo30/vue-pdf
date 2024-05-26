@@ -19,8 +19,8 @@ hero:
     - text: Examples
       link: /examples/basic/one_page
       theme: alt
-    - text: View on GitHub
-      link: https://github.com/TaTo30/vue-pdf
+    - text: Try on StackBlitz
+      link: https://stackblitz.com/edit/vue-pdf-playground?file=src%2FApp.vue
       theme: alt
 
 features:

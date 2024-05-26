@@ -5,6 +5,9 @@ export default {
   description: 'PDF component for Vue 3',
   base: '/vue-pdf/',
   lastUpdated: true,
+  head: [
+    ['link', { rel: 'icon', type: 'image/png', href: '/logo.png' }],
+  ],
   themeConfig: {
     logo: '/logo.png',
     editLink: {

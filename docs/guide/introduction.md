@@ -1,6 +1,10 @@
+---
+outline: [2,3]
+---
+
 # Introduction
 
-VuePDF is a **client-side** component for **Vue 3** that allows you to flexibly render PDF pages within your project. This library wraps `pdf.js` project so all main features of `pdf.js` are supported by `VuePDF` as well. 
+VuePDF is a **client-side** component for **Vue 3** that allows you to flexibly render PDF pages within your project. This library wraps `pdf.js` library so all main features of `pdf.js` are supported by `VuePDF` as well. 
 
 ## Installation
 
@@ -9,12 +13,10 @@ VuePDF is a **client-side** component for **Vue 3** that allows you to flexibly 
 npm i @tato30/vue-pdf
 ```
 
-```sh [npm]
+```sh [yarn]
 yarn add @tato30/vue-pdf
 ```
 :::
-
-
 
 ## Basic Usage
 
