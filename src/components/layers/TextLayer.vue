@@ -66,7 +66,6 @@ function render() {
     textContentSource: textStream!,
     viewport: viewport!,
     container: layer.value!,
-    isOffscreenCanvasSupported: true,
     textDivs,
     textDivProperties: new WeakMap(),
   }

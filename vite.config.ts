@@ -14,6 +14,13 @@ export default defineConfig({
       headless: true,
     },
   },
+  optimizeDeps: {
+    esbuildOptions: {
+      supported: {
+        'top-level-await': true,
+      },
+    },
+  },
   build: {
     lib: {
       entry: resolve(__dirname, './src/index.ts'),
