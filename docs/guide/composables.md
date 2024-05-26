@@ -94,11 +94,15 @@ Type: `PDFDocumentLoadingTask`
 
 Document's loading task, see [PDFDocumentLoadingTask](https://mozilla.github.io/pdf.js/api/draft/module-pdfjsLib-PDFDocumentLoadingTask.html) for more details.
 
+---
+
 #### pages
 
 Type: `int`
 
 Document's number pages.
+
+---
 
 #### info
 
@@ -114,6 +118,36 @@ Document's information object.
   "outline": {...} // Outline objects
 }
 ```
+---
+
+#### getPDFDestination
+
+Type: `function`
+
+This function returns the page number referenced by `dest` object used by internal-links or outline object. Check the related example in [Table of Content](../examples/advanced/toc.md)
+
+---
+
+#### print
+
+Type: `function`
+
+Open the browser's print dialog with current PDF loaded with the following parameters:
+
+- `dpi`: Pages resolution (default: `150`).
+- `filename`: Filename of the printed file (default: `'filename'`).
+
+---
+
+#### download
+
+Type: `function`
+
+Trigger a downloading action using an `HTMLAnchorElement` with the following parameters:
+
+- `filename`: Filename of the downloaded file (default: `'filename'`)
+
+---
 
 ### Document API
 

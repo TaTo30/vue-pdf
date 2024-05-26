@@ -16,7 +16,7 @@ watchEffect(() => {
     outlineTree.value = info.value.outline.map(function convert(node) {
       return {
         title: node.title,
-        destination: getPDFDestination(info.value.document, node.dest),
+        destination: getPDFDestination(node.dest),
         items: node.items.map((item) => {
           return convert(item)
         }),

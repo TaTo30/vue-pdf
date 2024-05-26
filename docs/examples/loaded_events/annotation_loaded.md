@@ -1,4 +1,4 @@
-# Loaded Event
+# Annotation Loaded Event
 
 ::: warning
 Annotation loaded event's payload has too many data to display on screen, open the console to see the results.

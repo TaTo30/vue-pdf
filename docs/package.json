@@ -1,6 +1,6 @@
 {
   "name": "vue-pdf-docs",
-  "version": "1.9.7",
+  "version": "1.10.0",
   "description": "VuePDF Documentation",
   "main": "index.js",
   "repository": "https://github.com/TaTo30/VuePDF",
@@ -15,6 +15,6 @@
     "vitepress": "^1.2.2"
   },
   "dependencies": {
-    "@tato30/vue-pdf": "^1.9.7"
+    "@tato30/vue-pdf": "^1.10.0"
   }
 }

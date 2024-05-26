@@ -1,4 +1,4 @@
-# Loaded Event
+# Text Loaded Event
 
 ::: warning
 Text loaded event's payload has too many data to display on screen, open the console to see the results.

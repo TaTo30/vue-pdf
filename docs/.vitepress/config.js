@@ -1,13 +1,21 @@
 import { version } from '../package.json'
 
 export default {
+  vite: {
+    optimizeDeps: {
+      include: ['pdfjs-dist'],
+      esbuildOptions: {
+        supported: {
+          'top-level-await': true,
+        },
+      },
+    },
+  },
   title: 'VuePDF',
   description: 'PDF component for Vue 3',
   base: '/vue-pdf/',
   lastUpdated: true,
-  head: [
-    ['link', { rel: 'icon', type: 'image/png', href: '/logo.png' }],
-  ],
+  head: [['link', { rel: 'icon', type: 'image/png', href: '/logo.png' }]],
   themeConfig: {
     logo: '/logo.png',
     editLink: {
@@ -159,7 +167,7 @@ export default {
                 link: 'multiple_pdf',
               },
               {
-                text: 'TOC',
+                text: 'Table of Content',
                 link: 'toc',
               },
             ],
