@@ -6,6 +6,7 @@ import type { PDFDocumentLoadingTask, PDFDocumentProxy } from 'pdfjs-dist'
 import type { Ref } from 'vue'
 import type { OnPasswordCallback, PDFDestination, PDFInfo, PDFOptions, PDFSrc } from './types'
 import { getDestinationArray, getDestinationRef, getLocation, isSpecLike } from './utils/destination'
+import { addStylesToIframe, createIframe } from './utils/miscellaneous'
 
 // Could not find a way to make this work with vite, importing the worker entry bundle the whole worker to the the final output
 // https://erindoyle.dev/using-pdfjs-with-vite/
@@ -114,6 +115,76 @@ export function usePDF(src: PDFSrc | Ref<PDFSrc>,
     return { pageIndex, location: location ?? { type: 'Fit', spec: [] } }
   }
 
+  async function download(filename = 'filename') {
+    if (!pdfDoc.value)
+      throw new Error('Current PDFDocumentProxy have not loaded yet')
+    const bytes = await pdfDoc.value?.saveDocument()
+    const blobBytes = new Blob([bytes], { type: 'application/pdf' })
+    const blobUrl = URL.createObjectURL(blobBytes)
+
+    const anchorDownload = document.createElement('a')
+    document.body.appendChild(anchorDownload)
+    anchorDownload.href = blobUrl
+    anchorDownload.download = filename
+    anchorDownload.style.display = 'none'
+    anchorDownload.click()
+
+    setTimeout(() => {
+      URL.revokeObjectURL(blobUrl)
+      document.body.removeChild(anchorDownload)
+    }, 10)
+  }
+
+  async function print(dpi = 150, filename = 'filename') {
+    if (!pdfDoc.value)
+      throw new Error('Current PDFDocumentProxy have not loaded yet')
+    const bytes = await pdfDoc.value?.saveDocument()
+    const savedLoadingTask = PDFJS.getDocument(bytes.buffer)
+    const savedDocument = await savedLoadingTask.promise
+
+    const PRINT_UNITS = dpi / 72
+    const CSS_UNITS = 96 / 72
+
+    const iframe = await createIframe()
+    const contentWindow = iframe.contentWindow
+    contentWindow!.document.title = filename
+
+    const pagesNumbers = [...Array(savedDocument.numPages).keys()].map(val => val + 1)
+
+    for (const pageNumber of pagesNumbers) {
+      const pageToPrint = await savedDocument.getPage(pageNumber)
+      const viewport = pageToPrint.getViewport({ scale: 1 })!
+
+      if (pageNumber === 1) {
+        addStylesToIframe(
+          contentWindow!,
+          (viewport.width * PRINT_UNITS) / CSS_UNITS,
+          (viewport.height * PRINT_UNITS) / CSS_UNITS,
+        )
+      }
+
+      const canvas = document.createElement('canvas')
+      canvas.width = viewport.width * PRINT_UNITS
+      canvas.height = viewport.height * PRINT_UNITS
+
+      const canvasCloned = canvas.cloneNode() as HTMLCanvasElement
+      contentWindow?.document.body.appendChild(canvasCloned)
+
+      await pageToPrint?.render({
+        canvasContext: canvas.getContext('2d')!,
+        intent: 'print',
+        transform: [PRINT_UNITS, 0, 0, PRINT_UNITS, 0, 0],
+        viewport,
+      }).promise
+
+      canvasCloned.getContext('2d')?.drawImage(canvas, 0, 0)
+    }
+
+    contentWindow?.focus()
+    contentWindow?.print()
+    document.body.removeChild(iframe)
+  }
+
   if (isRef(src)) {
     if (src.value)
       processLoadingTask(src.value)
@@ -131,6 +202,8 @@ export function usePDF(src: PDFSrc | Ref<PDFSrc>,
     pdf,
     pages,
     info,
+    print,
+    download,
     getPDFDestination,
   }
 }
