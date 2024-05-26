@@ -3,12 +3,14 @@ import { version } from '../package.json'
 export default {
   vite: {
     optimizeDeps: {
-      include: ['pdfjs-dist'],
       esbuildOptions: {
         supported: {
           'top-level-await': true,
         },
       },
+    },
+    build: {
+      target: 'esnext',
     },
   },
   title: 'VuePDF',
