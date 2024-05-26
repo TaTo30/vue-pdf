@@ -4,6 +4,7 @@
     "target": "esnext",
     "module": "esnext",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "skipLibCheck": true,
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
