@@ -123,3 +123,7 @@ npm install
 # Run code with hot reload
 npm run dev
 ```
+
+## Looking for maintainers and current status
+
+Refer to this announcement for more details: https://github.com/TaTo30/vue-pdf/discussions/128 
