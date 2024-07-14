@@ -5,9 +5,19 @@ import type { HighlightOptions, Match } from '../types'
 function searchQuery(textContent: TextContent, query: string, options: HighlightOptions) {
   const strs = []
   for (const textItem of textContent.items as TextItem[]) {
-    strs.push(textItem.str)
-    if (textItem.hasEOL)
-      strs.push('\n')
+    if (textItem.hasEOL) {
+      // Remove the break line hyphen in the middle of the sentence
+      if (textItem.str.endsWith('-')) {
+        const lastHyphen = textItem.str.lastIndexOf('-')
+        strs.push(textItem.str.substring(0, lastHyphen))
+      }
+      else {
+        strs.push(textItem.str, '\n')
+      }
+    }
+    else {
+      strs.push(textItem.str)
+    }
   }
 
   // Join the text as is presented in textlayer and then replace newlines (/n) with whitespaces
@@ -34,6 +44,19 @@ function searchQuery(textContent: TextContent, query: string, options: Highlight
 }
 
 function convertMatches(matches: (number | string)[][], textContent: TextContent): Match[] {
+  function endOfLineOffset(item: TextItem) {
+    // When textitem has a EOL flag and the string has a hyphen at the end
+    // the hyphen should be removed (-1 len) so the sentence could be searched as a joined one.
+    // In other cases the EOL flag introduce a whitespace (+1 len) between two different sentences
+    if (item.hasEOL) {
+      if (item.str.endsWith('-'))
+        return -1
+      else
+        return 1
+    }
+    return 0
+  }
+
   let index = 0
   let tindex = 0
   const textItems = textContent.items as TextItem[]
@@ -46,7 +69,8 @@ function convertMatches(matches: (number | string)[][], textContent: TextContent
     let mindex = matches[m][0] as number
 
     while (index !== end && mindex >= tindex + textItems[index].str.length) {
-      tindex += textItems[index].str.length + (textItems[index].hasEOL ? 1 : 0)
+      const item = textItems[index]
+      tindex += item.str.length + endOfLineOffset(item)
       index++
     }
 
@@ -58,7 +82,8 @@ function convertMatches(matches: (number | string)[][], textContent: TextContent
     mindex += matches[m][1] as number
 
     while (index !== end && mindex > tindex + textItems[index].str.length) {
-      tindex += textItems[index].str.length + (textItems[index].hasEOL ? 1 : 0)
+      const item = textItems[index]
+      tindex += item.str.length + endOfLineOffset(item)
       index++
     }
 

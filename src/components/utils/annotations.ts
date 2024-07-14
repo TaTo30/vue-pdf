@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable no-case-declarations */
@@ -99,21 +100,49 @@ async function linkAnnotation(annotation: {
   unsafeUrl?: string
 }, PDFDoc: PDFDocumentProxy) {
   if (annotation.dest) {
-    // Get referenced page number of internal link
-    if (typeof annotation.dest === 'string') {
+    let explicitDest
+    if (typeof annotation.dest === 'string')
+      explicitDest = await PDFDoc.getDestination(annotation.dest)
+    else
+      explicitDest = annotation.dest
+
+    if (!Array.isArray(explicitDest)) {
+      console.warn(`Destination "${explicitDest}" is not a valid destination (dest="${annotation.dest}")`)
       return buildAnnotationData(INTERNAL_LINK, {
-        referencedPage: Number(annotation.dest.substring(1, annotation.dest.length)),
+        referencedPage: null,
         offset: null,
       })
     }
-    else {
-      const pageIndex = await PDFDoc.getPageIndex(annotation.dest[0] as RefProxy)
+
+    let offset = null
+    if (explicitDest.length === 5) {
+      offset = {
+        left: annotation.dest[2],
+        bottom: annotation.dest[3],
+      }
+    }
+
+    const [destRef] = explicitDest
+    if (Number.isInteger(destRef)) {
       return buildAnnotationData(INTERNAL_LINK, {
-        referencedPage: pageIndex + 1,
-        offset: {
-          left: annotation.dest[2],
-          bottom: annotation.dest[3],
-        },
+        referencedPage: Number(destRef) + 1,
+        offset,
+      })
+    }
+    else if (typeof destRef === 'object') {
+      const pageNumber = await PDFDoc.getPageIndex(destRef as RefProxy)
+      return buildAnnotationData(INTERNAL_LINK, {
+        referencedPage: pageNumber + 1,
+        offset,
+      })
+    }
+    else {
+      console.warn(
+        `Destination "${destRef}" is not a valid destination (dest="${annotation.dest}")`,
+      )
+      return buildAnnotationData(INTERNAL_LINK, {
+        referencedPage: null,
+        offset: null,
       })
     }
   }
