@@ -1,0 +1,73 @@
+{
+  "name": "@tato30/vue-pdf",
+  "version": "1.10.0",
+  "description": "PDF component for Vue 3",
+  "author": {
+    "name": "Aldo Hernandez",
+    "url": "https://github.com/TaTo30"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/TaTo30/vue-pdf/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TaTo30/vue-pdf.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TaTo30/vue-pdf/issues"
+  },
+  "keywords": [
+    "pdf",
+    "vue",
+    "viewer"
+  ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.umd.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/types/index.d.ts"
+    },
+    "./style.css": "./dist/style.css",
+    "./src/*": "./src/*"
+  },
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/types/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "dev": "vite --force --config vite.playground.ts",
+    "build": "npm run tests && npm run build:lib && npm run build:dts",
+    "build:lib": "vite build",
+    "build:dts": "vue-tsc --declaration --emitDeclarationOnly -p tsconfig.build.json",
+    "preview": "vite preview --port 5050",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "test": "vitest run",
+    "tests": "npm run test"
+  },
+  "peerDependencies": {
+    "vue": "^3.2.33"
+  },
+  "dependencies": {
+    "pdfjs-dist": "4.2.67"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^0.38.5",
+    "@babel/core": "^7.21.8",
+    "@originjs/vite-plugin-commonjs": "^1.0.3",
+    "@types/node": "^18.16.3",
+    "@vitejs/plugin-vue": "^4.2.1",
+    "@vitest/browser": "^1.0.4",
+    "@vue/eslint-config-prettier": "^7.1.0",
+    "@vue/test-utils": "^2.4.3",
+    "eslint": "^8.39.0",
+    "typescript": "^4.9.4",
+    "vite": "^4.3.4",
+    "vitest": "^1.0.4",
+    "vue": "^3.2.47",
+    "vue-tsc": "^1.6.3",
+    "webdriverio": "^8.26.2"
+  }
+}

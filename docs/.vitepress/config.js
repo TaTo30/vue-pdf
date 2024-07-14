@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url'
 import { version } from '../package.json'
 
 export default {
@@ -11,6 +12,13 @@ export default {
     },
     build: {
       target: 'esnext',
+    },
+    resolve: {
+      alias: {
+        '@tato30/vue-pdf': fileURLToPath(
+          new URL('../../packages/vue-pdf/src', import.meta.url),
+        ),
+      },
     },
   },
   title: 'VuePDF',
