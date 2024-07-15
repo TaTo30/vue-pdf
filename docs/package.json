@@ -8,7 +8,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "vitepress dev .",
-    "docs:build": "vitepress build --clean-temp --clean-cache ."
+    "build": "vitepress build --clean-temp --clean-cache ."
   },
   "dependencies": {
     "@tato30/vue-pdf": "*"

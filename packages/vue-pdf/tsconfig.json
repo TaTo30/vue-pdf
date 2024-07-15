@@ -11,6 +11,6 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
-  "include": ["src/**/*", "vite.config.ts", "shims.d.ts"],
+  "include": ["vite.config.ts", "src/**/*.vue", "src/**/*.ts", "**/*.dt.ts"],
   "exclude": ["node_modules", "dist"]
 }

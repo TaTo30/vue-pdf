@@ -4,7 +4,7 @@ declare module "*.vue" {
   export default component;
 }
 
-declare module '*.pdf' {
-  const pdfurl: string
-  export default pdfurl
+declare module "@samples/*.pdf" {
+  const pdfurl: string;
+  export default pdfurl;
 }

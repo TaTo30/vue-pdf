@@ -4,10 +4,14 @@
   "description": "vue-pdf-monorepo",
   "workspaces": [
     "packages/*",
-    "docs"
+    "docs",
+    "tests"
   ],
   "scripts": {
-    "dev": "npm run dev -w vue-pdf-playground",
-    "dev:docs": "npm run dev -w docs"
+    "dev": "npm run --prefix packages/playground dev",
+    "dev:docs": "npm run --prefix packages/vue-pdf build:lib && npm run --prefix docs dev",
+    "test": "npm run --prefix tests test",
+    "build": "npm run --prefix packages/vue-pdf build",
+    "build:docs": "npm run --prefix packages/vue-pdf build:lib && npm run --prefix docs build"
   }
 }

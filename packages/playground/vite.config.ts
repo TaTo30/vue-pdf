@@ -1,21 +1,16 @@
 import { fileURLToPath } from 'node:url'
-import vue from '@vitejs/plugin-vue'
-import { defineConfig } from 'vite'
+import { defineConfig, mergeConfig } from 'vite'
+import commonConfig from '../../vite.config'
 
-export default defineConfig({
-  optimizeDeps: {
-    esbuildOptions: {
-      supported: {
-        'top-level-await': true,
+export default mergeConfig(
+  commonConfig,
+  defineConfig({
+    resolve: {
+      alias: {
+        '@tato30/vue-pdf': fileURLToPath(
+          new URL('../vue-pdf/src', import.meta.url),
+        ),
       },
     },
-  },
-  resolve: {
-    alias: {
-      '@tato30/vue-pdf': fileURLToPath(new URL('../vue-pdf/src', import.meta.url)),
-    },
-  },
-  plugins: [
-    vue(),
-  ],
-})
+  }),
+)

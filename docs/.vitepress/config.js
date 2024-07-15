@@ -10,13 +10,10 @@ export default {
         },
       },
     },
-    build: {
-      target: 'esnext',
-    },
     resolve: {
       alias: {
         '@tato30/vue-pdf': fileURLToPath(
-          new URL('../../packages/vue-pdf/src', import.meta.url),
+          new URL('../../packages/vue-pdf/dist', import.meta.url),
         ),
       },
     },

@@ -2,7 +2,7 @@ import { beforeAll, expect, test, vi } from 'vitest'
 
 import { mount } from '@vue/test-utils'
 
-import { VuePDF, usePDF } from '../src'
+import { VuePDF, usePDF } from '@tato30/vue-pdf'
 
 const { pdf, pages } = usePDF(
   'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf',
