@@ -5,7 +5,7 @@ import { ref } from 'vue';
 
 import { VuePDF, usePDF } from '@tato30/vue-pdf';
 
-import pdf014 from 'samples/example_014.pdf';
+import pdf014 from '@samples/14.pdf';
 
 const docinit: DocumentInitParameters = {
   url: pdf014,

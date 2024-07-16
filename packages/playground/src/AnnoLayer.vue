@@ -5,7 +5,7 @@ import { ref } from 'vue';
 
 import 'pdfjs-dist/web/pdf_viewer.css';
 
-import pdf014 from '../pdf/example_014.pdf';
+import pdf014 from '@samples/14.pdf';
 
 const { pdf } = usePDF(pdf014)
 const scale = ref(1)

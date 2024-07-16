@@ -13,5 +13,9 @@
     "test": "npm run --prefix tests test",
     "build": "npm run --prefix packages/vue-pdf build",
     "build:docs": "npm run --prefix packages/vue-pdf build:lib && npm run --prefix docs build"
+  },
+  "dependencies": {
+    "@rushstack/eslint-patch": "^1.10.3",
+    "@vue/eslint-config-typescript": "^13.0.0"
   }
 }

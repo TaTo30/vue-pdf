@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import pdfdoc from '@samples/14.pdf';
 import { VuePDF, usePDF } from '@tato30/vue-pdf';
 import { ref } from 'vue';
-import pdfdoc from '../pdf/example_014.pdf';
 
 const { pdf } = usePDF(pdfdoc)
 const page = ref(1)

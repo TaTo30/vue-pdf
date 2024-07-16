@@ -1,6 +1,6 @@
 declare module "*?worker" {
   const workerConstructor: {
-    new(): Worker
+    new (): Worker;
   };
   export default workerConstructor;
 }
@@ -16,5 +16,11 @@ declare module "*?worker&url" {
 }
 
 declare module "pdfjs-dist/build/pdf" {
-  export * from 'pdfjs-dist'
+  export * from "pdfjs-dist";
+}
+
+declare module "*.vue" {
+  import type { DefineComponent } from "vue";
+  const component: DefineComponent<{}, {}, any>;
+  export default component;
 }

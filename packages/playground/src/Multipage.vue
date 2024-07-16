@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { VuePDF, usePDF } from '@tato30/vue-pdf';
 
-import pdf014 from '../pdf/lazy.pdf';
+import pdf014 from '@samples/14.pdf';
 
 const { pdf, pages } = usePDF(pdf014)
 </script>

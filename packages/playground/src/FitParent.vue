@@ -2,7 +2,7 @@
 import { VuePDF, usePDF } from '@tato30/vue-pdf';
 import { ref } from 'vue';
 
-import pdf014 from '../pdf/example_014.pdf';
+import pdf014 from '@samples/14.pdf';
 
 const { pdf } = usePDF(pdf014)
 

@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
@@ -11,6 +10,10 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
-  "include": ["vite.config.ts", "src/**/*.vue", "src/**/*.ts", "**/*.dt.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "vite.config.ts",
+    "src/**/*.vue",
+    "src/**/*.ts",
+    "src/global.dt.ts"
+  ]
 }
