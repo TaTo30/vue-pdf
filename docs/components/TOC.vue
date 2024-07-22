@@ -1,10 +1,10 @@
 <script setup>
-import { ref, triggerRef, watchEffect } from 'vue';
 import { VuePDF, usePDF } from '@tato30/vue-pdf';
 import { withBase } from 'vitepress/client';
+import { ref, triggerRef, watchEffect } from 'vue';
 import ChaptersList from './ChaptersList.vue';
 
-const { pdf, info, getPDFDestination } = usePDF(withBase('/example_045.pdf'))
+const { pdf, info, getPDFDestination } = usePDF(withBase('/45.pdf'))
 const eventValue = ref({})
 const outlineTree = ref([])
 

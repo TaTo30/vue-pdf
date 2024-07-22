@@ -12,16 +12,12 @@
     "baseUrl": ".",
     "paths": {
       "@tato30/vue-pdf": [
-        "../vue-pdf/src"
+        "../packages/vue-pdf/src"
       ]
     }
   },
   "include": [
-    "vite.config.ts",
-    "src/**/*.vue",
-    "src/**/*.ts",
-    "env.d.ts",
-    "main.ts",
-    "App.vue"
+    "*.ts",
+    "env.d.ts"
   ]
 }

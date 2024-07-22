@@ -1,5 +1,5 @@
 <div align="center">
-  <img width=250 src="./docs/public/logo.png" />
+  <img width=250 src="./samples/logo.png" />
   <h1>VuePDF</h1>
 </div>
 
@@ -92,7 +92,7 @@ import { VuePDF, usePDF } from '@tato30/vue-pdf'
 import '@tato30/vue-pdf/style.css'
 
 const { pdf } = usePDF({
-  url: '/example_xfa.pdf',
+  url: '/xfa.pdf',
   enableXfa: true,
 })
 </script>

@@ -1,27 +1,21 @@
-import { fileURLToPath } from 'node:url'
-import vue from '@vitejs/plugin-vue'
-import { defineConfig } from 'vitest/config'
+import { resolve } from "node:url";
+import { defineConfig, mergeConfig } from 'vitest/config';
+import commonConfig from "../vite.config";
 
-export default defineConfig({
-  test: {
-    browser: {
-      enabled: true,
-      name: 'firefox',
-      headless: true,
-    },
-  },
-  resolve: {
-    alias: {
-      '@tato30/vue-pdf': fileURLToPath(new URL('../packages/vue-pdf/src', import.meta.url)),
-      'samples': fileURLToPath(new URL('../samples', import.meta.url)),
-    },
-  },
-  optimizeDeps: {
-    esbuildOptions: {
-      supported: {
-        'top-level-await': true,
+export default mergeConfig(
+  commonConfig,
+  defineConfig({
+    test: {
+      browser: {
+        enabled: true,
+        name: "firefox",
+        headless: true,
       },
     },
-  },
-  plugins: [vue()],
-})
+    resolve: {
+      alias: {
+        "@tato30/vue-pdf": resolve(__dirname, "packages/vue-pdf/src"),
+      },
+    }
+  })
+);

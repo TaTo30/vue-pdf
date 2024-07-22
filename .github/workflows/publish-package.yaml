@@ -27,6 +27,7 @@ jobs:
         run: npm run build
 
       - name: Publish packages
+        working-directory: packages/vue-pdf
         run: npm publish --access public
         env: 
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

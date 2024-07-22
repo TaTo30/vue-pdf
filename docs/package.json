@@ -1,11 +1,7 @@
 {
   "name": "vue-pdf-docs",
-  "version": "1.10.0",
-  "description": "VuePDF Documentation",
-  "author": "Aldo Hernandez",
-  "license": "MIT",
-  "repository": "https://github.com/TaTo30/VuePDF",
-  "main": "index.js",
+  "version": "1.0.0",
+  "description": "vue-pdf docs",
   "scripts": {
     "dev": "vitepress dev .",
     "build": "vitepress build --clean-temp --clean-cache ."
@@ -15,6 +11,7 @@
   },
   "devDependencies": {
     "sass": "^1.77.2",
-    "vitepress": "^1.2.2"
+    "vitepress": "^1.2.2",
+    "vite": "^4.3.4"
   }
 }

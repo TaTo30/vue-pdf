@@ -37,7 +37,7 @@
     "src"
   ],
   "scripts": {
-    "build": "npm run tests && npm run build:lib && npm run build:dts",
+    "build": "npm run build:lib && npm run build:dts",
     "build:lib": "vite build",
     "build:dts": "vue-tsc --declaration --emitDeclarationOnly -p tsconfig.build.json",
     "lint": "eslint .",

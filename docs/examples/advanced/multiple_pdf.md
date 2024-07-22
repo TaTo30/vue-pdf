@@ -6,10 +6,10 @@ import { VuePDF, usePDF } from '@tato30/vue-pdf'
 import { ref } from 'vue'
 
 const pdfSources = [
-  '/example_014.pdf',
-  '/example_036.pdf',
-  '/example_041.pdf',
-  '/example_045.pdf',
+  '/14.pdf',
+  '/36.pdf',
+  '/41.pdf',
+  '/45.pdf',
   'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf',
 ]
 // Setting the first (or default) PDF

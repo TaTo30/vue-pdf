@@ -92,7 +92,3 @@ function getAnnotations() {
     </div>
   </div>
 </template>
-
-<style>
-
-</style>

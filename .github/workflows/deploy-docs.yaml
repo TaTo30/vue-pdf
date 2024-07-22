@@ -22,12 +22,10 @@ jobs:
           node-version: 18
 
       - name: Install packages  
-        working-directory: docs
         run: npm install
 
       - name: Build VitePress site
-        working-directory: docs
-        run: npm run docs:build
+        run: npm run build:docs
 
       - name: Deploy to GitHub Pages
         uses: crazy-max/ghaction-github-pages@v4

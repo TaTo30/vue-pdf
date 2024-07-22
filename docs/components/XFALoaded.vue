@@ -1,11 +1,11 @@
 <script setup>
-import { VuePDF, usePDF } from '@tato30/vue-pdf'
-import { ref } from 'vue'
-import { withBase } from 'vitepress/client'
-import '@tato30/vue-pdf/style.css'
+import { VuePDF, usePDF } from '@tato30/vue-pdf';
+import '@tato30/vue-pdf/style.css';
+import { withBase } from 'vitepress/client';
+import { ref } from 'vue';
 
 const { pdf } = usePDF({
-  url: withBase('/example_xfa.pdf'),
+  url: withBase('/xfa.pdf'),
   enableXfa: true,
 })
 const eventValue = ref('Rendering pending')

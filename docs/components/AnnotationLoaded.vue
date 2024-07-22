@@ -2,7 +2,7 @@
 import { VuePDF, usePDF } from '@tato30/vue-pdf';
 import { withBase } from 'vitepress/client';
 
-const { pdf } = usePDF(withBase('/example_014.pdf'))
+const { pdf } = usePDF(withBase('/14.pdf'))
 function onLoaded(value) {
   console.log(value)
 }

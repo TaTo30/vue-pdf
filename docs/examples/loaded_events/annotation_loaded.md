@@ -8,7 +8,7 @@ Annotation loaded event's payload has too many data to display on screen, open t
 <script setup>
 import { VuePDF, usePDF } from '@tato30/vue-pdf'
 
-const { pdf } = usePDF('/example_014.pdf')
+const { pdf } = usePDF('/14.pdf')
 function onLoaded(value) {
   console.log(value)
 }

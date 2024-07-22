@@ -72,7 +72,7 @@ import { VuePDF, usePDF } from '@tato30/vue-pdf'
 import '@tato30/vue-pdf/style.css'
 
 const { pdf } = usePDF({
-  url: '/example_xfa.pdf',
+  url: '/xfa.pdf',
   enableXfa: true,
 })
 </script>

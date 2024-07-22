@@ -5,7 +5,7 @@
 import { ref } from 'vue'
 import { VuePDF, usePDF } from '@tato30/vue-pdf'
 
-const { pdf } = usePDF('/example_014.pdf')
+const { pdf } = usePDF('/14.pdf')
 
 const filters = ref(['Widget', 'Widget.Tx', 'Widget.Btn', 'Widget.Ch'])
 const selectedFilter = ref(['Widget'])
