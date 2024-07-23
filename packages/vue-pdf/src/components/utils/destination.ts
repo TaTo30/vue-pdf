@@ -61,6 +61,5 @@ export {
   getDestinationArray,
   getDestinationRef,
   getLocation,
-  isSpecLike
+  isSpecLike,
 }
-

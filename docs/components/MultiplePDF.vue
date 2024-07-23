@@ -1,13 +1,13 @@
 <script setup>
-import { VuePDF, usePDF } from '@tato30/vue-pdf'
-import { withBase } from 'vitepress/client'
-import { ref } from 'vue'
+import { VuePDF, usePDF } from '@tato30/vue-pdf';
+import { withBase } from 'vitepress/client';
+import { ref } from 'vue';
 
 const pdfSources = [
-  withBase('/example_014.pdf'),
-  withBase('/example_036.pdf'),
-  withBase('/example_041.pdf'),
-  withBase('/example_045.pdf'),
+  withBase('/14.pdf'),
+  withBase('/36.pdf'),
+  withBase('/41.pdf'),
+  withBase('/45.pdf'),
   'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf',
 ]
 const pdfSourceIdx = ref(0)

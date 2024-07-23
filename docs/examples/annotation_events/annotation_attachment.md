@@ -5,7 +5,7 @@
 import { ref } from 'vue'
 import { VuePDF, usePDF } from '@tato30/vue-pdf'
 
-const { pdf } = usePDF('/example_041.pdf')
+const { pdf } = usePDF('/41.pdf')
 function onAnnotation(value) {
   console.log(value)
 }

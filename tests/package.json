@@ -1,0 +1,22 @@
+{
+  "name": "vue-pdf-tests",
+  "version": "1.0.0",
+  "description": "vue-pdf-tests",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@tato30/vue-pdf": "*"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.2.1",
+    "@vitest/browser": "^1.0.4",
+    "@vue/test-utils": "^2.4.6",
+    "typescript": "^4.9.4",
+    "vite": "^4.3.4",
+    "vitest": "^1.0.4",
+    "vue": "^3.2.47",
+    "vue-tsc": "^1.6.3",
+    "webdriverio": "^8.26.2"
+  }
+}

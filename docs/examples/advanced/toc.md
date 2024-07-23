@@ -8,7 +8,7 @@ import { VuePDF, usePDF } from '@tato30/vue-pdf'
 
 import ChaptersList from './ChaptersList.vue'
 
-const { pdf, info, getPDFDestination } = usePDF('/example_045.pdf')
+const { pdf, info, getPDFDestination } = usePDF('/45.pdf')
 const outlineTree = ref([])
 
 watchEffect(() => {

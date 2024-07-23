@@ -1,10 +1,10 @@
 <script setup>
-import { VuePDF, usePDF } from '@tato30/vue-pdf'
-import { withBase } from 'vitepress/client'
-import '@tato30/vue-pdf/style.css'
+import { VuePDF, usePDF } from '@tato30/vue-pdf';
+import '@tato30/vue-pdf/style.css';
+import { withBase } from 'vitepress/client';
 
 const { pdf } = usePDF({
-  url: withBase('/example_xfa.pdf'),
+  url: withBase('/xfa.pdf'),
   enableXfa: true,
 })
 </script>

@@ -3,7 +3,7 @@ import { VuePDF, usePDF } from '@tato30/vue-pdf';
 import { withBase } from 'vitepress/client';
 import { ref } from 'vue';
 
-const { pdf } = usePDF(withBase('/example_014.pdf'))
+const { pdf } = usePDF(withBase('/14.pdf'))
 
 const filters = ref(['Widget', 'Widget.Tx', 'Widget.Btn', 'Widget.Ch'])
 const selectedFilter = ref(['Widget'])

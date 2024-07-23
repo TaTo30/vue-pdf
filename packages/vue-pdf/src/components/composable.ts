@@ -1,5 +1,5 @@
 import * as PDFJS from 'pdfjs-dist'
-import PDFWorker from 'pdfjs-dist/build/pdf.worker.min?url'
+import PDFWorker from 'pdfjs-dist/legacy/build/pdf.worker.min?url'
 import { isRef, shallowRef, watch } from 'vue'
 
 import type { PDFDocumentLoadingTask, PDFDocumentProxy } from 'pdfjs-dist'
@@ -106,10 +106,10 @@ export function usePDF(src: PDFSrc | Ref<PDFSrc>,
       return null
 
     const pageIndex = await document.getPageIndex(destRef)
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+
     const name = destArray[1].name
     const rest = destArray.slice(2)
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
     const location = isSpecLike(rest) ? getLocation(name, rest) : null
 
     return { pageIndex, location: location ?? { type: 'Fit', spec: [] } }

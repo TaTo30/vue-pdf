@@ -4,7 +4,7 @@ import { withBase } from 'vitepress/client';
 import { ref } from 'vue';
 
 const annotation_layer = ref(false)
-const { pdf } = usePDF(withBase('/example_014.pdf'))
+const { pdf } = usePDF(withBase('/14.pdf'))
 </script>
 
 <template>

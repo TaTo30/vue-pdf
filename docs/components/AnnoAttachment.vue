@@ -3,7 +3,7 @@ import { VuePDF, usePDF } from '@tato30/vue-pdf';
 import { withBase } from 'vitepress/client';
 import { ref } from 'vue';
 
-const { pdf } = usePDF(withBase('/example_041.pdf'))
+const { pdf } = usePDF(withBase('/41.pdf'))
 const eventValue = ref({})
 function onAnnotation(value) {
   console.log(value)

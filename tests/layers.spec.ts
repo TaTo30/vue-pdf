@@ -1,15 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { beforeAll, describe, expect, test, vi } from 'vitest'
 
 import { mount } from '@vue/test-utils'
 
-import type { HighlightEventPayload } from '../src'
-import { VuePDF, usePDF } from '../src'
+import { VuePDF, usePDF } from '@tato30/vue-pdf'
+import type { HighlightEventPayload } from '@tato30/vue-pdf/src/components/types.ts'
 
-import a14PDF from '../docs/public/example_014.pdf'
-import a45PDF from '../docs/public/example_045.pdf'
-import xfaPDF from '../docs/public/example_xfa.pdf'
+import a14PDF from '@samples/14.pdf'
+import a45PDF from "@samples/45.pdf"
+import xfaPDF from "@samples/xfa.pdf"
 
 describe('Text Layer', () => {
   const { pdf } = usePDF(

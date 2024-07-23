@@ -4,6 +4,5 @@
   "compilerOptions": {
     "outDir": "dist/types"
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*"]
 }
