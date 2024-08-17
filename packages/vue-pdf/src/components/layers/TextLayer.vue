@@ -3,7 +3,6 @@ import * as PDFJS from 'pdfjs-dist'
 import { onMounted, ref, watch } from 'vue'
 
 import type { PDFPageProxy, PageViewport } from 'pdfjs-dist'
-import type { TextLayerRenderParameters } from 'pdfjs-dist/types/src/display/text_layer'
 import type { HighlightEventPayload, HighlightOptions, TextLayerLoadedEventPayload } from '../types'
 import { findMatches, highlightMatches, resetDivs } from '../utils/highlight'
 
@@ -21,8 +20,7 @@ const emit = defineEmits<{
 
 const layer = ref<HTMLDivElement>()
 const endContent = ref<HTMLDivElement>()
-
-const textDivs: HTMLElement[] = []
+let textDivs: HTMLElement[] = []
 
 function getHighlightOptionsWithDefaults(): HighlightOptions {
   return Object.assign({}, {
@@ -56,27 +54,15 @@ async function findAndHighlight(reset = false) {
 
 function render() {
   layer.value!.replaceChildren?.()
-  textDivs.splice(0, textDivs.length)
 
   const page = props.page
   const viewport = props.viewport
-
   const textStream = page?.streamTextContent({ includeMarkedContent: true, disableNormalization: true })
-  const parameters: TextLayerRenderParameters = {
-    textContentSource: textStream!,
-    viewport: viewport!,
-    container: layer.value!,
-    textDivs,
-    textDivProperties: new WeakMap(),
-  }
-
-  const task = PDFJS.renderTextLayer(parameters)
-  task.promise.then(async () => {
+  const textLayer = new PDFJS.TextLayer({ container: layer.value!, textContentSource: textStream!, viewport: viewport! })
+  textLayer.render().then(async () => {
+    textDivs = textLayer.textDivs
     const textContent = await page?.getTextContent()
-    emit('textLoaded', {
-      textDivs,
-      textContent,
-    })
+    emit('textLoaded', { textDivs, textContent })
     const endOfContent = document.createElement('div')
     endOfContent.className = 'endOfContent'
     layer.value?.appendChild(endOfContent)
