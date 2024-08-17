@@ -1,5 +1,5 @@
 import * as PDFJS from 'pdfjs-dist'
-import PDFWorker from 'pdfjs-dist/legacy/build/pdf.worker.min?url'
+import PDFWorker from 'pdfjs-dist/build/pdf.worker.min?url'
 import { isRef, shallowRef, watch } from 'vue'
 
 import type { PDFDocumentLoadingTask, PDFDocumentProxy } from 'pdfjs-dist'
