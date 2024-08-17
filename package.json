@@ -12,7 +12,8 @@
     "dev:docs": "npm run --prefix packages/vue-pdf build:lib && npm run --prefix docs dev",
     "test": "npm run --prefix tests test",
     "build": "npm run test && npm run --prefix packages/vue-pdf build",
-    "build:docs": "npm run --prefix packages/vue-pdf build:lib && npm run --prefix docs build"
+    "build:docs": "npm run --prefix packages/vue-pdf build:lib && npm run --prefix docs build",
+    "lint:fix": "eslint --fix ."
   },
   "dependencies": {
     "@rushstack/eslint-patch": "^1.10.3",
