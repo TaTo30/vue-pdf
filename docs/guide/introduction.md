@@ -119,6 +119,26 @@ const { pdf } = usePDF({
 })
 ```
 
+## Supporting legacy browsers
+
+If you need to support legacy browsers you could use any polyfill to patch modern functions, but this workaround only works on the **main** thread, the *worker* that runs in other thread will not get reached by any polyfills you apply. 
+
+This package embed and configure the `pdf.js` *worker* for you but in case you need to support legacy environments you will need to configure the `legacy` *worker* by adding this code:
+
+```vue
+<script setup lang="ts">
+import * as PDFJS from 'pdfjs-dist'; // [!code ++]
+import LegacyWorker from 'pdfjs-dist/legacy/build/pdf.worker.min?url'; // [!code ++]
+import { VuePDF, usePDF } from '@tato30/vue-pdf';
+
+PDFJS.GlobalWorkerOptions.workerSrc = LegacyWorker // [!code ++]
+
+const { pdf } = usePDF(/** */)
+</script>
+```
+
+Just be aware to set the `legacy` worker before use `usePDF`.
+
 ## Contributing
 
 Any idea, suggestion or contribution to the code or documentation are very welcome.
@@ -126,14 +146,12 @@ Any idea, suggestion or contribution to the code or documentation are very welco
 ```sh
 # Clone the repository
 git clone https://github.com/TaTo30/vue-pdf.git
-
 # Change to code folder
 cd vue-pdf
-cd vue-pdf/docs # In case you want to update docs
-
 # Install node_modules
 npm install
-
 # Run code with hot reload
 npm run dev
+# Run docs
+npm run dev:docs
 ```
