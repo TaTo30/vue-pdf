@@ -1,5 +1,5 @@
 <div align="center">
-  <img width=250 src="./samples/logo.png" />
+  <img width=250 src="https://raw.githubusercontent.com/TaTo30/vue-pdf/master/samples/logo.png" />
   <h1>VuePDF</h1>
 </div>
 

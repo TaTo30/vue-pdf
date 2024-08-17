@@ -7,7 +7,7 @@ export default {
     optimizeDeps: {
       esbuildOptions: {
         supported: {
-          "top-level-await": true,
+          "top-level-await": true
         },
       },
     },
