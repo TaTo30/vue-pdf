@@ -137,6 +137,38 @@ const { pdf } = usePDF(/** */)
 
 Just be aware to set the `legacy` worker before use `usePDF`.
 
+## Common issues
+
+### Promise.withResolvers
+
+> Promise.withResolvers is not a function
+
+That throws because `Promise.withResolvers` is a relative "new feature" of JavaScript's Promises, even if almost all browsers [support it](https://caniuse.com/?search=withResolvers), in NodeJS this feature was fully included on version v22 as a base feature. To solve this issue consider updating node version if you are currently using a lower one.
+
+### Top-level await is not available in the configured target environment
+
+> [ERROR] Top-level await is not available in the configured target environment ("chrome87", "edge88", "es2020", "firefox78", "safari14" + 2 overrides)
+
+This error is more related to ESBuild settings instead of compatibility matters, `Top-level await` is (as usually) a "new feature" of the JavaScript definition, practically all browsers [support it](https://caniuse.com/?search=top-level%20await) and was included on NodeJS since v14.
+
+To solve this issue you will need to add this settings on `vite.config`:
+
+```json
+optimizeDeps: {
+  esbuildOptions: {
+    supported: {
+      'top-level-await': true,
+    },
+  },
+},
+esbuild: {
+  supported: {
+    'top-level-await': true,
+  },
+}
+```
+
+
 ## Contributing
 
 Any idea, suggestion or contribution to the code or documentation are very welcome.
