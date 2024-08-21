@@ -153,7 +153,7 @@ This error is more related to ESBuild settings instead of compatibility matters,
 
 To solve this issue you will need to add this settings on `vite.config`:
 
-```json
+```js
 optimizeDeps: {
   esbuildOptions: {
     supported: {
