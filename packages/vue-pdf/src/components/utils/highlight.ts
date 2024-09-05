@@ -27,7 +27,8 @@ function searchQuery(textContent: TextContent, query: string, options: Highlight
   if (options.ignoreCase)
     regexFlags.push('i')
 
-  let fquery = query.trim()
+  // Trim the query and escape all regex special characters
+  let fquery = query.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   if (options.completeWords)
     fquery = `\\b${fquery}\\b`
 
