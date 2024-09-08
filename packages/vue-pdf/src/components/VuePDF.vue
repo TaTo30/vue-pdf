@@ -1,7 +1,7 @@
 <!-- eslint-disable no-case-declarations -->
 <script setup lang="ts">
 import * as PDFJS from 'pdfjs-dist'
-import { computed, onMounted, ref, toRaw, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, toRaw, watch } from 'vue'
 
 import 'pdfjs-dist/web/pdf_viewer.css'
 
@@ -277,6 +277,11 @@ watch(() => [
 onMounted(() => {
   if (props.pdf !== undefined)
     initDoc(props.pdf)
+})
+
+onUnmounted(() => {
+  // Abort all network process and terminates the worker
+  props.pdf?.destroy()
 })
 
 // Exposed methods
