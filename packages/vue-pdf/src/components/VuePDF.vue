@@ -28,6 +28,7 @@ const props = withDefaults(defineProps<{
   width?: number
   height?: number
   textLayer?: boolean
+  autoDestroy?: boolean
   imageResourcesPath?: string
   hideForms?: boolean
   intent?: string
@@ -42,6 +43,7 @@ const props = withDefaults(defineProps<{
   page: 1,
   scale: 1,
   intent: 'display',
+  autoDestroy: false
 })
 
 const emit = defineEmits<{
@@ -281,10 +283,15 @@ onMounted(() => {
 
 onUnmounted(() => {
   // Abort all network process and terminates the worker
-  props.pdf?.destroy()
+  if (props.autoDestroy)
+    props.pdf?.destroy()
 })
 
-// Exposed methods
+// Exposed method
+function destroy() {
+  props.pdf?.destroy()
+}
+
 function reload() {
   renderPage(props.page)
 }
@@ -296,6 +303,7 @@ function cancel() {
 defineExpose({
   reload,
   cancel,
+  destroy
 })
 </script>
 
