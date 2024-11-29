@@ -41,7 +41,6 @@ function getHighlightOptionsWithDefaults(): HighlightOptions {
 async function findAndHighlight(reset = false) {
   const page = props.page;
   const textContent = await page?.getTextContent();
-  console.log("highlightText", props.highlightText);
 
   if (!textContent) return;
 
@@ -61,7 +60,6 @@ async function findAndHighlight(reset = false) {
       getHighlightOptionsWithDefaults()
     );
     highlightMatches(matches, textContent!, textDivs);
-    console.log("emitted page", page?.pageNumber);
     emit("highlight", {
       matches,
       textContent,
