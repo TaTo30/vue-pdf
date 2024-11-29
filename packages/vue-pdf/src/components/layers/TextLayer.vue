@@ -1,103 +1,138 @@
 <script setup lang="ts">
-import * as PDFJS from 'pdfjs-dist'
-import { onMounted, ref, watch } from 'vue'
+import * as PDFJS from "pdfjs-dist";
+import { onMounted, ref, watch } from "vue";
 
-import type { PDFPageProxy, PageViewport } from 'pdfjs-dist'
-import type { HighlightEventPayload, HighlightOptions, TextLayerLoadedEventPayload } from '../types'
-import { findMatches, highlightMatches, resetDivs } from '../utils/highlight'
+import type { PDFPageProxy, PageViewport } from "pdfjs-dist";
+import type {
+  HighlightEventPayload,
+  HighlightOptions,
+  TextLayerLoadedEventPayload,
+} from "../types";
+import { findMatches, highlightMatches, resetDivs } from "../utils/highlight";
 
 const props = defineProps<{
-  page?: PDFPageProxy
-  viewport?: PageViewport
-  highlightText?: string | string[]
-  highlightOptions?: HighlightOptions
-}>()
+  page?: PDFPageProxy;
+  viewport?: PageViewport;
+  highlightText?: string | string[];
+  highlightOptions?: HighlightOptions;
+  hightlightPages?: number[];
+}>();
 
 const emit = defineEmits<{
-  (event: 'highlight', payload: HighlightEventPayload): void
-  (event: 'textLoaded', payload: TextLayerLoadedEventPayload): void
-}>()
+  (event: "highlight", payload: HighlightEventPayload): void;
+  (event: "textLoaded", payload: TextLayerLoadedEventPayload): void;
+}>();
 
-const layer = ref<HTMLDivElement>()
-const endContent = ref<HTMLDivElement>()
-let textDivs: HTMLElement[] = []
+const layer = ref<HTMLDivElement>();
+const endContent = ref<HTMLDivElement>();
+let textDivs: HTMLElement[] = [];
 
 function getHighlightOptionsWithDefaults(): HighlightOptions {
-  return Object.assign({}, {
-    ignoreCase: true,
-    completeWords: false,
-  }, props.highlightOptions)
+  return Object.assign(
+    {},
+    {
+      ignoreCase: true,
+      completeWords: false,
+    },
+    props.highlightOptions
+  );
 }
 
 async function findAndHighlight(reset = false) {
-  const page = props.page
-  const textContent = await page?.getTextContent()
+  const page = props.page;
+  const textContent = await page?.getTextContent();
+  console.log("highlightText", props.highlightText);
 
-  if (!textContent)
-    return
+  if (!textContent) return;
 
-  if (reset)
-    resetDivs(textContent, textDivs)
+  if (reset) resetDivs(textContent, textDivs);
 
-  if (props.highlightText) {
-    const queries = typeof props.highlightText === 'string' ? [props.highlightText] : props.highlightText
-    const matches = findMatches(queries, textContent!, getHighlightOptionsWithDefaults())
-    highlightMatches(matches, textContent!, textDivs)
-    emit('highlight', {
+  if (
+    props.highlightText &&
+    (!props.hightlightPages || props.hightlightPages.includes(page!.pageNumber))
+  ) {
+    const queries =
+      typeof props.highlightText === "string"
+        ? [props.highlightText]
+        : props.highlightText;
+    const matches = findMatches(
+      queries,
+      textContent!,
+      getHighlightOptionsWithDefaults()
+    );
+    highlightMatches(matches, textContent!, textDivs);
+    console.log("emitted page", page?.pageNumber);
+    emit("highlight", {
       matches,
       textContent,
       textDivs,
       page: page?.pageNumber || 1,
-    })
+    });
   }
 }
 
 function render() {
-  layer.value!.replaceChildren?.()
+  layer.value!.replaceChildren?.();
 
-  const page = props.page
-  const viewport = props.viewport
-  const textStream = page?.streamTextContent({ includeMarkedContent: true, disableNormalization: true })
-  const textLayer = new PDFJS.TextLayer({ container: layer.value!, textContentSource: textStream!, viewport: viewport! })
+  const page = props.page;
+  const viewport = props.viewport;
+  const textStream = page?.streamTextContent({
+    includeMarkedContent: true,
+    disableNormalization: true,
+  });
+  const textLayer = new PDFJS.TextLayer({
+    container: layer.value!,
+    textContentSource: textStream!,
+    viewport: viewport!,
+  });
   textLayer.render().then(async () => {
-    textDivs = textLayer.textDivs
-    const textContent = await page?.getTextContent()
-    emit('textLoaded', { textDivs, textContent })
-    const endOfContent = document.createElement('div')
-    endOfContent.className = 'endOfContent'
-    layer.value?.appendChild(endOfContent)
-    endContent.value = endOfContent
-    findAndHighlight()
-  })
+    textDivs = textLayer.textDivs;
+    const textContent = await page?.getTextContent();
+    emit("textLoaded", { textDivs, textContent });
+    const endOfContent = document.createElement("div");
+    endOfContent.className = "endOfContent";
+    layer.value?.appendChild(endOfContent);
+    endContent.value = endOfContent;
+    findAndHighlight();
+  });
 }
 
 function onMouseDown() {
-  if (!endContent.value)
-    return
-  endContent.value.classList.add('active')
+  if (!endContent.value) return;
+  endContent.value.classList.add("active");
 }
 
 function onMouseUp() {
-  if (!endContent.value)
-    return
-  endContent.value.classList.remove('active')
+  if (!endContent.value) return;
+  endContent.value.classList.remove("active");
 }
 
-watch(() => props.viewport, (_) => {
-  if (props.page && props.viewport && layer.value)
-    render()
-})
+watch(
+  () => props.viewport,
+  (_) => {
+    if (props.page && props.viewport && layer.value) render();
+  }
+);
 
-watch(() => [props.highlightText, props.highlightOptions], (_) => {
-  findAndHighlight(true)
-}, { deep: true })
+watch(
+  () => [props.highlightText, props.highlightOptions],
+  (_) => {
+    findAndHighlight(true);
+  },
+  { deep: true }
+);
 
 onMounted(() => {
-  if (props.page && props.viewport && layer.value)
-    render()
-})
+  if (props.page && props.viewport && layer.value) render();
+});
 </script>
 
 <template>
-  <div ref="layer" class="textLayer" style="display: block;" @mousedown="onMouseDown" @mouseup="onMouseUp" />
+  <div
+    ref="layer"
+    class="textLayer"
+    style="display: block"
+    @mousedown="onMouseDown"
+    @mouseup="onMouseUp"
+  />
 </template>
