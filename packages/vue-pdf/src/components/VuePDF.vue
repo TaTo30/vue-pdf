@@ -99,7 +99,7 @@ const alayerProps = computed(() => {
 });
 const tlayerProps = computed(() => {
   return {
-    highlightText: "Map",
+    highlightText: props.highlightText,
     highlightOptions: props.highlightOptions,
     highlightPages: props.highlightPages,
   };
@@ -343,6 +343,7 @@ defineExpose({
       @annotation-loaded="emit('annotationLoaded', $event)"
     />
     <TextLayer
+      v-if="textLayer"
       v-bind="{ ...internalProps, ...tlayerProps }"
       @highlight="emit('highlight', $event)"
       @text-loaded="emit('textLoaded', $event)"
