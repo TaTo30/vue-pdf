@@ -125,6 +125,7 @@ describe('Annotation Layer', () => {
 
     const checkbox = wrapper.get('input[type=\'checkbox\']').element as HTMLInputElement
     checkbox.click()
+    checkbox.dispatchEvent(new Event("change", { bubbles: true }));
     await vi.waitUntil(() => wrapper.emitted('annotation'))
 
     expect(wrapper.emitted('annotation')).toHaveLength(1)
@@ -139,6 +140,7 @@ describe('Annotation Layer', () => {
 
     const radiobutton = wrapper.get('input[data-element-id="14R"]').element as HTMLInputElement
     radiobutton.click()
+    radiobutton.dispatchEvent(new Event("change", { bubbles: true }));
     await vi.waitUntil(() => wrapper.emitted('annotation')?.length === 2)
     expect(wrapper.emitted('annotation')![1][0]).toEqual({
       type: 'form-radio',

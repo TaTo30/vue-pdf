@@ -101,7 +101,8 @@ async function render() {
     page: page!,
     viewport: viewport!.clone({ dontFlip: true }),
     annotationEditorUIManager: null,
-    l10n: null
+    l10n: null,
+    structTreeLayer: null
   }
 
   const renderParameters: AnnotationLayerParameters = {
