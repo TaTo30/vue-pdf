@@ -190,7 +190,9 @@ function getCurrentCanvas(): HTMLCanvasElement | null {
 
 function setupCanvas(viewport: PageViewport): HTMLCanvasElement {
   let canvas;
+  let offscreenCanvas;
   const currentCanvas = getCurrentCanvas()!;
+
   if (currentCanvas && currentCanvas?.getAttribute("role") === "main") {
     canvas = currentCanvas;
   } else {
@@ -200,8 +202,28 @@ function setupCanvas(viewport: PageViewport): HTMLCanvasElement {
   }
 
   const outputScale = window.devicePixelRatio || 1;
-  canvas.width = Math.floor(viewport.width * outputScale);
-  canvas.height = Math.floor(viewport.height * outputScale);
+  const width = Math.floor(viewport.width * outputScale);
+  const height = Math.floor(viewport.height * outputScale);
+
+  // Create and setup OffscreenCanvas
+  if (typeof window !== 'undefined' && 'OffscreenCanvas' in window) {
+    offscreenCanvas = new OffscreenCanvas(width, height);
+    const offscreenContext = offscreenCanvas.getContext('2d');
+    if (offscreenContext) {
+      // Transfer rendered content back to main canvas
+      canvas.width = width;
+      canvas.height = height;
+      const mainContext = canvas.getContext('2d');
+      const bitmap = offscreenCanvas.transferToImageBitmap();
+      if (mainContext) {
+        mainContext.drawImage(bitmap, 0, 0);
+      }
+    }
+  } else {
+    // Fallback to regular canvas if OffscreenCanvas not supported
+    canvas.width = width;
+    canvas.height = height;
+  }
 
   canvas.style.width = `${Math.floor(viewport.width)}px`;
   canvas.style.height = `${Math.floor(viewport.height)}px`;
