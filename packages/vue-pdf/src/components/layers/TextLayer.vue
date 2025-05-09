@@ -15,7 +15,7 @@ const props = defineProps<{
   viewport?: PageViewport;
   highlightText?: string | string[];
   highlightOptions?: HighlightOptions;
-  hightlightPages?: number[];
+  highlightPages?: number[];
 }>();
 
 const emit = defineEmits<{
@@ -48,7 +48,7 @@ async function findAndHighlight(reset = false) {
 
   if (
     props.highlightText &&
-    (!props.hightlightPages || props.hightlightPages.includes(page!.pageNumber))
+    (!props.highlightPages || props.highlightPages.includes(page!.pageNumber))
   ) {
     const queries =
       typeof props.highlightText === "string"

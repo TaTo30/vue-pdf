@@ -116,9 +116,9 @@ Default: `null`
 Highlight on the page the searched text or the searched array of text.
 
 ```vue
-<VuePDF :pdf="pdf" text-layer hightlight-text="javascript" />
+<VuePDF :pdf="pdf" text-layer highlight-text="javascript" />
 
-<VuePDF :pdf="pdf" text-layer :hightlight-text="['javascript', 'trace-based']" />
+<VuePDF :pdf="pdf" text-layer :highlight-text="['javascript', 'trace-based']" />
 ```
 
 ## highlight-options  <badge type="tip" text="v1.9" vertical="middle" />
@@ -136,7 +136,7 @@ Default:
 Settings for how to find the [highlight-text](#highlight-text) on page's text.
 
 ```vue
-<VuePDF :pdf="pdf" text-layer hightlight-text="javascript" :highlight-options="{
+<VuePDF :pdf="pdf" text-layer highlight-text="javascript" :highlight-options="{
     completeWords: true,
     ignoreCase: false
   }"

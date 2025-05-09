@@ -29,7 +29,7 @@ features:
     details: Set a scale, width, height or fit the PDF page with parent width
   - icon: 🔆
     title: Highlight Text
-    details: Search and hightlight text
+    details: Search and highlight text
   - icon: ©️
     title: Watermark
     details: Watermark your pages to protect your content
