@@ -33,6 +33,7 @@ test('Load/Mount component', async () => {
     {
       viewBox: [0, 0, 612, 792],
       scale: 1,
+      userUnit: 1,
       rotation: 0,
       offsetX: 0,
       offsetY: 0,

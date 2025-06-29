@@ -208,6 +208,8 @@ function setupCanvas(viewport: PageViewport): HTMLCanvasElement {
 
   // --scale-factor property
   container.value?.style.setProperty("--scale-factor", `${viewport.scale}`);
+  container.value?.style.setProperty("--user-unit", `${viewport.userUnit}`);
+  container.value?.style.setProperty("--total-scale-factor", "calc(var(--scale-factor) * var(--user-unit))");
   // Also setting dimension properties for load layer
   loadingLayer.value!.style.width = `${Math.floor(viewport.width)}px`;
   loadingLayer.value!.style.height = `${Math.floor(viewport.height)}px`;
