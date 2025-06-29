@@ -115,10 +115,19 @@ export function usePDF(src: PDFSrc | Ref<PDFSrc>,
     return { pageIndex, location: location ?? { type: 'Fit', spec: [] } }
   }
 
-  async function download(filename = 'filename') {
+  async function getBytes() {
     if (!pdfDoc.value)
-      throw new Error('Current PDFDocumentProxy have not loaded yet')
-    const bytes = await pdfDoc.value?.saveDocument()
+      throw new Error("Current PDFDocumentProxy have not loaded yet");
+    try {
+      return await pdfDoc.value.saveDocument();
+    } catch (error) {
+      console.error("Error saving PDF document:", error);
+      return await pdfDoc.value.getData();
+    }
+  }
+
+  async function download(filename = 'filename') {
+    const bytes = await getBytes()
     const blobBytes = new Blob([bytes], { type: 'application/pdf' })
     const blobUrl = URL.createObjectURL(blobBytes)
 
@@ -136,11 +145,10 @@ export function usePDF(src: PDFSrc | Ref<PDFSrc>,
   }
 
   async function print(dpi = 150, filename = 'filename') {
-    if (!pdfDoc.value)
-      throw new Error('Current PDFDocumentProxy have not loaded yet')
-    const bytes = await pdfDoc.value?.saveDocument()
-    const savedLoadingTask = PDFJS.getDocument(bytes.buffer)
-    const savedDocument = await savedLoadingTask.promise
+    if (!pdf.value)
+      throw new Error("Current PDFDocumentLoadingTask have not loaded yet");
+    
+    const savedDocument = await pdf.value.promise;
 
     const PRINT_UNITS = dpi / 72
     const CSS_UNITS = 96 / 72
