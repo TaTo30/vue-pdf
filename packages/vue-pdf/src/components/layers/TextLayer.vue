@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as PDFJS from "pdfjs-dist";
-import { onMounted, ref, watch } from "vue";
+import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 import type { PDFPageProxy, PageViewport } from "pdfjs-dist";
 import type {
@@ -26,6 +26,7 @@ const emit = defineEmits<{
 const layer = ref<HTMLDivElement>();
 const endContent = ref<HTMLDivElement>();
 let textDivs: HTMLElement[] = [];
+let textLayerTask: PDFJS.TextLayer | null = null;
 
 function getHighlightOptionsWithDefaults(): HighlightOptions {
   return Object.assign(
@@ -69,7 +70,8 @@ async function findAndHighlight(reset = false) {
   }
 }
 
-function render() {
+async function render() {
+  textLayerTask?.cancel();
   layer.value!.replaceChildren?.();
 
   const page = props.page;
@@ -83,16 +85,23 @@ function render() {
     textContentSource: textStream!,
     viewport: viewport!,
   });
-  textLayer.render().then(async () => {
-    textDivs = textLayer.textDivs;
-    const textContent = await page?.getTextContent();
-    emit("textLoaded", { textDivs, textContent });
-    const endOfContent = document.createElement("div");
-    endOfContent.className = "endOfContent";
-    layer.value?.appendChild(endOfContent);
-    endContent.value = endOfContent;
-    findAndHighlight();
-  });
+
+  textLayerTask = textLayer;
+  await textLayer.render();
+
+  textDivs = textLayer.textDivs;
+  const textContent = await page?.getTextContent();
+  emit("textLoaded", { textDivs, textContent });
+
+  setEOC();
+  findAndHighlight();
+}
+
+function setEOC() {
+  const endOfContent = document.createElement("div");
+  endOfContent.className = "endOfContent";
+  layer.value?.appendChild(endOfContent);
+  endContent.value = endOfContent;
 }
 
 function onMouseDown() {

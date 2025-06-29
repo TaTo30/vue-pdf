@@ -5,23 +5,20 @@ import type { HighlightOptions, Match } from '../types'
 function searchQuery(textContent: TextContent, query: string, options: HighlightOptions) {
   const strs = []
   for (const textItem of textContent.items as TextItem[]) {
-    if (textItem.hasEOL) {
-      // Remove the break line hyphen in the middle of the sentence
-      if (textItem.str.endsWith('-')) {
-        const lastHyphen = textItem.str.lastIndexOf('-')
-        strs.push(textItem.str.substring(0, lastHyphen))
-      }
-      else {
-        strs.push(textItem.str, '\n')
-      }
-    }
-    else {
-      strs.push(textItem.str)
-    }
+    strs.push(textItem.str);
+    if (textItem.hasEOL) 
+      strs.push("\n");
   }
 
-  // Join the text as is presented in textlayer and then replace newlines (/n) with whitespaces
-  const textJoined = strs.join('').replace(/\n/g, ' ')
+  let textJoined = strs.join('')
+  // Join the text as is presented in textlayer and then perform this replacements to build up broken words
+  // 1. newline between CJK characters should be removed
+  // 2. hyphen at the end of a line should be removed
+  textJoined = textJoined.replace(/(?<=\p{Ideographic}|[\u3040-\u30FF])\n(\p{Ideographic}|[\u3040-\u30FF])/gmu, '$1');
+  textJoined = textJoined.replace(/(?<=\S)-\n/gmu, "");
+
+  // Replace all "valid" newlines with a space
+  textJoined = textJoined.replace(/\n/g, " ");
 
   const regexFlags = ['g']
   if (options.ignoreCase)
@@ -45,17 +42,29 @@ function searchQuery(textContent: TextContent, query: string, options: Highlight
 }
 
 function convertMatches(matches: (number | string)[][], textContent: TextContent): Match[] {
-  function endOfLineOffset(item: TextItem) {
+  function endOfLineOffset(
+    item: TextItem,
+    prevItem: TextItem | null,
+    nextItem: TextItem | null
+  ): number {
     // When textitem has a EOL flag and the string has a hyphen at the end
     // the hyphen should be removed (-1 len) so the sentence could be searched as a joined one.
     // In other cases the EOL flag introduce a whitespace (+1 len) between two different sentences
-    if (item.hasEOL) {
-      if (item.str.endsWith('-'))
-        return -1
-      else
-        return 1
+    // In cases where the EOL is between two CJK characters, no offset is added
+    if (item.hasEOL && item.str.length === 0) {
+      const lastchar = prevItem?.str[prevItem.str.length - 1];
+      const nextchar = nextItem?.str[0];
+
+      const isCJK = new RegExp(/(\p{Ideographic}|[\u3040-\u30FF])/u);
+      if (lastchar && isCJK.test(lastchar) && nextchar && isCJK.test(nextchar))
+        return 0;
     }
-    return 0
+
+    if (item.hasEOL) {
+      if (item.str.endsWith("-")) return -1;
+      else return 1;
+    }
+    return 0;
   }
 
   let index = 0
@@ -71,10 +80,13 @@ function convertMatches(matches: (number | string)[][], textContent: TextContent
 
     while (index !== end && mindex >= tindex + textItems[index].str.length) {
       const item = textItems[index]
-      tindex += item.str.length + endOfLineOffset(item)
+      tindex += item.str.length + endOfLineOffset(
+        item,
+        index - 1 < 0 ? null : textItems[index - 1],
+        index + 1 >= textItems.length ? null : textItems[index + 1]
+      )
       index++
     }
-
     const divStart = {
       idx: index,
       offset: mindex - tindex,
@@ -84,7 +96,13 @@ function convertMatches(matches: (number | string)[][], textContent: TextContent
 
     while (index !== end && mindex > tindex + textItems[index].str.length) {
       const item = textItems[index]
-      tindex += item.str.length + endOfLineOffset(item)
+      tindex +=
+        item.str.length +
+        endOfLineOffset(
+          item,
+          index - 1 < 0 ? null : textItems[index - 1],
+          index + 1 >= textItems.length ? null : textItems[index + 1]
+        );
       index++
     }
 
@@ -92,6 +110,7 @@ function convertMatches(matches: (number | string)[][], textContent: TextContent
       idx: index,
       offset: mindex - tindex,
     }
+
     convertedMatches.push({
       start: divStart,
       end: divEnd,
@@ -172,11 +191,10 @@ function highlightMatches(matches: Match[], textContent: TextContent, textDivs: 
     div.replaceChildren(...nodes)
   }
 
-  for (const match of matches) {
+  for (const match of matches.sort((a, b) => a.oindex - b.oindex)) {
     if (match.start.idx === match.end.idx) {
       appendHighlightDiv(match.start.idx, match.start.offset, match.end.offset)
-    }
-    else {
+    } else {
       for (let si = match.start.idx, ei = match.end.idx; si <= ei; si++) {
         if (si === match.start.idx)
           appendHighlightDiv(si, match.start.offset)
