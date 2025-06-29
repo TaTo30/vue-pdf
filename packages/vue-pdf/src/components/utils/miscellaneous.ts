@@ -26,7 +26,6 @@ function addStylesToIframe(content: Window, sizeX: number, sizeY: number) {
       width: 100%;
     }
     canvas {
-      width: 100%;
       page-break-after: always;
       page-break-before: avoid;
       page-break-inside: avoid;
