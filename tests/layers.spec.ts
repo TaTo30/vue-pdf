@@ -123,8 +123,7 @@ describe('Annotation Layer', () => {
 
     await vi.waitUntil(() => wrapper.get('div.annotationLayer').element.childNodes.length > 0)
 
-    const checkbox = wrapper.get('input[type=\'checkbox\']').element as HTMLInputElement
-    checkbox.click()
+    await wrapper.get('input[type=\'checkbox\']').setValue(true)
     await vi.waitUntil(() => wrapper.emitted('annotation'))
 
     expect(wrapper.emitted('annotation')).toHaveLength(1)
@@ -137,8 +136,7 @@ describe('Annotation Layer', () => {
         },
       })
 
-    const radiobutton = wrapper.get('input[data-element-id="14R"]').element as HTMLInputElement
-    radiobutton.click()
+    await wrapper.get('input[data-element-id="14R"]').setValue(true)
     await vi.waitUntil(() => wrapper.emitted('annotation')?.length === 2)
     expect(wrapper.emitted('annotation')![1][0]).toEqual({
       type: 'form-radio',
@@ -205,8 +203,7 @@ describe('Annotation Layer', () => {
 
     await vi.waitUntil(() => wrapper.get('div.annotationLayer').element.childNodes.length > 0)
 
-    const indexLink = wrapper.get('a[data-element-id="13R"]').element as HTMLAnchorElement
-    indexLink.click()
+    await wrapper.get('a[data-element-id="13R"]').trigger("click")
     await vi.waitUntil(() => wrapper.emitted('annotation'))
     expect(wrapper.emitted('annotation')![0][0]).toEqual({
       type: 'internal-link',
