@@ -354,5 +354,10 @@ defineExpose({
     <div v-show="loading" ref="loadingLayer" style="position: absolute">
       <slot />
     </div>
+    <slot
+      name="footer"
+      :width="internalProps.viewport?.width"
+      :height="internalProps.viewport?.height"
+    />
   </div>
 </template>
