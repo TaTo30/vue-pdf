@@ -355,7 +355,7 @@ defineExpose({
       <slot />
     </div>
     <slot
-      name="footer"
+      name="overlay"
       :width="internalProps.viewport?.width"
       :height="internalProps.viewport?.height"
     />
