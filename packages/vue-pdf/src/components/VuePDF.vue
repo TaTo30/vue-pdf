@@ -284,7 +284,11 @@ function initDoc(proxy: PDFDocumentLoadingTask) {
 
 watch(
   () => props.pdf,
-  (pdf) => {
+  (pdf, oldPdf) => {
+    cancelRender();
+    if (oldPdf && oldPdf !== pdf && !props.autoDestroy) {
+      oldPdf.destroy();
+    }
     // For any changes on pdf, reinicialize all
     if (pdf !== undefined) initDoc(pdf);
   }
