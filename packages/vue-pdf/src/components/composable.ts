@@ -51,6 +51,8 @@ export function usePDF(src: PDFSrc | Ref<PDFSrc>,
   const info = shallowRef<PDFInfo | {}>({})
 
   function processLoadingTask(source: PDFSrc) {
+    if (pdf.value)
+      void pdf.value.destroy()
     if (pdfDoc.value)
       void pdfDoc.value.destroy()
 
@@ -147,7 +149,7 @@ export function usePDF(src: PDFSrc | Ref<PDFSrc>,
   async function print(dpi = 150, filename = 'filename') {
     if (!pdf.value)
       throw new Error("Current PDFDocumentLoadingTask have not loaded yet");
-    
+
     const savedDocument = await pdf.value.promise;
 
     const PRINT_UNITS = dpi / 72
