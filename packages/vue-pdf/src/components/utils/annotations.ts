@@ -167,12 +167,12 @@ function mergePopupArgs(annotation: HTMLElement) {
 }
 
 // Use this function to handle annotation events
-function annotationEventsHandler(evt: Event, PDFDoc: PDFDocumentProxy, Annotations: Object[]) {
-  let annotation = (evt.target as HTMLInputElement).parentNode! as HTMLElement
+function annotationEventsHandler(evt: Event, PDFDoc: PDFDocumentProxy, Annotations: Object[]) {  
+  let annotation = evt.target as HTMLElement
 
-  // annotations are <section> elements if div returned find in child nodes the section element
-  if (annotation.tagName === 'DIV')
-    annotation = annotation.firstChild! as HTMLElement
+  // annotations are <section> elements if target element are not <section> the parentNode should be
+  if (annotation.tagName !== 'SECTION')
+    annotation = annotation.parentNode! as HTMLElement
 
   if (annotation.className === 'linkAnnotation' && evt.type === 'click') {
     const id: string | undefined = annotation.dataset?.annotationId
