@@ -87,7 +87,11 @@ async function render() {
   });
 
   textLayerTask = textLayer;
-  await textLayer.render();
+  try {
+    await textLayer.render();
+  } catch (e) {
+    // Ignore render cancelled errors
+  }
 
   textDivs = textLayer.textDivs;
   const textContent = await page?.getTextContent();
