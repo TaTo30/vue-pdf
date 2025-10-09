@@ -6,6 +6,7 @@ class SimpleLinkService implements IPDFLinkService {
   constructor() {
     this.externalLinkEnabled = true
   }
+   goToXY(pageNumber: number, x: number, y: number): void {}
 
   /**
      * @type {number}

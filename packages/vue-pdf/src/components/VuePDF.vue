@@ -245,7 +245,7 @@ function renderPage(pageNum: number) {
 
       // Render PDF page into canvas context
       const renderContext: RenderParameters = {
-        canvasContext: canvas.getContext("2d")!,
+        canvas: canvas,
         viewport,
         annotationMode: props.hideForms
           ? PDFJS.AnnotationMode.ENABLE

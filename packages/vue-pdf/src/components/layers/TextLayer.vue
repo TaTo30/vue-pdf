@@ -89,16 +89,16 @@ async function render() {
   textLayerTask = textLayer;
   try {
     await textLayer.render();
+
+    textDivs = textLayer.textDivs;
+    const textContent = await page?.getTextContent();
+    emit("textLoaded", { textDivs, textContent });
+  
+    setEOC();
+    findAndHighlight();
   } catch (e) {
     // Ignore render cancelled errors
   }
-
-  textDivs = textLayer.textDivs;
-  const textContent = await page?.getTextContent();
-  emit("textLoaded", { textDivs, textContent });
-
-  setEOC();
-  findAndHighlight();
 }
 
 function setEOC() {
