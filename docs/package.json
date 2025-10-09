@@ -4,7 +4,8 @@
   "description": "vue-pdf docs",
   "scripts": {
     "dev": "vitepress dev .",
-    "build": "vitepress build --clean-temp --clean-cache ."
+    "build": "npm run patch && vitepress build --clean-temp --clean-cache .",
+    "patch": "replace-in-file 'pdfjs-dist' 'pdfjs-dist/legacy/build/pdf.mjs' ../packages/vue-pdf/dist/index.mjs"
   },
   "dependencies": {
     "@tato30/vue-pdf": "*"
@@ -12,6 +13,7 @@
   "devDependencies": {
     "sass": "^1.77.2",
     "vite": "^7.1.9",
-    "vitepress": "^1.6.4"
+    "vitepress": "^1.6.4",
+    "replace-in-file": "^8.3.0"
   }
 }
