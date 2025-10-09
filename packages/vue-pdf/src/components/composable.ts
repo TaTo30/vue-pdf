@@ -181,7 +181,7 @@ export function usePDF(src: PDFSrc | Ref<PDFSrc>,
       contentWindow?.document.body.appendChild(canvasCloned)
 
       await pageToPrint?.render({
-        canvasContext: canvas.getContext('2d')!,
+        canvas: canvas,
         intent: 'print',
         transform: [PRINT_UNITS, 0, 0, PRINT_UNITS, 0, 0],
         viewport,

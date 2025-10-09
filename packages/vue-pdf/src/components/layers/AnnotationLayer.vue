@@ -102,6 +102,9 @@ async function render() {
     viewport: viewport!.clone({ dontFlip: true }),
     annotationEditorUIManager: null,
     l10n: null,
+    annotationStorage,
+    linkService: new SimpleLinkService(),
+    commentManager: null,
     structTreeLayer: null
   }
 

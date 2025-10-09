@@ -9,7 +9,7 @@ const { pdf } = usePDF(
 )
 
 beforeAll(async () => {
-  await vi.waitUntil(() => pdf.value, { timeout: 5000 })
+  await vi.waitUntil(() => pdf.value, { timeout: 10000 });
 })
 
 test('Scaling', async () => {

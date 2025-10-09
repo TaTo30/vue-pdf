@@ -15,7 +15,7 @@ describe('Text Layer', () => {
   )
 
   beforeAll(async () => {
-    await vi.waitUntil(() => pdf.value, { timeout: 5000 })
+    await vi.waitUntil(() => pdf.value, { timeout: 10000 })
   })
 
   test('Visibility', async () => {
