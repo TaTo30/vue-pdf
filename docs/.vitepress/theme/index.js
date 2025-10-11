@@ -8,14 +8,14 @@ import AnnoLinks from '../../components/AnnoLinks.vue'
 import AnnotationFilter from '../../components/AnnotationFilter.vue'
 import AnnotationLayer from '../../components/AnnotationLayer.vue'
 import FitParent from '../../components/FitParent.vue'
-import Loaded from '../../components/Loaded.vue'
+import LoadedEvent from "../../components/LoadedEvent.vue";
 import MultiplePDF from '../../components/MultiplePDF.vue'
 import OnePage from '../../components/OnePage.vue'
-import Rotation from '../../components/Rotation.vue'
-import Scale from '../../components/Scale.vue'
+import RotationPage from "../../components/RotationPage.vue";
+import ScalePage from "../../components/ScalePage.vue";
 import TextLayer from '../../components/TextLayer.vue'
 import XFALayer from '../../components/XFALayer.vue'
-import Watermark from '../../components/Watermark.vue'
+import WatermarkPage from "../../components/WatermarkPage.vue";
 import TOC from '../../components/TOC.vue'
 import HighlightText from '../../components/HighlightText.vue'
 import TextHighlight from '../../components/TextHighlight.vue'
@@ -28,10 +28,10 @@ export default {
   extends: DefaultTheme,
   enhanceApp({ app }) {
     app.component('OnePage', OnePage)
-    app.component('Watermark', Watermark)
+    app.component("WatermarkPage", WatermarkPage);
     app.component('AllPages', AllPages)
-    app.component('Scale', Scale)
-    app.component('Rotation', Rotation)
+    app.component("ScalePage", ScalePage);
+    app.component("RotationPage", RotationPage);
     app.component('TextLayer', TextLayer)
     app.component('AnnotationLayer', AnnotationLayer)
     app.component('XFALayer', XFALayer)
@@ -41,7 +41,7 @@ export default {
     app.component('AnnoAttachment', AnnoAttachment)
     app.component('AnnoForms', AnnoForms)
     app.component('AnnoLinks', AnnoLinks)
-    app.component('Loaded', Loaded)
+    app.component("LoadedEvent", LoadedEvent);
     app.component('TOC', TOC)
     app.component('HighlightText', HighlightText)
     app.component('TextHighlight', TextHighlight)

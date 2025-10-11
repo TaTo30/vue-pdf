@@ -26,5 +26,5 @@ const { pdf } = usePDF('https://raw.githubusercontent.com/mozilla/pdf.js/ba2edea
 ```
 
 <ClientOnly>
-  <Rotation />
+  <RotationPage />
 </ClientOnly>

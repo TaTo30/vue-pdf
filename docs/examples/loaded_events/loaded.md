@@ -19,5 +19,5 @@ function onLoaded(value) {
 ```
 
 <ClientOnly>
-  <Loaded />
+  <LoadedEvent />
 </ClientOnly>

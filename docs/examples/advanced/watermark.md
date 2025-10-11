@@ -37,5 +37,5 @@ function reload() {
 </template>
 ```
 <ClientOnly>
-  <Watermark />
+  <WatermarkPage />
 </ClientOnly>
