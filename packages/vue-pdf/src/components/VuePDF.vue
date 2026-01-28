@@ -1,7 +1,15 @@
 <!-- eslint-disable no-case-declarations -->
 <script setup lang="ts">
 import * as PDFJS from "pdfjs-dist";
-import { computed, onMounted, onUnmounted, ref, toRaw, watch } from "vue";
+import {
+  computed,
+  onMounted,
+  onUnmounted,
+  provide,
+  ref,
+  toRaw,
+  watch,
+} from "vue";
 
 import "pdfjs-dist/web/pdf_viewer.css";
 
@@ -26,8 +34,14 @@ import type {
 } from "./types";
 
 import AnnotationLayer from "./layers/AnnotationLayer.vue";
+import AnnotationEditorLayer from "./layers/AnnotationEditorLayer.vue";
 import TextLayer from "./layers/TextLayer.vue";
 import XFALayer from "./layers/XFALayer.vue";
+
+import {
+  ANNOTATION_LAYER_INSTANCE_KEY,
+  TEXT_LAYER_CONTAINER_KEY,
+} from "./utils/symbols";
 
 interface InternalProps {
   page: PDFPageProxy | undefined;
@@ -63,7 +77,7 @@ const props = withDefaults(
     scale: 1,
     intent: "display",
     autoDestroy: false,
-  }
+  },
 );
 
 const emit = defineEmits<{
@@ -105,6 +119,12 @@ const tlayerProps = computed(() => {
   };
 });
 
+const alayerInstance = ref<PDFJS.AnnotationLayer | null>(null);
+const tlayerContainer = ref<PDFJS.TextLayer | null>(null);
+
+provide(ANNOTATION_LAYER_INSTANCE_KEY, alayerInstance);
+provide(TEXT_LAYER_CONTAINER_KEY, tlayerContainer);
+
 function getWatermarkOptionsWithDefaults(): WatermarkOptions {
   return Object.assign(
     {},
@@ -115,7 +135,7 @@ function getWatermarkOptionsWithDefaults(): WatermarkOptions {
       fontSize: 18,
       color: "rgba(211, 210, 211, 0.4)",
     },
-    props.watermarkOptions
+    props.watermarkOptions,
   );
 }
 
@@ -209,7 +229,10 @@ function setupCanvas(viewport: PageViewport): HTMLCanvasElement {
   // --scale-factor property
   container.value?.style.setProperty("--scale-factor", `${viewport.scale}`);
   container.value?.style.setProperty("--user-unit", `${viewport.userUnit}`);
-  container.value?.style.setProperty("--total-scale-factor", "calc(var(--scale-factor) * var(--user-unit))");
+  container.value?.style.setProperty(
+    "--total-scale-factor",
+    "calc(var(--scale-factor) * var(--user-unit))",
+  );
   // Also setting dimension properties for load layer
   loadingLayer.value!.style.width = `${Math.floor(viewport.width)}px`;
   loadingLayer.value!.style.height = `${Math.floor(viewport.height)}px`;
@@ -291,7 +314,7 @@ watch(
     }
     // For any changes on pdf, reinicialize all
     if (pdf !== undefined) initDoc(pdf);
-  }
+  },
 );
 
 watch(
@@ -307,7 +330,7 @@ watch(
   () => {
     // Props that should dispatch an render task
     renderPage(props.page);
-  }
+  },
 );
 
 onMounted(() => {
@@ -348,6 +371,7 @@ defineExpose({
       @annotation="emit('annotation', $event)"
       @annotation-loaded="emit('annotationLoaded', $event)"
     />
+    <AnnotationEditorLayer v-bind="{ ...internalProps, ...alayerProps }" />
     <TextLayer
       v-if="textLayer"
       v-bind="{ ...internalProps, ...tlayerProps }"

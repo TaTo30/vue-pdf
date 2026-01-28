@@ -47,7 +47,7 @@
     "vue": "^3.2.33"
   },
   "dependencies": {
-    "pdfjs-dist": "5.4.296"
+    "pdfjs-dist": "5.4.530"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

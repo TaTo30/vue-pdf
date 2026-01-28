@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as PDFJS from 'pdfjs-dist'
-import { onMounted, ref, toRaw, watch } from 'vue'
+import { inject, onMounted, Ref, ref, toRaw, watch } from 'vue'
 
 import type { PDFDocumentProxy, PDFPageProxy, PageViewport } from 'pdfjs-dist'
 import type { AnnotationLayerParameters } from 'pdfjs-dist/types/src/display/annotation_layer'
@@ -10,6 +10,7 @@ import { EVENTS_TO_HANDLER, annotationEventsHandler } from '../utils/annotations
 import { SimpleLinkService } from '../utils/link_service'
 
 import type { AnnotationEventPayload } from '../types'
+import { ANNOTATION_LAYER_INSTANCE_KEY } from '../utils/symbols'
 
 const props = defineProps<{
   page?: PDFPageProxy
@@ -30,6 +31,10 @@ const emit = defineEmits<{
 
 const layer = ref<HTMLDivElement>()
 const annotations = ref<any[]>()
+
+const annotationLayerInstance: Ref<PDFJS.AnnotationLayer | null> = inject(
+  ANNOTATION_LAYER_INSTANCE_KEY,
+)!;
 
 function annotationsEvents(evt: Event) {
   const value = annotationEventsHandler(evt, props.document!, annotations.value!)
@@ -123,7 +128,10 @@ async function render() {
     downloadManager: null as unknown as IDownloadManager,
     imageResourcesPath: props.imageResourcesPath,
   }
-  const task = new PDFJS.AnnotationLayer(layerParameters).render(renderParameters)
+
+  const instance = new PDFJS.AnnotationLayer(layerParameters)
+  annotationLayerInstance.value = instance
+  const task = instance.render(renderParameters)
   task.then(async () => {
     emit('annotationLoaded', (await getAnnotations())!)
   })

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as PDFJS from "pdfjs-dist";
-import { onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { inject, onBeforeUnmount, onMounted, Ref, ref, watch } from "vue";
 
 import type { PDFPageProxy, PageViewport } from "pdfjs-dist";
 import type {
@@ -9,6 +9,7 @@ import type {
   TextLayerLoadedEventPayload,
 } from "../types";
 import { findMatches, highlightMatches, resetDivs } from "../utils/highlight";
+import { TEXT_LAYER_CONTAINER_KEY } from "../utils/symbols";
 
 const props = defineProps<{
   page?: PDFPageProxy;
@@ -27,6 +28,10 @@ const layer = ref<HTMLDivElement>();
 const endContent = ref<HTMLDivElement>();
 let textDivs: HTMLElement[] = [];
 let textLayerTask: PDFJS.TextLayer | null = null;
+
+const textLayerContainer: Ref<HTMLDivElement | null> = inject(
+  TEXT_LAYER_CONTAINER_KEY,
+)!;
 
 function getHighlightOptionsWithDefaults(): HighlightOptions {
   return Object.assign(
@@ -93,9 +98,9 @@ async function render() {
     textDivs = textLayer.textDivs;
     const textContent = await page?.getTextContent();
     emit("textLoaded", { textDivs, textContent });
-  
     setEOC();
     findAndHighlight();
+    textLayerContainer.value = layer.value!;
   } catch (e) {
     // Ignore render cancelled errors
   }
@@ -122,7 +127,7 @@ watch(
   () => props.viewport,
   (_) => {
     if (props.page && props.viewport && layer.value) render();
-  }
+  },
 );
 
 watch(
@@ -130,7 +135,7 @@ watch(
   (_) => {
     findAndHighlight(true);
   },
-  { deep: true }
+  { deep: true },
 );
 
 onMounted(() => {
