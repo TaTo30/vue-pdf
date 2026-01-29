@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as PDFJS from "pdfjs-dist";
-import { inject, onMounted, Ref, ref, watch } from "vue";
+import { inject, onMounted, provide, Ref, ref, toRaw, watch } from "vue";
 
 import type { PDFDocumentProxy, PDFPageProxy, PageViewport } from "pdfjs-dist";
 import { GenericL10n } from "../utils/l10n";
@@ -9,8 +9,8 @@ import MinimalUiManager from "../utils/manager";
 import {
   ANNOTATION_LAYER_INSTANCE_KEY,
   TEXT_LAYER_CONTAINER_KEY,
+  ANNOTATION_EDITORS_PARAMS_KEY,
 } from "../utils/symbols";
-import { AnnotationEditorConstructor } from "../types";
 
 const props = defineProps<{
   page?: PDFPageProxy;
@@ -25,8 +25,10 @@ const props = defineProps<{
 }>();
 
 const layer = ref<HTMLDivElement>();
-
 let editor: any = null;
+
+const editorsParams: Function[] = [];
+provide(ANNOTATION_EDITORS_PARAMS_KEY, editorsParams);
 
 const textLayerInstance: Ref<HTMLDivElement | null> = inject(
   TEXT_LAYER_CONTAINER_KEY,
@@ -42,7 +44,7 @@ async function render() {
   const viewport = props.viewport!;
 
   var drawLayer = new PDFJS.DrawLayer({ pageIndex: page?._pageIndex });
-  var uiManager = new MinimalUiManager(props.document);
+  const uiManager = new MinimalUiManager(props.document, editorsParams);
 
   editor = new PDFJS.AnnotationEditorLayer({
     uiManager: uiManager,
@@ -61,20 +63,6 @@ async function render() {
 
   editor.render({ viewport: viewport!.clone({ dontFlip: true }) });
   editor.enable();
-
-  // const freeText: AnnotationEditorConstructor = uiManager.editorsAvailable.find(
-  //   (e: any) => e._type === "freetext",
-  // )!;
-
-  // const freetextInstance = new freeText({
-  //   uiManager: uiManager,
-  //   parent: editor,
-  //   id: "vue-pdf-" + editor.getNextId(),
-  //   x: 0,
-  //   y: 0,
-  // });
-
-  // editor.addNewEditor(freetextInstance);
 }
 
 watch(
@@ -91,9 +79,10 @@ onMounted(() => {
 
 <template>
   <div ref="layer" class="annotationEditorLayer" style="z-index: 3" />
+  <slot></slot>
   <Teleport to="body">
-    <button @click="editor.disable()">groseria</button>
-    <button @click="editor.enable()">groseria2</button>
+    <button @click="editor.disable()">desh</button>
+    <button @click="editor.enable()">hab</button>
   </Teleport>
 </template>
 

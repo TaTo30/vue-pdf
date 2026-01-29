@@ -371,7 +371,9 @@ defineExpose({
       @annotation="emit('annotation', $event)"
       @annotation-loaded="emit('annotationLoaded', $event)"
     />
-    <AnnotationEditorLayer v-bind="{ ...internalProps, ...alayerProps }" />
+    <AnnotationEditorLayer v-bind="{ ...internalProps, ...alayerProps }">
+      <slot name="editors" />
+    </AnnotationEditorLayer>
     <TextLayer
       v-if="textLayer"
       v-bind="{ ...internalProps, ...tlayerProps }"

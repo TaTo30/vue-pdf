@@ -1,4 +1,7 @@
-import { AnnotationEditorUIManager } from "pdfjs-dist";
+import {
+  AnnotationEditorParamsType,
+  AnnotationEditorUIManager,
+} from "pdfjs-dist";
 import { AnnotationEditorConstructor } from "../types";
 import { AnnotationEditorType } from "pdfjs-dist/build/pdf";
 
@@ -85,46 +88,6 @@ class SimpleAbortSignal implements AbortSignal {
 
 const abortSignal: AbortSignal = new SimpleAbortSignal();
 
-type InternalState = {
-  layers: Map<number, any>;
-  editors: Map<string, any>;
-  selection: Set<any>;
-  deletedAnnotationElements: Set<string>;
-  changedExisting: Map<string, string>;
-  undoStack: any[];
-  redoStack: any[];
-  mode: number;
-  activeEditor: any | null;
-  waiting: boolean;
-  preferences: Record<string, any>;
-  isEditing: boolean;
-  dragSession?: { started: boolean };
-};
-
-const __state = new WeakMap<MinimalUiManager, InternalState>();
-function getState(self: MinimalUiManager): InternalState {
-  let s = __state.get(self);
-  if (!s) {
-    s = {
-      layers: new Map(),
-      editors: new Map(),
-      selection: new Set(),
-      deletedAnnotationElements: new Set(),
-      changedExisting: new Map(),
-      undoStack: [],
-      redoStack: [],
-      mode: 0,
-      activeEditor: null,
-      waiting: false,
-      preferences: {},
-      isEditing: false,
-      dragSession: { started: false },
-    };
-    __state.set(self, s);
-  }
-  return s;
-}
-
 export default class MinimalUiManager extends AnnotationEditorUIManager {
   static get _keyboardManager() {
     console.log("_keyboardManager");
@@ -132,26 +95,34 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
   }
 
   _editorUndoBar: any | null = null;
-  _signal: AbortSignal = abortSignal;
   viewParameters: { realScale: number; rotation: number } = {
     realScale: 1,
     rotation: 0,
   };
   isShiftKeyDown = false;
   _supportsPinchToZoom = false;
-  private _currentLayer: any | null = null;
   _eventBus: any;
 
   editorsAvailable: AnnotationEditorConstructor[] = [];
 
-  constructor(pdfDocument: any) {
+  #editorDefaultParams: Function[] = [];
+
+  constructor(pdfDocument: any, editorsParams: Function[] = []) {
     console.log("MinimalUiManager constructor", pdfDocument);
+    console.log(editorsParams);
     const eventBus = {
       _on(event: any, any: any) {
         console.log("eventBus on", event, any);
       },
       dispatch(event: any, data: any) {
         console.log("eventBus dispatch", event, data);
+        switch (event) {
+          case "annotationeditorparamschanged":
+            break;
+
+          default:
+            break;
+        }
       },
     };
 
@@ -175,15 +146,11 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
     );
     this._supportsPinchToZoom = false;
     this._eventBus = eventBus;
-    this._signal = abortSignal;
+    this.#editorDefaultParams = editorsParams;
   }
 
   destroy(): void {
     console.log("destroy");
-  }
-
-  combinedSignal(_ac: any): AbortSignal {
-    return _ac.signal;
   }
 
   get mlManager(): any {
@@ -238,7 +205,6 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
 
   setCurrentDrawingSession(layer: any): void {
     console.log("setCurrentDrawingSession", layer);
-    this._currentLayer = layer;
   }
 
   setMainHighlightColorPicker(): void {
@@ -303,13 +269,10 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
 
   switchToMode(mode: any, callback: any): void {
     console.log("switchToMode", mode, callback);
-    getState(this).mode = Number(mode) || 0;
-    if (typeof callback === "function") callback();
   }
 
   setPreference(name: any, value: any): void {
     console.log("setPreference", name, value);
-    getState(this).preferences[String(name)] = value;
   }
 
   onSetPreference({ name, value }: { name: any; value: any }): void {
@@ -330,9 +293,8 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
     return null;
   }
 
-  /** @override */
+  // TODO: this function notify whenever text selection is disabled or enabled when editor is beign dragging
   disableUserSelect(): void {
-    // TODO: this function notify whenever text selection is disabled or enabled when editor is beign dragging
     console.log("disableUserSelect");
   }
 
@@ -370,10 +332,6 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
     console.log("getAndRemoveDataFromAnnotationStorage");
     return null;
   }
-
-  // addToAnnotationStorage(): void {
-  //   console.log("addToAnnotationStorage");
-  // }
 
   a11yAlert(messageId: any, args = null): void {
     console.log("a11yAlert", messageId, args);
@@ -432,60 +390,47 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
     super.setEditingState(isEditing);
   }
 
-  registerEditorTypes(vals: any): void {
-    this.editorsAvailable = vals;
-    console.log("registerEditorTypes", vals);
-  }
-
-  // getId(): string {
-  //   console.log("getId");
-  //   return `mui-${Math.random().toString(36).slice(2)}`;
-  // }
-
-  get currentLayer(): any {
-    console.log("currentLayer");
-    return this._currentLayer ?? null;
-  }
-
   getLayer(pageIndex: any): any {
     console.log("getLayer", pageIndex);
-    return getState(this).layers.get(Number(pageIndex)) || null;
   }
 
   get currentPageIndex(): number {
     console.log("currentPageIndex");
-    const active = getState(this).activeEditor;
-    return typeof active?.pageIndex === "number" ? active.pageIndex : 0;
+    return 0;
   }
 
   addLayer(layer: any): void {
-    // call super method
     console.log("addLayer", layer);
     super.addLayer(layer);
+
+    for (const editorParams of this.#editorDefaultParams) {
+      editorParams(this.updateParams.bind(this));
+    }
   }
 
   removeLayer(layer: any): void {
     console.log("removeLayer", layer);
-    getState(this).layers.delete(Number(layer.pageIndex));
+    super.removeLayer(layer);
   }
 
   async updateMode(mode: number): Promise<void> {
     console.log("updateMode", mode);
-    getState(this).mode = Number(mode) || 0;
   }
 
   addNewEditorFromKeyboard(): void {
     console.log("addNewEditorFromKeyboard");
   }
 
+  // TODO: Notifica el fin de la edicion, se puede utilizar para remover el modo de edicion
   updateToolbar(): undefined {
-    // TODO: Notifica el fin de la edicion, se puede utilizar para remover el modo de edicion
     console.log("updateToolbar");
     return undefined;
   }
 
-  updateParams(): void {
-    console.log("updateParams");
+  // TODO: llamar despues de addeditor para modificar parametros globales y tambien notificar cambios en parametros
+  updateParams(type: any, value: any): void {
+    console.log("updateParams", type, value, this.hasSelection);
+    super.updateParams(type, value);
   }
 
   showAllEditors(): void {
@@ -494,48 +439,28 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
 
   enableWaiting(mustWait?: boolean): void {
     console.log("enableWaiting", mustWait);
-    getState(this).waiting = !!mustWait;
   }
 
   addEditor(editor: any): void {
-    // call super method
-    console.log("addEditor", editor);
     super.addEditor(editor);
   }
 
   removeEditor(editor: any): void {
-    console.log("removeEditor", editor);
-    const s = getState(this);
-    s.editors.delete(editor.id);
-    const layer = s.layers.get(Number(editor.pageIndex));
-    if (layer?.editors) {
-      layer.editors = layer.editors.filter((e: any) => e !== editor);
-    }
-    s.selection.delete(editor);
-    if (s.activeEditor === editor) s.activeEditor = null;
+    super.removeEditor(editor);
   }
 
   addDeletedAnnotationElement(editor: any): void {
     console.log("addDeletedAnnotationElement", editor);
-    getState(this).deletedAnnotationElements.add(editor.id);
   }
 
   isDeletedAnnotationElement(annotationElementId: string): boolean {
     console.log("isDeletedAnnotationElement", annotationElementId);
-    return getState(this).deletedAnnotationElements.has(
-      String(annotationElementId),
-    );
+    return false;
   }
 
   removeDeletedAnnotationElement(editor: any): void {
     console.log("removeDeletedAnnotationElement", editor);
-    getState(this).deletedAnnotationElements.delete(editor.id);
   }
-
-  // setActiveEditor(editor: any): void {
-  //   console.log("setActiveEditor", editor);
-  //   getState(this).activeEditor = editor || null;
-  // }
 
   updateUI(): void {
     console.log("updateUI");
@@ -545,49 +470,6 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
     console.log("updateUIForDefaultProperties");
   }
 
-  // toggleSelected(editor: any): void {
-  //   console.log("toggleSelected", editor);
-  //   const s = getState(this);
-  //   if (s.selection.has(editor)) {
-  //     s.selection.delete(editor);
-  //     editor.isSelected = false;
-  //   } else {
-  //     s.selection.add(editor);
-  //     editor.isSelected = true;
-  //   }
-  // }
-
-  // setSelected(editor: any): void {
-  //   console.log("setSelected", editor);
-  //   const s = getState(this);
-  //   s.selection.add(editor);
-  //   editor.isSelected = true;
-  // }
-
-  // isSelected(editor: any): boolean {
-  //   console.log("isSelected", editor);
-  //   return getState(this).selection.has(editor);
-  // }
-
-  // get firstSelectedEditor(): any | null {
-  //   console.log("firstSelectedEditor");
-  //   const it = getState(this).selection.values();
-  //   const n = it.next();
-  //   return n.done ? null : n.value;
-  // }
-
-  // unselect(editor: any): void {
-  //   console.log("unselect", editor);
-  //   const s = getState(this);
-  //   s.selection.delete(editor);
-  //   editor.isSelected = false;
-  // }
-
-  // get hasSelection(): boolean {
-  //   console.log("hasSelection");
-  //   return getState(this).selection.size > 0;
-  // }
-
   get isEnterHandled(): boolean {
     console.log("isEnterHandled");
     return false;
@@ -595,94 +477,24 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
 
   undo(): void {
     console.log("undo");
-    const s = getState(this);
-    const cmd = s.undoStack.pop();
-    if (cmd?.undo) cmd.undo();
-    if (cmd) s.redoStack.push(cmd);
   }
 
   redo(): void {
     console.log("redo");
-    const s = getState(this);
-    const cmd = s.redoStack.pop();
-    if (cmd?.redo) cmd.redo();
-    if (cmd) s.undoStack.push(cmd);
-  }
-
-  addCommands(params: Object): void {
-    // TODO: Esta funcion permite habilitar acciones rapidas sobre un editor seleccionado
-    console.log("addCommands", params);
-
-    // getState(this).undoStack.push(params);
-    // getState(this).redoStack.length = 0;
   }
 
   cleanUndoStack(): void {
     console.log("cleanUndoStack");
-    const s = getState(this);
-    s.undoStack.length = 0;
-    s.redoStack.length = 0;
   }
 
-  delete(): void {
-    console.log("delete");
-    const s = getState(this);
-    for (const ed of Array.from(s.selection)) {
-      this.removeEditor(ed);
-    }
-  }
-
-  commitOrRemove(): void {
-    console.log("commitOrRemove");
-  }
+  // TODO: Evento de eliminacion de editores seleccionados
+  // delete(): void {
+  // }
 
   hasSomethingToControl(): boolean {
     console.log("hasSomethingToControl");
-    const s = getState(this);
-    return s.editors.size > 0 || s.selection.size > 0;
+    return false;
   }
-
-  // selectAll(): void {
-  //   console.log("selectAll");
-  //   const s = getState(this);
-  //   s.selection.clear();
-  //   for (const ed of s.editors.values()) {
-  //     s.selection.add(ed);
-  //     ed.isSelected = true;
-  //   }
-  // }
-
-  // unselectAll(): void {
-  //   console.log("unselectAll");
-  //   const s = getState(this);
-  //   for (const ed of s.selection) ed.isSelected = false;
-  //   s.selection.clear();
-  // }
-
-  // translateSelectedEditors(x: any, y: any, noCommit?: boolean): void {
-  //   console.log("translateSelectedEditors", x, y, noCommit);
-  //   super.translateSelectedEditors(x, y, noCommit);
-  //   // const s = getState(this);
-  //   // for (const ed of s.selection) {
-  //   //   ed.translate?.(Number(x) || 0, Number(y) || 0, !!noCommit);
-  //   // }
-  // }
-
-  // setUpDragSession(): void {
-  //   console.log("setUpDragSession");
-  //   super.setUpDragSession();
-  // }
-
-  // endDragSession(): boolean {
-  //   console.log("endDragSession");
-  //   return super.endDragSession();
-  // }
-
-  // dragSelectedEditors(tx: number, ty: number): void {
-  //   console.log("dragSelectedEditors", tx, ty);
-  //   super.dragSelectedEditors(tx, ty);
-  //   // this.translateSelectedEditors(tx, ty, true);
-  // }
 
   rebuild(): void {
     console.log("rebuild");
@@ -693,25 +505,10 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
     return false;
   }
 
-  // isActive(editor: any): editor is never {
-  //   console.log("isActive", editor);
-  //   return getState(this).activeEditor === editor;
-  // }
-
-  // getActive(): any | null {
-  //   console.log("getActive");
-  //   return getState(this).activeEditor;
-  // }
-
   getMode(): number {
-    // TODO: Esto puede variar realmente
+    console.log("getMode", AnnotationEditorType.FREETEXT);
     return AnnotationEditorType.FREETEXT;
   }
-
-  // isEditingMode(): boolean {
-  //   console.log("isEditingMode");
-  //   return getState(this).mode !== 0;
-  // }
 
   get imageManager(): any {
     console.log("imageManager");
@@ -733,7 +530,6 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
     id: any;
   }): void {
     console.log("addChangedExistingAnnotation", annotationElementId, id);
-    getState(this).changedExisting.set(String(annotationElementId), String(id));
   }
 
   removeChangedExistingAnnotation({
@@ -742,7 +538,6 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
     annotationElementId: any;
   }): void {
     console.log("removeChangedExistingAnnotation", annotationElementId);
-    getState(this).changedExisting.delete(String(annotationElementId));
   }
 
   renderAnnotationElement(): void {
