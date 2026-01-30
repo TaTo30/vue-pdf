@@ -18,7 +18,7 @@ const color = ref<string>(colorOptions[0]);
 const fontSize = ref<number>(20);
 const thickness = ref<number>(20);
 
-const toggle = ref(false);
+const toggle = ref(true);
 type EditorType = 0 | 3 | 9;
 const editorType = ref<EditorType>(3);
 
@@ -68,6 +68,7 @@ const rotation = ref<number>(0);
       text-layer
       :editor-layer="toggle"
       :editor-type="editorType"
+      :scale="2"
     >
       <template #editors>
         <PDFFreeTextAnnotation :color="color" :fontSize="fontSize" />

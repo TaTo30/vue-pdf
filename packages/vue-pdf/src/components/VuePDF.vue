@@ -123,7 +123,6 @@ const tlayerProps = computed(() => {
   };
 });
 const aelayerProps = computed(() => {
-  console.log(props.editorType);
   return {
     editorType: props.editorType,
     intent: props.intent,
@@ -249,13 +248,18 @@ function setupCanvas(viewport: PageViewport): HTMLCanvasElement {
   canvas.style.width = `${Math.floor(viewport.width)}px`;
   canvas.style.height = `${Math.floor(viewport.height)}px`;
 
-  // --scale-factor property
   container.value?.style.setProperty("--scale-factor", `${viewport.scale}`);
   container.value?.style.setProperty("--user-unit", `${viewport.userUnit}`);
+
+  // TODO: this attributes should be calculated according to device pixel ratio and scale, 1px works well for several cases
+  // but may not be accurate in some specific cases
+  container.value?.style.setProperty("--scale-round-y", `1px`);
+  container.value?.style.setProperty("--scale-round-x", `1px`);
   container.value?.style.setProperty(
     "--total-scale-factor",
     "calc(var(--scale-factor) * var(--user-unit))",
   );
+
   // Also setting dimension properties for load layer
   loadingLayer.value!.style.width = `${Math.floor(viewport.width)}px`;
   loadingLayer.value!.style.height = `${Math.floor(viewport.height)}px`;

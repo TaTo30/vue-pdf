@@ -178,19 +178,19 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
     console.log("removeShouldRescale");
   }
 
-  onScaleChanging({ scale }: { scale: any }): void {
-    console.log("onScaleChanging", scale);
-    const vp = this.viewParameters || { realScale: 1, rotation: 0 };
-    vp.realScale = Number(scale) || vp.realScale;
-    this.viewParameters = vp;
-  }
+  // onScaleChanging({ scale }: { scale: any }): void {
+  //   console.log("onScaleChanging", scale);
+  //   const vp = this.viewParameters || { realScale: 1, rotation: 0 };
+  //   vp.realScale = Number(scale) || vp.realScale;
+  //   this.viewParameters = vp;
+  // }
 
-  onRotationChanging({ pagesRotation }: { pagesRotation: any }): void {
-    console.log("onRotationChanging", pagesRotation);
-    const vp = this.viewParameters || { realScale: 1, rotation: 0 };
-    vp.rotation = Number(pagesRotation) || vp.rotation;
-    this.viewParameters = vp;
-  }
+  // onRotationChanging({ pagesRotation }: { pagesRotation: any }): void {
+  //   console.log("onRotationChanging", pagesRotation);
+  //   const vp = this.viewParameters || { realScale: 1, rotation: 0 };
+  //   vp.rotation = Number(pagesRotation) || vp.rotation;
+  //   this.viewParameters = vp;
+  // }
 
   commentSelection(): void {
     console.log("commentSelection");

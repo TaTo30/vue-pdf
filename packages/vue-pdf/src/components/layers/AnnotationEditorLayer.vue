@@ -43,41 +43,50 @@ async function render() {
   const page = props.page!;
   const viewport = props.viewport!;
 
+  if (!uiManager) {
+    uiManager = new MinimalUiManager(props.document, editorsParams);
+  }
+
   // Wait for both text layer and annotation layer dependencies to resolve
   const [textLayerElement, annotationLayerInstance] = await Promise.all([
     textLayerProvider.promise,
     annotationLayerProvider.promise,
   ]);
 
-  var drawLayer = new PDFJS.DrawLayer({ pageIndex: page?._pageIndex });
+  const clonedViewport = viewport.clone({ dontFlip: true });
+  if (editor) {
+    editor.pause(true);
+    editor.update({ viewport: clonedViewport });
+    editor.pause(false);
+    uiManager.updateMode(props.editorType);
+    return;
+  }
 
+  const drawLayer = new PDFJS.DrawLayer({ pageIndex: page?._pageIndex });
   const parentdrawer = document.getElementById("drawlayer");
   drawLayer.setParent(parentdrawer!);
 
-  if (!editor) {
-    uiManager = new MinimalUiManager(props.document, editorsParams);
-    editor = new PDFJS.AnnotationEditorLayer({
-      uiManager: uiManager,
-      div: layer.value!,
-      viewport: viewport!.clone({ dontFlip: true }),
-      enabled: true,
-      pageIndex: page!.pageNumber - 1,
-      l10n: new GenericL10n("en-US"),
-      textLayer: textLayerElement
-        ? ({ div: textLayerElement } as any as HTMLDivElement)
-        : undefined, // <-- Type casting to satisfy typescript bllsht :)
-      drawLayer: drawLayer,
-      mode: PDFJS.AnnotationEditorType.NONE,
-      structTreeLayer: null,
-      accessibilityManager: undefined,
-      annotationLayer: annotationLayerInstance,
-    });
+  editor = new PDFJS.AnnotationEditorLayer({
+    uiManager: uiManager,
+    div: layer.value!,
+    viewport: viewport!.clone({ dontFlip: true }),
+    enabled: true,
+    pageIndex: page!.pageNumber - 1,
+    l10n: new GenericL10n("en-US"),
+    textLayer: textLayerElement
+      ? ({ div: textLayerElement } as any as HTMLDivElement)
+      : undefined, // <-- Type casting to satisfy typescript bllsht :)
+    drawLayer: drawLayer,
+    mode: PDFJS.AnnotationEditorType.NONE,
+    structTreeLayer: null,
+    accessibilityManager: undefined,
+    annotationLayer: annotationLayerInstance,
+  });
 
-    editor.render({ viewport: viewport!.clone({ dontFlip: true }) });
-    editor.enable();
-  }
+  editor.render({ viewport: viewport!.clone({ dontFlip: true }) });
+  editor.enable();
 
-  uiManager?.updateMode(props.editorType);
+  uiManager.updateMode(props.editorType);
 }
 
 function checkEditorType() {
@@ -98,13 +107,11 @@ function checkEditorType() {
 watch(
   () => [props.viewport, props.editorType],
   () => {
-    console.log(props.editorType);
     if (props.page && props.viewport && layer.value) checkEditorType();
   },
 );
 
 onMounted(() => {
-  console.log(props.editorType);
   if (props.page && props.viewport && layer.value) checkEditorType();
 });
 </script>
