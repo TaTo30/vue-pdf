@@ -1,89 +1,115 @@
 <script setup lang="ts">
 import * as PDFJS from "pdfjs-dist";
-import { inject, onMounted, provide, Ref, ref, toRaw, watch } from "vue";
+import { inject, onMounted, provide, Ref, ref, watch } from "vue";
 
-import type { PDFDocumentProxy, PDFPageProxy, PageViewport } from "pdfjs-dist";
+import type { PDFPageProxy, PageViewport } from "pdfjs-dist";
 import { GenericL10n } from "../utils/l10n";
 
 import MinimalUiManager from "../utils/manager";
 import {
-  ANNOTATION_LAYER_INSTANCE_KEY,
-  TEXT_LAYER_CONTAINER_KEY,
   ANNOTATION_EDITORS_PARAMS_KEY,
+  EDITOR_ANNOTATION_LAYER_OBJ_KEY,
+  EDITOR_TEXT_LAYER_OBJ_KEY,
 } from "../utils/symbols";
 
 const props = defineProps<{
   page?: PDFPageProxy;
   viewport?: PageViewport;
-  document?: PDFDocumentProxy;
-  annotationsFilter?: string[];
-  annotationsMap?: object;
-  imageResourcesPath?: string;
-  hideForms?: boolean;
-  enableScripting?: boolean;
+  document?: PDFJS.PDFDocumentProxy;
   intent: string;
+  editorType: number;
 }>();
 
 const layer = ref<HTMLDivElement>();
+
+let uiManager: MinimalUiManager | null = null;
 let editor: any = null;
 
 const editorsParams: Function[] = [];
 provide(ANNOTATION_EDITORS_PARAMS_KEY, editorsParams);
 
-const textLayerInstance: Ref<HTMLDivElement | null> = inject(
-  TEXT_LAYER_CONTAINER_KEY,
-)!;
-const annotationLayerInstance: Ref<PDFJS.AnnotationLayer | null> = inject(
-  ANNOTATION_LAYER_INSTANCE_KEY,
-)!;
+const textLayerProvider = inject(EDITOR_TEXT_LAYER_OBJ_KEY)! as {
+  container: Ref<HTMLDivElement | undefined>;
+  promise: Promise<HTMLDivElement | undefined>;
+  resolve: (value: HTMLDivElement | undefined) => void;
+};
+const annotationLayerProvider = inject(EDITOR_ANNOTATION_LAYER_OBJ_KEY)! as {
+  instance: Ref<PDFJS.AnnotationLayer | undefined>;
+  promise: Promise<PDFJS.AnnotationLayer | undefined>;
+  resolve: (value: PDFJS.AnnotationLayer | undefined) => void;
+};
 
 async function render() {
-  layer.value!.replaceChildren?.();
-
   const page = props.page!;
   const viewport = props.viewport!;
 
+  // Wait for both text layer and annotation layer dependencies to resolve
+  const [textLayerElement, annotationLayerInstance] = await Promise.all([
+    textLayerProvider.promise,
+    annotationLayerProvider.promise,
+  ]);
+
   var drawLayer = new PDFJS.DrawLayer({ pageIndex: page?._pageIndex });
-  const uiManager = new MinimalUiManager(props.document, editorsParams);
 
-  editor = new PDFJS.AnnotationEditorLayer({
-    uiManager: uiManager,
-    div: layer.value!,
-    viewport: viewport!.clone({ dontFlip: true }),
-    enabled: true,
-    pageIndex: page!.pageNumber - 1,
-    l10n: new GenericL10n("en-US"),
-    textLayer: textLayerInstance.value!,
-    drawLayer: drawLayer,
-    mode: PDFJS.AnnotationEditorType.FREETEXT,
-    structTreeLayer: null,
-    accessibilityManager: undefined,
-    annotationLayer: annotationLayerInstance.value!,
-  });
+  const parentdrawer = document.getElementById("drawlayer");
+  drawLayer.setParent(parentdrawer!);
 
-  editor.render({ viewport: viewport!.clone({ dontFlip: true }) });
-  editor.enable();
+  if (!editor) {
+    uiManager = new MinimalUiManager(props.document, editorsParams);
+    editor = new PDFJS.AnnotationEditorLayer({
+      uiManager: uiManager,
+      div: layer.value!,
+      viewport: viewport!.clone({ dontFlip: true }),
+      enabled: true,
+      pageIndex: page!.pageNumber - 1,
+      l10n: new GenericL10n("en-US"),
+      textLayer: textLayerElement
+        ? ({ div: textLayerElement } as any as HTMLDivElement)
+        : undefined, // <-- Type casting to satisfy typescript bllsht :)
+      drawLayer: drawLayer,
+      mode: PDFJS.AnnotationEditorType.NONE,
+      structTreeLayer: null,
+      accessibilityManager: undefined,
+      annotationLayer: annotationLayerInstance,
+    });
+
+    editor.render({ viewport: viewport!.clone({ dontFlip: true }) });
+    editor.enable();
+  }
+
+  uiManager?.updateMode(props.editorType);
+}
+
+function checkEditorType() {
+  const whiteList = [
+    PDFJS.AnnotationEditorType.FREETEXT,
+    PDFJS.AnnotationEditorType.HIGHLIGHT,
+    PDFJS.AnnotationEditorType.NONE,
+    PDFJS.AnnotationEditorType.DISABLE,
+  ];
+
+  if (!whiteList.includes(props.editorType)) {
+    console.warn(`[vue-pdf] Unsupported editor type: ${props.editorType}.`);
+  } else {
+    render();
+  }
 }
 
 watch(
-  () => props.viewport,
+  () => [props.viewport, props.editorType],
   () => {
-    if (props.page && props.viewport && layer.value) render();
+    console.log(props.editorType);
+    if (props.page && props.viewport && layer.value) checkEditorType();
   },
 );
 
 onMounted(() => {
-  if (props.page && props.viewport && layer.value) render();
+  console.log(props.editorType);
+  if (props.page && props.viewport && layer.value) checkEditorType();
 });
 </script>
 
 <template>
-  <div ref="layer" class="annotationEditorLayer" style="z-index: 3" />
+  <div ref="layer" class="annotationEditorLayer" />
   <slot></slot>
-  <Teleport to="body">
-    <button @click="editor.disable()">desh</button>
-    <button @click="editor.enable()">hab</button>
-  </Teleport>
 </template>
-
-<style></style>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as PDFJS from "pdfjs-dist";
-import { inject, onBeforeUnmount, onMounted, Ref, ref, watch } from "vue";
+import { inject, onMounted, Ref, ref, watch } from "vue";
 
 import type { PDFPageProxy, PageViewport } from "pdfjs-dist";
 import type {
@@ -9,7 +9,7 @@ import type {
   TextLayerLoadedEventPayload,
 } from "../types";
 import { findMatches, highlightMatches, resetDivs } from "../utils/highlight";
-import { TEXT_LAYER_CONTAINER_KEY } from "../utils/symbols";
+import { EDITOR_TEXT_LAYER_OBJ_KEY } from "../utils/symbols";
 
 const props = defineProps<{
   page?: PDFPageProxy;
@@ -27,11 +27,12 @@ const emit = defineEmits<{
 const layer = ref<HTMLDivElement>();
 const endContent = ref<HTMLDivElement>();
 let textDivs: HTMLElement[] = [];
-let textLayerTask: PDFJS.TextLayer | null = null;
+let textLayerTask: PDFJS.TextLayer | undefined;
 
-const textLayerContainer: Ref<HTMLDivElement | null> = inject(
-  TEXT_LAYER_CONTAINER_KEY,
-)!;
+const textLayerContainerProvider = inject(EDITOR_TEXT_LAYER_OBJ_KEY)! as {
+  promise: Promise<HTMLDivElement | undefined>;
+  resolve: (value: HTMLDivElement | undefined) => void;
+};
 
 function getHighlightOptionsWithDefaults(): HighlightOptions {
   return Object.assign(
@@ -40,7 +41,7 @@ function getHighlightOptionsWithDefaults(): HighlightOptions {
       ignoreCase: true,
       completeWords: false,
     },
-    props.highlightOptions
+    props.highlightOptions,
   );
 }
 
@@ -63,7 +64,7 @@ async function findAndHighlight(reset = false) {
     const matches = findMatches(
       queries,
       textContent!,
-      getHighlightOptionsWithDefaults()
+      getHighlightOptionsWithDefaults(),
     );
     highlightMatches(matches, textContent!, textDivs);
     emit("highlight", {
@@ -100,7 +101,7 @@ async function render() {
     emit("textLoaded", { textDivs, textContent });
     setEOC();
     findAndHighlight();
-    textLayerContainer.value = layer.value!;
+    textLayerContainerProvider.resolve(layer.value!);
   } catch (e) {
     // Ignore render cancelled errors
   }
@@ -147,7 +148,6 @@ onMounted(() => {
   <div
     ref="layer"
     class="textLayer"
-    style="display: block"
     @mousedown="onMouseDown"
     @mouseup="onMouseUp"
   />

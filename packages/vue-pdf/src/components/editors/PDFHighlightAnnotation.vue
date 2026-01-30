@@ -6,7 +6,7 @@ import { ANNOTATION_EDITORS_PARAMS_KEY } from "../utils/symbols";
 
 const props = defineProps<{
   color: string;
-  fontSize: number;
+  thickness: number;
 }>();
 
 const params = inject<Function[]>(ANNOTATION_EDITORS_PARAMS_KEY);
@@ -19,14 +19,17 @@ function editorParam(fn: Function) {
 }
 
 function updateParams() {
-  updateParamsFn?.(AnnotationEditorParamsType.FREETEXT_COLOR, props.color);
-  updateParamsFn?.(AnnotationEditorParamsType.FREETEXT_SIZE, props.fontSize);
+  updateParamsFn?.(AnnotationEditorParamsType.HIGHLIGHT_COLOR, props.color);
+  updateParamsFn?.(
+    AnnotationEditorParamsType.HIGHLIGHT_THICKNESS,
+    props.thickness,
+  );
 }
 
 params?.push(editorParam);
 
 watch(
-  () => [props.color, props.fontSize],
+  () => [props.color, props.thickness],
   () => {
     updateParams();
   },

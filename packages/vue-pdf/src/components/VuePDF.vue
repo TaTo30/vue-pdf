@@ -37,10 +37,9 @@ import AnnotationLayer from "./layers/AnnotationLayer.vue";
 import AnnotationEditorLayer from "./layers/AnnotationEditorLayer.vue";
 import TextLayer from "./layers/TextLayer.vue";
 import XFALayer from "./layers/XFALayer.vue";
-
 import {
-  ANNOTATION_LAYER_INSTANCE_KEY,
-  TEXT_LAYER_CONTAINER_KEY,
+  EDITOR_ANNOTATION_LAYER_OBJ_KEY,
+  EDITOR_TEXT_LAYER_OBJ_KEY,
 } from "./utils/symbols";
 
 interface InternalProps {
@@ -71,10 +70,14 @@ const props = withDefaults(
     highlightText?: string | string[];
     highlightOptions?: HighlightOptions;
     highlightPages?: number[];
+    // TODO: this prop is currently not working properly when used reactively
+    editorLayer?: boolean;
+    editorType?: number;
   }>(),
   {
     page: 1,
     scale: 1,
+    editorType: 0,
     intent: "display",
     autoDestroy: false,
   },
@@ -90,7 +93,8 @@ const emit = defineEmits<{
 }>();
 
 // Template Refs
-const container = ref<HTMLSpanElement>();
+const container = ref<HTMLDivElement>();
+const canvasWrapper = ref<HTMLDivElement>();
 const loadingLayer = ref<HTMLSpanElement>();
 const loading = ref(false);
 let renderTask: RenderTask;
@@ -118,12 +122,30 @@ const tlayerProps = computed(() => {
     highlightPages: props.highlightPages,
   };
 });
+const aelayerProps = computed(() => {
+  console.log(props.editorType);
+  return {
+    editorType: props.editorType,
+    intent: props.intent,
+  };
+});
 
-const alayerInstance = ref<PDFJS.AnnotationLayer | null>(null);
-const tlayerContainer = ref<PDFJS.TextLayer | null>(null);
+// Promise resolvers for async dependency management
+let alayerResolver: (value: PDFJS.AnnotationLayer | undefined) => void;
+let tlayerResolver: (value: HTMLDivElement | undefined) => void;
 
-provide(ANNOTATION_LAYER_INSTANCE_KEY, alayerInstance);
-provide(TEXT_LAYER_CONTAINER_KEY, tlayerContainer);
+provide(EDITOR_ANNOTATION_LAYER_OBJ_KEY, {
+  promise: new Promise<PDFJS.AnnotationLayer | undefined>((resolve) => {
+    alayerResolver = resolve;
+  }),
+  resolve: (value: PDFJS.AnnotationLayer | undefined) => alayerResolver(value),
+});
+provide(EDITOR_TEXT_LAYER_OBJ_KEY, {
+  promise: new Promise<HTMLDivElement | undefined>((resolve) => {
+    tlayerResolver = resolve;
+  }),
+  resolve: (value: HTMLDivElement | undefined) => tlayerResolver(value),
+});
 
 function getWatermarkOptionsWithDefaults(): WatermarkOptions {
   return Object.assign(
@@ -150,8 +172,9 @@ function getRotation(rotation: number): number {
 function getScale(page: PDFPageProxy): number {
   let fscale = props.scale;
   if (props.fitParent) {
-    const parentWidth: number = (container.value!.parentNode! as HTMLElement)
-      .clientWidth;
+    const parentWidth: number = (
+      canvasWrapper.value!.parentNode! as HTMLElement
+    ).clientWidth;
     const scale1Width = page.getViewport({ scale: 1 }).width;
     fscale = parentWidth / scale1Width;
   } else if (props.width) {
@@ -202,7 +225,7 @@ function paintWatermark(zoomRatio = 1.0) {
 
 function getCurrentCanvas(): HTMLCanvasElement | null {
   let oldCanvas = null;
-  container.value?.childNodes.forEach((el) => {
+  canvasWrapper.value?.childNodes.forEach((el) => {
     if ((el as HTMLElement).tagName === "CANVAS") oldCanvas = el;
   });
   return oldCanvas;
@@ -278,7 +301,7 @@ function renderPage(pageNum: number) {
       };
 
       if (canvas?.getAttribute("role") !== "main") {
-        if (oldCanvas) container.value?.replaceChild(canvas, oldCanvas);
+        if (oldCanvas) canvasWrapper.value?.replaceChild(canvas, oldCanvas);
       } else {
         canvas.removeAttribute("role");
       }
@@ -363,23 +386,32 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="container" style="position: relative; display: block">
-    <canvas dir="ltr" style="display: block" role="main" />
-    <AnnotationLayer
-      v-if="annotationLayer"
-      v-bind="{ ...internalProps, ...alayerProps }"
-      @annotation="emit('annotation', $event)"
-      @annotation-loaded="emit('annotationLoaded', $event)"
-    />
-    <AnnotationEditorLayer v-bind="{ ...internalProps, ...alayerProps }">
-      <slot name="editors" />
-    </AnnotationEditorLayer>
+  <div
+    ref="container"
+    class="page"
+    style="position: relative; background-clip: content-box"
+  >
+    <div ref="canvasWrapper" id="drawlayer" class="canvasWrapper">
+      <canvas dir="ltr" role="main" />
+    </div>
     <TextLayer
       v-if="textLayer"
       v-bind="{ ...internalProps, ...tlayerProps }"
       @highlight="emit('highlight', $event)"
       @text-loaded="emit('textLoaded', $event)"
     />
+    <AnnotationLayer
+      v-if="annotationLayer"
+      v-bind="{ ...internalProps, ...alayerProps }"
+      @annotation="emit('annotation', $event)"
+      @annotation-loaded="emit('annotationLoaded', $event)"
+    />
+    <AnnotationEditorLayer
+      v-if="editorLayer"
+      v-bind="{ ...internalProps, ...aelayerProps }"
+    >
+      <slot name="editors" />
+    </AnnotationEditorLayer>
     <XFALayer v-bind="{ ...internalProps }" @xfa-loaded="emit('xfaLoaded')" />
     <div v-show="loading" ref="loadingLayer" style="position: absolute">
       <slot />
