@@ -3,8 +3,10 @@ import { FakeEventBus } from "./fake_evenbus";
 
 import type {
   AnnotationEditorConstructor,
+  CommentEditorOpts,
   HighlightEditorColors,
 } from "../types";
+import { CommentManager } from "./comment_manager";
 
 export default class MinimalUiManager extends AnnotationEditorUIManager {
   editorsAvailable: AnnotationEditorConstructor[] = [];
@@ -12,6 +14,7 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
 
   constructor(
     pdfDocument: any,
+    commentPopup: CommentEditorOpts,
     highlightColors: HighlightEditorColors,
     editorsParams: Function[] = [],
   ) {
@@ -29,7 +32,7 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
       null,
       null,
       null,
-      null,
+      commentPopup.fn ? new CommentManager(commentPopup) : null,
       null,
       eventBus,
       pdfDocument,
@@ -79,30 +82,6 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
   }
 
   editAltText(): void {}
-
-  hasCommentManager(): boolean {
-    return false;
-  }
-
-  editComment(): void {}
-
-  selectComment(): void {}
-
-  updateComment(): void {}
-
-  updatePopupColor(): void {}
-
-  removeComment(): void {}
-
-  toggleComment(): void {}
-
-  makeCommentColor(color: any, opacity: any): any {
-    return { color, opacity };
-  }
-
-  getCommentDialogElement(): any {
-    return null;
-  }
 
   // NOTE: Properties and methods related to signatures
   getSignature(): void {}

@@ -130,3 +130,8 @@ export type AnnotationEditorConstructor = new (
 export interface HighlightEditorColors {
   [key: string]: [string, string];
 }
+
+export interface CommentEditorOpts {
+  fn: Function | null;
+  request: Function | null;
+}

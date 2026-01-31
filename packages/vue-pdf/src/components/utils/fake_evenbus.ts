@@ -12,9 +12,7 @@ export class FakeEventBus {
     this.uiManager = uiManager;
   }
 
-  _on(event: string, callback: Function): void {
-    console.log("eventBus _on", event, callback);
-  }
+  _on(event: string, callback: Function): void {}
 
   on(event: string, callback: Function): void {
     this._on(event, callback);
@@ -23,7 +21,6 @@ export class FakeEventBus {
   // In the original eventbus this dispatch method is actually the emitter
   // but for the sake of this library we will be using it as the listener
   dispatch(event: string, data: any): void {
-    console.log("eventBus dispatch", event, data);
     if (this.uiManager) {
       switch (event) {
         case "switchannotationeditorparams":

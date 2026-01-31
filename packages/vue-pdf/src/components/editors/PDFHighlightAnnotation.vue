@@ -9,14 +9,6 @@ import {
 
 import type { HighlightEditorColors } from "../types";
 
-const DEFAULT_COLORS: HighlightEditorColors = {
-  yellow: ["#FFEB3B", "#FFFFCC"],
-  green: ["#8BC34A", "#53FFBC"],
-  pink: ["#FFCBE6", "#F6B8FF"],
-  red: ["#F44336", "#FF4F5F"],
-  blue: ["#2196F3", "#80EBFF"],
-};
-
 const props = defineProps<{
   color: string;
   thickness: number;
@@ -45,7 +37,7 @@ function updateParams() {
 
 params?.push(editorParam);
 highlightColors.fn = () => {
-  return props.colorOptions ?? DEFAULT_COLORS;
+  return props.colorOptions;
 };
 
 watch(
