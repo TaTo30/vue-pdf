@@ -2,14 +2,31 @@
 import { AnnotationEditorParamsType } from "pdfjs-dist";
 
 import { inject, watch } from "vue";
-import { ANNOTATION_EDITORS_PARAMS_KEY } from "../utils/symbols";
+import {
+  ANNOTATION_EDITORS_PARAMS_KEY,
+  HIGHLIGHT_EDITOR_COLORS_KEY,
+} from "../utils/symbols";
+
+import type { HighlightEditorColors } from "../types";
+
+const DEFAULT_COLORS: HighlightEditorColors = {
+  yellow: ["#FFEB3B", "#FFFFCC"],
+  green: ["#8BC34A", "#53FFBC"],
+  pink: ["#FFCBE6", "#F6B8FF"],
+  red: ["#F44336", "#FF4F5F"],
+  blue: ["#2196F3", "#80EBFF"],
+};
 
 const props = defineProps<{
   color: string;
   thickness: number;
+  colorOptions?: HighlightEditorColors;
 }>();
 
 const params = inject<Function[]>(ANNOTATION_EDITORS_PARAMS_KEY);
+const highlightColors = inject<{ fn: Function | null }>(
+  HIGHLIGHT_EDITOR_COLORS_KEY,
+)!;
 
 let updateParamsFn: Function | null = null;
 
@@ -27,11 +44,23 @@ function updateParams() {
 }
 
 params?.push(editorParam);
+highlightColors.fn = () => {
+  return props.colorOptions ?? DEFAULT_COLORS;
+};
 
 watch(
   () => [props.color, props.thickness],
   () => {
     updateParams();
+  },
+);
+
+watch(
+  () => props.colorOptions,
+  () => {
+    console.warn(
+      "[vue-pdf] Highlight color options can only be set once during initialization.",
+    );
   },
 );
 </script>

@@ -8,6 +8,7 @@ import {
   usePDF,
   PDFFreeTextAnnotation,
   PDFHighlightAnnotation,
+  PDFInkAnnotation,
 } from "@tato30/vue-pdf";
 
 import "pdfjs-dist/web/pdf_viewer.css";
@@ -17,6 +18,7 @@ const color = ref<string>(colorOptions[0]);
 
 const fontSize = ref<number>(20);
 const thickness = ref<number>(20);
+const opacity = ref<number>(1.0);
 
 const toggle = ref(true);
 type EditorType = 0 | 3 | 9;
@@ -37,6 +39,7 @@ const rotation = ref<number>(0);
     <select v-model="editorType">
       <option :value="3">FREETEXT</option>
       <option :value="9">HIGHLIGHT</option>
+      <option :value="15">INK</option>
       <option :value="0">NONE</option>
     </select>
   </label>
@@ -59,6 +62,11 @@ const rotation = ref<number>(0);
     <input type="range" min="1" max="40" v-model.number="thickness" />
     {{ thickness }}
   </label>
+  <label>
+    Opacity:
+    <input type="range" min="0" max="1" step="0.01" v-model.number="opacity" />
+    {{ opacity }}
+  </label>
   {{ editorType }}
   <div style="display: flex; align-items: center">
     <VuePDF
@@ -68,11 +76,15 @@ const rotation = ref<number>(0);
       text-layer
       :editor-layer="toggle"
       :editor-type="editorType"
-      :scale="2"
     >
       <template #editors>
         <PDFFreeTextAnnotation :color="color" :fontSize="fontSize" />
         <PDFHighlightAnnotation :color="color" :thickness="thickness" />
+        <PDFInkAnnotation
+          :color="color"
+          :thickness="thickness"
+          :opacity="opacity"
+        />
       </template>
     </VuePDF>
   </div>

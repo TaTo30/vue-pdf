@@ -10,6 +10,7 @@ import {
   ANNOTATION_EDITORS_PARAMS_KEY,
   EDITOR_ANNOTATION_LAYER_OBJ_KEY,
   EDITOR_TEXT_LAYER_OBJ_KEY,
+  HIGHLIGHT_EDITOR_COLORS_KEY,
 } from "../utils/symbols";
 
 const props = defineProps<{
@@ -23,10 +24,12 @@ const props = defineProps<{
 const layer = ref<HTMLDivElement>();
 
 let uiManager: MinimalUiManager | null = null;
-let editor: any = null;
+let editor: PDFJS.AnnotationEditorLayer | null = null;
 
 const editorsParams: Function[] = [];
+const getHighlightColors: { fn: Function | null } = { fn: null };
 provide(ANNOTATION_EDITORS_PARAMS_KEY, editorsParams);
+provide(HIGHLIGHT_EDITOR_COLORS_KEY, getHighlightColors);
 
 const textLayerProvider = inject(EDITOR_TEXT_LAYER_OBJ_KEY)! as {
   container: Ref<HTMLDivElement | undefined>;
@@ -44,7 +47,12 @@ async function render() {
   const viewport = props.viewport!;
 
   if (!uiManager) {
-    uiManager = new MinimalUiManager(props.document, editorsParams);
+    const highlightColors = getHighlightColors.fn?.();
+    uiManager = new MinimalUiManager(
+      props.document,
+      highlightColors,
+      editorsParams,
+    );
   }
 
   // Wait for both text layer and annotation layer dependencies to resolve
@@ -57,6 +65,8 @@ async function render() {
   if (editor) {
     editor.pause(true);
     editor.update({ viewport: clonedViewport });
+    uiManager.onRotationChanging({ pagesRotation: clonedViewport.rotation });
+    uiManager.onScaleChanging({ scale: clonedViewport.scale });
     editor.pause(false);
     uiManager.updateMode(props.editorType);
     return;
@@ -93,6 +103,7 @@ function checkEditorType() {
   const whiteList = [
     PDFJS.AnnotationEditorType.FREETEXT,
     PDFJS.AnnotationEditorType.HIGHLIGHT,
+    PDFJS.AnnotationEditorType.INK,
     PDFJS.AnnotationEditorType.NONE,
     PDFJS.AnnotationEditorType.DISABLE,
   ];

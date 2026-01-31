@@ -126,3 +126,7 @@ export interface AnnotationEditorParams {
 export type AnnotationEditorConstructor = new (
   params: AnnotationEditorParams,
 ) => any;
+
+export interface HighlightEditorColors {
+  [key: string]: [string, string];
+}
