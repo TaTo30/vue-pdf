@@ -2,18 +2,19 @@
 <!-- Use this component to play with the main components -->
 <script setup lang="ts">
 import { ref } from "vue";
-import pdf14 from "@samples/issue126.pdf";
+import pdf14 from "@samples/issue133.pdf";
 import {
   VuePDF,
   usePDF,
   PDFFreeTextAnnotation,
   PDFHighlightAnnotation,
   PDFInkAnnotation,
+  PDFCommentAnnotation,
 } from "@tato30/vue-pdf";
 
 import "pdfjs-dist/web/pdf_viewer.css";
 const { pdf, download } = usePDF(pdf14);
-const colorOptions = ["blue", "red", "green", "yellow", "purple", "orange"];
+const colorOptions = ["#2196F3", "red", "green", "yellow", "purple", "orange"];
 const color = ref<string>(colorOptions[0]);
 
 const fontSize = ref<number>(20);
@@ -22,9 +23,14 @@ const opacity = ref<number>(1.0);
 
 const toggle = ref(true);
 type EditorType = 0 | 3 | 9;
-const editorType = ref<EditorType>(3);
+const editorType = ref<EditorType>(9);
 
 const rotation = ref<number>(0);
+
+function addCommentText(cb: Function) {
+  const data = prompt("Enter comment text:");
+  cb(data);
+}
 </script>
 
 <template>
@@ -85,6 +91,7 @@ const rotation = ref<number>(0);
           :thickness="thickness"
           :opacity="opacity"
         />
+        <PDFCommentAnnotation @add-comment="addCommentText" />
       </template>
     </VuePDF>
   </div>

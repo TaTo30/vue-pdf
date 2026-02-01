@@ -25,6 +25,7 @@ function toggle(
   editor: any,
   isSelected: boolean,
   visibility: any,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   isEditable: boolean,
 ) {
   if (!editor) {
@@ -56,10 +57,12 @@ function toggle(
     hasPopup: true,
   });
 
-  let [posX, posY] = editor.commentPopupPosition;
-  editor.elementBeforePopup.after(popupContainer.value);
-  position.value.x = posX * 100;
-  position.value.y = posY * 100;
+  if (editor.commentPopupPosition) {
+    let [posX, posY] = editor.commentPopupPosition;
+    editor.elementBeforePopup.after(popupContainer.value);
+    position.value.x = posX * 100;
+    position.value.y = posY * 100;
+  }
 
   const { contentsObj, richText, creationDate, modificationDate } =
     editor.getData();

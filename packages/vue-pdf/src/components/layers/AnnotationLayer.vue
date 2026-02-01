@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as PDFJS from "pdfjs-dist";
-import { inject, onMounted, Ref, ref, toRaw, watch } from "vue";
+import { inject, onMounted, ref, toRaw, watch } from "vue";
 
 import type { PDFDocumentProxy, PDFPageProxy, PageViewport } from "pdfjs-dist";
 import type { AnnotationLayerParameters } from "pdfjs-dist/types/src/display/annotation_layer";

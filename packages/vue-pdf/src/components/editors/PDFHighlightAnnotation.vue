@@ -10,7 +10,7 @@ import {
 import type { HighlightEditorColors } from "../types";
 
 const props = defineProps<{
-  color: string;
+  color: string; // Note: color value must match with the values defined in HighlightEditorColors
   thickness: number;
   colorOptions?: HighlightEditorColors;
 }>();
@@ -56,3 +56,8 @@ watch(
   },
 );
 </script>
+
+<template>
+  <!-- This component does not render anything. -->
+  <div style="display: none"></div>
+</template>

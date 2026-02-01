@@ -34,3 +34,8 @@ watch(
   },
 );
 </script>
+
+<template>
+  <!-- This component does not render anything. -->
+  <div style="display: none"></div>
+</template>
