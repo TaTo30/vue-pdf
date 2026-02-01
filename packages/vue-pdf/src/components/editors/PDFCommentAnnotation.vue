@@ -4,13 +4,13 @@ import * as PDFJS from "pdfjs-dist";
 import { inject, ref, useTemplateRef } from "vue";
 
 import { COMMENT_EDITOR_KEY } from "../utils/symbols";
-import type { CommentEditorOpts } from "../types";
+import type { AnnotationFnRequestParams } from "../types";
 
 const emits = defineEmits<{
   (event: "addComment", payload: Function): void;
 }>();
 
-const popupDispatcher = inject<CommentEditorOpts>(COMMENT_EDITOR_KEY)!;
+const popupDispatcher = inject<AnnotationFnRequestParams>(COMMENT_EDITOR_KEY)!;
 
 const show = ref(false);
 const selected = ref(false);
@@ -91,9 +91,9 @@ function formatDate(input: string): string {
 }
 
 function editComment() {
-  currentEditor?.editComment({ height: 0 });
   show.value = false;
   selected.value = false;
+  currentEditor?.editComment({ height: 0 });
   currentEditor.focus();
 }
 

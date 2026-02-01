@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { AnnotationEditorUIManager } from "pdfjs-dist";
 import { FakeEventBus } from "./fake_evenbus";
 
 import type {
   AnnotationEditorConstructor,
-  CommentEditorOpts,
+  AnnotationFnRequestParams,
   HighlightEditorColors,
 } from "../types";
 import { CommentManager } from "./comment_manager";
@@ -11,10 +12,13 @@ import { CommentManager } from "./comment_manager";
 export default class MinimalUiManager extends AnnotationEditorUIManager {
   editorsAvailable: AnnotationEditorConstructor[] = [];
   #editorDefaultParams: Function[] = [];
+  #commentOpts: AnnotationFnRequestParams;
+  #stampOpts: AnnotationFnRequestParams;
 
   constructor(
     pdfDocument: any,
-    commentPopup: CommentEditorOpts,
+    commentOpts: AnnotationFnRequestParams,
+    stampOpts: AnnotationFnRequestParams,
     highlightColors: HighlightEditorColors,
     editorsParams: Function[] = [],
   ) {
@@ -32,7 +36,7 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
       null,
       null,
       null,
-      commentPopup.fn ? new CommentManager(commentPopup) : null,
+      commentOpts.fn ? new CommentManager(commentOpts) : null,
       null,
       eventBus,
       pdfDocument,
@@ -50,6 +54,8 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
     eventBus.setUiManager(this);
     this._eventBus = eventBus;
     this.#editorDefaultParams = editorsParams;
+    this.#commentOpts = commentOpts;
+    this.#stampOpts = stampOpts;
   }
 
   get direction(): any {
@@ -68,20 +74,16 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
     return false;
   }
 
-  get imageManager(): any {
-    return null;
+  editAltText(editor: any): void {
+    if (this.#stampOpts.request) {
+      this.#stampOpts.request((altText: string) => {
+        editor.altTextData = {
+          altText,
+          decorative: null,
+        };
+      });
+    }
   }
-
-  // NOTE: Properties and methods related to comments and images
-  get useNewAltTextFlow(): boolean {
-    return false;
-  }
-
-  get useNewAltTextWhenAddingImage(): boolean {
-    return false;
-  }
-
-  editAltText(): void {}
 
   // NOTE: Properties and methods related to signatures
   getSignature(): void {}

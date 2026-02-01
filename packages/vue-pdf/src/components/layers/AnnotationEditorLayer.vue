@@ -12,10 +12,15 @@ import {
   EDITOR_ANNOTATION_LAYER_OBJ_KEY,
   EDITOR_TEXT_LAYER_OBJ_KEY,
   HIGHLIGHT_EDITOR_COLORS_KEY,
+  STAMP_EDITOR_KEY,
 } from "../utils/symbols";
 
-import type { CommentEditorOpts, HighlightEditorColors } from "../types";
-import { IL10n } from "pdfjs-dist/types/web/interfaces";
+import type {
+  AnnotationFnParams,
+  AnnotationFnRequestParams,
+  HighlightEditorColors,
+} from "../types";
+import type { IL10n } from "pdfjs-dist/types/web/interfaces";
 
 const DEFAULT_HIGHLIGHT_COLORS: HighlightEditorColors = {
   yellow: ["#FFEB3B", "#FFFFCC"],
@@ -39,8 +44,27 @@ let uiManager: MinimalUiManager | null = null;
 let editor: PDFJS.AnnotationEditorLayer | null = null;
 
 const editorsParams: Function[] = [];
-const getHighlightColors: { fn: Function | null } = { fn: null };
-const commentPopup: CommentEditorOpts = {
+const getHighlightColors: AnnotationFnParams = { fn: null };
+const addStampFn: AnnotationFnRequestParams = {
+  fn: (source: File | string | null) => {
+    if (props.editorType !== PDFJS.AnnotationEditorType.STAMP) {
+      console.warn(
+        `[vue-pdf] Cannot add stamp editor when editor type is not STAMP.`,
+      );
+      return;
+    }
+
+    if (typeof source === "string") {
+      editor?.addNewEditor({ bitmapUrl: source });
+    } else if (source) {
+      editor?.addNewEditor({ bitmapFile: source });
+    } else {
+      editor?.addNewEditor();
+    }
+  },
+  request: null,
+};
+const commentPopup: AnnotationFnRequestParams = {
   fn: null,
   request: null,
 };
@@ -48,6 +72,7 @@ const commentPopup: CommentEditorOpts = {
 provide(ANNOTATION_EDITORS_PARAMS_KEY, editorsParams);
 provide(HIGHLIGHT_EDITOR_COLORS_KEY, getHighlightColors);
 provide(COMMENT_EDITOR_KEY, commentPopup);
+provide(STAMP_EDITOR_KEY, addStampFn);
 
 const textLayerProvider = inject(EDITOR_TEXT_LAYER_OBJ_KEY)! as {
   container: Ref<HTMLDivElement | undefined>;
@@ -68,6 +93,7 @@ async function render() {
     uiManager = new MinimalUiManager(
       props.document,
       commentPopup,
+      addStampFn,
       getHighlightColors.fn?.() ?? DEFAULT_HIGHLIGHT_COLORS,
       editorsParams,
     );
@@ -122,6 +148,7 @@ function checkEditorType() {
     PDFJS.AnnotationEditorType.FREETEXT,
     PDFJS.AnnotationEditorType.HIGHLIGHT,
     PDFJS.AnnotationEditorType.INK,
+    PDFJS.AnnotationEditorType.STAMP,
     PDFJS.AnnotationEditorType.NONE,
     PDFJS.AnnotationEditorType.DISABLE,
   ];

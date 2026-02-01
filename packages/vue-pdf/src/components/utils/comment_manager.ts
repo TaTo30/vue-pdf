@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export class CommentManager {
   commentPopup: any | null = null;
   dialogElement: HTMLElement | null; // Important for editor toolbar

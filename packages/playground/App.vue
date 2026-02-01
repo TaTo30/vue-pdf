@@ -1,7 +1,7 @@
 <!-- eslint-disable unused-imports/no-unused-imports -->
 <!-- Use this component to play with the main components -->
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, useTemplateRef } from "vue";
 import pdf14 from "@samples/issue133.pdf";
 import {
   VuePDF,
@@ -10,6 +10,7 @@ import {
   PDFHighlightAnnotation,
   PDFInkAnnotation,
   PDFCommentAnnotation,
+  PDFStampAnnotation,
 } from "@tato30/vue-pdf";
 
 import "pdfjs-dist/web/pdf_viewer.css";
@@ -22,19 +23,31 @@ const thickness = ref<number>(20);
 const opacity = ref<number>(1.0);
 
 const toggle = ref(true);
-type EditorType = 0 | 3 | 9;
-const editorType = ref<EditorType>(9);
+type EditorType = 0 | 3 | 9 | 13 | 101;
+const editorType = ref<EditorType>(101);
 
 const rotation = ref<number>(0);
 
+const stamp = useTemplateRef("stamp01");
+
+function addImage() {
+  stamp.value?.addStamp();
+}
+
 function addCommentText(cb: Function) {
   const data = prompt("Enter comment text:");
+  cb(data);
+}
+
+function addAltText(cb: Function) {
+  const data = prompt("Enter alt text:");
   cb(data);
 }
 </script>
 
 <template>
   <button @click="download()">descargar</button>
+  <button @click="addImage()">agregarImagen</button>
   <button @click="toggle = !toggle">toggle</button>
 
   <button @click="rotation = (rotation + 270) % 360">-90</button>
@@ -46,6 +59,7 @@ function addCommentText(cb: Function) {
       <option :value="3">FREETEXT</option>
       <option :value="9">HIGHLIGHT</option>
       <option :value="15">INK</option>
+      <option :value="13">STAMP</option>
       <option :value="0">NONE</option>
     </select>
   </label>
@@ -91,7 +105,8 @@ function addCommentText(cb: Function) {
           :thickness="thickness"
           :opacity="opacity"
         />
-        <PDFCommentAnnotation @add-comment="addCommentText" />
+        <!-- <PDFCommentAnnotation @add-comment="addCommentText" /> -->
+        <PDFStampAnnotation ref="stamp01" @alt-text="addAltText" />
       </template>
     </VuePDF>
   </div>
