@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as PDFJS from "pdfjs-dist";
-import { inject, onMounted, ref, watch } from "vue";
+import { inject, onMounted, ref, useTemplateRef, watch } from "vue";
 
 import type { PDFPageProxy, PageViewport } from "pdfjs-dist";
 import type {
@@ -24,7 +24,7 @@ const emit = defineEmits<{
   (event: "textLoaded", payload: TextLayerLoadedEventPayload): void;
 }>();
 
-const layer = ref<HTMLDivElement>();
+const layer = useTemplateRef("layer");
 const endContent = ref<HTMLDivElement>();
 let textDivs: HTMLElement[] = [];
 let textLayerTask: PDFJS.TextLayer | undefined;
@@ -150,6 +150,7 @@ onMounted(() => {
   <div
     ref="layer"
     class="textLayer"
+    :data-main-page="page?._pageIndex"
     @mousedown="onMouseDown"
     @mouseup="onMouseUp"
   />

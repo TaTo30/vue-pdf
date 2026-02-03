@@ -8,6 +8,7 @@ import {
   provide,
   ref,
   toRaw,
+  useTemplateRef,
   watch,
 } from "vue";
 
@@ -38,6 +39,7 @@ import AnnotationEditorLayer from "./layers/AnnotationEditorLayer.vue";
 import TextLayer from "./layers/TextLayer.vue";
 import XFALayer from "./layers/XFALayer.vue";
 import {
+  CONTAINER_OBJ_KEY,
   EDITOR_ANNOTATION_LAYER_OBJ_KEY,
   EDITOR_TEXT_LAYER_OBJ_KEY,
 } from "./utils/symbols";
@@ -93,9 +95,10 @@ const emit = defineEmits<{
 }>();
 
 // Template Refs
-const container = ref<HTMLDivElement>();
-const canvasWrapper = ref<HTMLDivElement>();
-const loadingLayer = ref<HTMLSpanElement>();
+const container = useTemplateRef("container");
+const canvasWrapper = useTemplateRef("canvasWrapper");
+const loadingLayer = useTemplateRef("loadingLayer");
+
 const loading = ref(false);
 let renderTask: RenderTask;
 
@@ -145,6 +148,7 @@ provide(EDITOR_TEXT_LAYER_OBJ_KEY, {
   }),
   resolve: (value: HTMLDivElement | undefined) => tlayerResolver(value),
 });
+provide(CONTAINER_OBJ_KEY, { wrapper: canvasWrapper, container: container });
 
 function getWatermarkOptionsWithDefaults(): WatermarkOptions {
   return Object.assign(

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as PDFJS from 'pdfjs-dist'
-import { onMounted, ref, toRaw, watch } from 'vue'
+import { onMounted, toRaw, useTemplateRef, watch } from 'vue'
 
 import type { PDFDocumentProxy, PDFPageProxy, PageViewport } from 'pdfjs-dist'
 import type { XfaLayerParameters } from 'pdfjs-dist/types/src/display/xfa_layer'
@@ -17,7 +17,7 @@ const emit = defineEmits<{
   (event: 'xfaLoaded'): void
 }>()
 
-const layer = ref<HTMLDivElement>()
+const layer = useTemplateRef("layer")
 
 async function render() {
   layer.value!.replaceChildren?.()

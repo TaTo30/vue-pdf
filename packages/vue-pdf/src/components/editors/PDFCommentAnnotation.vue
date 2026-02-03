@@ -57,7 +57,7 @@ function toggle(
     hasPopup: true,
   });
 
-  if (editor.commentPopupPosition) {
+  if (editor.hasComment && editor.commentPopupPosition) {
     let [posX, posY] = editor.commentPopupPosition;
     editor.elementBeforePopup.after(popupContainer.value);
     position.value.x = posX * 100;

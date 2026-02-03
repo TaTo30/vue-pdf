@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import * as PDFJS from "pdfjs-dist";
-import { inject, onMounted, provide, Ref, ref, watch } from "vue";
+import { inject, onMounted, provide, Ref, useTemplateRef, watch } from "vue";
 
 import type { PDFPageProxy, PageViewport } from "pdfjs-dist";
-// import { GenericL10n } from "../utils/l10n";
 
 import MinimalUiManager from "../utils/manager";
 import {
   ANNOTATION_EDITORS_PARAMS_KEY,
   COMMENT_EDITOR_KEY,
+  CONTAINER_OBJ_KEY,
   EDITOR_ANNOTATION_LAYER_OBJ_KEY,
   EDITOR_TEXT_LAYER_OBJ_KEY,
   HIGHLIGHT_EDITOR_COLORS_KEY,
@@ -38,7 +38,7 @@ const props = defineProps<{
   editorType: number;
 }>();
 
-const layer = ref<HTMLDivElement>();
+const layer = useTemplateRef("layer");
 
 let uiManager: MinimalUiManager | null = null;
 let editor: PDFJS.AnnotationEditorLayer | null = null;
@@ -84,6 +84,10 @@ const annotationLayerProvider = inject(EDITOR_ANNOTATION_LAYER_OBJ_KEY)! as {
   promise: Promise<PDFJS.AnnotationLayer | undefined>;
   resolve: (value: PDFJS.AnnotationLayer | undefined) => void;
 };
+const containerObj = inject(CONTAINER_OBJ_KEY)! as {
+  wrapper: Ref<HTMLDivElement | undefined>;
+  container: Ref<HTMLDivElement | undefined>;
+};
 
 async function render() {
   const page = props.page!;
@@ -95,6 +99,7 @@ async function render() {
       commentPopup,
       addStampFn,
       getHighlightColors.fn?.() ?? DEFAULT_HIGHLIGHT_COLORS,
+      containerObj.wrapper.value!,
       editorsParams,
     );
   }
@@ -111,14 +116,14 @@ async function render() {
     editor.update({ viewport: clonedViewport });
     uiManager.onRotationChanging({ pagesRotation: clonedViewport.rotation });
     uiManager.onScaleChanging({ scale: clonedViewport.scale });
+    uiManager.onPageChanging({ pageNumber: page.pageNumber });
     editor.pause(false);
     uiManager.updateMode(props.editorType);
     return;
   }
 
   const drawLayer = new PDFJS.DrawLayer({ pageIndex: page?._pageIndex });
-  const parentdrawer = document.getElementById("drawlayer");
-  drawLayer.setParent(parentdrawer!);
+  drawLayer.setParent(containerObj.wrapper.value);
 
   editor = new PDFJS.AnnotationEditorLayer({
     uiManager: uiManager,
@@ -137,9 +142,17 @@ async function render() {
     annotationLayer: annotationLayerInstance,
   });
 
+  editor.hasTextLayer = (textlayer: HTMLDivElement) => {
+    const pageAttr = textlayer.getAttribute("data-main-page");
+    if (!pageAttr) return false;
+    return parseInt(pageAttr) === page._pageIndex;
+  };
   editor.render({ viewport: viewport!.clone({ dontFlip: true }) });
   editor.enable();
 
+  uiManager.onRotationChanging({ pagesRotation: clonedViewport.rotation });
+  uiManager.onScaleChanging({ scale: clonedViewport.scale });
+  uiManager.onPageChanging({ pageNumber: page.pageNumber });
   uiManager.updateMode(props.editorType);
 }
 
@@ -160,6 +173,10 @@ function checkEditorType() {
   }
 }
 
+function unselectAll() {
+  uiManager?.unselectAll();
+}
+
 watch(
   () => [props.viewport, props.editorType],
   () => {
@@ -169,6 +186,10 @@ watch(
 
 onMounted(() => {
   if (props.page && props.viewport && layer.value) checkEditorType();
+});
+
+defineExpose({
+  unselectAll,
 });
 </script>
 

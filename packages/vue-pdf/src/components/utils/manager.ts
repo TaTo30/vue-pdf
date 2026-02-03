@@ -14,12 +14,14 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
   #editorDefaultParams: Function[] = [];
   #commentOpts: AnnotationFnRequestParams;
   #stampOpts: AnnotationFnRequestParams;
+  #container: HTMLElement;
 
   constructor(
     pdfDocument: any,
     commentOpts: AnnotationFnRequestParams,
     stampOpts: AnnotationFnRequestParams,
     highlightColors: HighlightEditorColors,
+    container: HTMLElement,
     editorsParams: Function[] = [],
   ) {
     const eventBus = new FakeEventBus();
@@ -56,6 +58,7 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
     this.#editorDefaultParams = editorsParams;
     this.#commentOpts = commentOpts;
     this.#stampOpts = stampOpts;
+    this.#container = container;
   }
 
   get direction(): any {
@@ -106,8 +109,10 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
   cut(): void {}
   async paste(): Promise<void> {}
   addNewEditorFromKeyboard(): void {}
-  focusMainContainer(): void {} // This could be used for the wrapper <div>
-  disableUserSelect(): void {} // This could be used to control text selection for text layer
+  focusMainContainer(): void {
+    this.#container.focus();
+  } // This could be used for the wrapper <div>
+  disableUserSelect(value: any): void {} // This could be used to control text selection for text layer
   a11yAlert(messageId: any, args = null): void {} // This could be used to announce messages for screen readers
   addEditListeners(): void {}
   removeEditListeners(): void {}
@@ -115,6 +120,22 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
   // Note: Important methods to customize its original behavior
   addEditor(editor: any): void {
     super.addEditor(editor);
+  }
+
+  highlightSelection(methodOfCreation = "", comment = false) {
+    const selection = document.getSelection();
+    if (!selection || selection.isCollapsed) {
+      return;
+    }
+    const { anchorNode } = selection;
+    const anchorElement: any =
+      anchorNode!.nodeType === Node.TEXT_NODE
+        ? anchorNode!.parentElement
+        : anchorNode;
+    const textLayer = anchorElement!.closest(".textLayer");
+
+    if (!this.currentLayer.hasTextLayer(textLayer)) return;
+    super.highlightSelection(methodOfCreation, comment);
   }
 
   removeEditor(editor: any): void {
@@ -139,5 +160,14 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
 
   updateParams(type: any, value: any): void {
     super.updateParams(type, value);
+  }
+
+  getId(): string {
+    const randomNumber = Math.floor(Math.random() * 100);
+    return super.getId() + randomNumber;
+  }
+
+  get currentLayer() {
+    return super.currentLayer;
   }
 }
