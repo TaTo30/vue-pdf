@@ -109,6 +109,11 @@ async function render() {
     annotationLayerProvider.promise,
   ]);
 
+  if (editor && editor.pageIndex !== page._pageIndex) {
+    editor.destroy();
+    editor = null;
+  }
+
   const clonedViewport = viewport.clone({ dontFlip: true });
   if (editor) {
     editor.pause(true);
@@ -137,12 +142,15 @@ async function render() {
       ? ({ div: textLayerElement } as any as HTMLDivElement)
       : undefined, // <-- Type casting to satisfy typescript bllsht :)
     drawLayer: drawLayer,
-    mode: PDFJS.AnnotationEditorType.NONE,
+    mode: props.editorType,
     structTreeLayer: null,
     accessibilityManager: undefined,
     annotationLayer: annotationLayerInstance,
   });
 
+  editor.toggleDrawing = (enabled: boolean) => {
+    layer.value?.classList.toggle("drawing", !enabled);
+  };
   editor.hasTextLayer = (textlayer: HTMLDivElement) => {
     const pageAttr = textlayer.getAttribute("data-main-page");
     if (!pageAttr) return false;

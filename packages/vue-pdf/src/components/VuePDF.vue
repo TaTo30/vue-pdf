@@ -100,7 +100,6 @@ const canvasWrapper = useTemplateRef("canvasWrapper");
 const loadingLayer = useTemplateRef("loadingLayer");
 
 const loading = ref(false);
-const hasEditorLoaded = ref(false);
 let renderTask: RenderTask;
 
 const internalProps = computed(() => {
