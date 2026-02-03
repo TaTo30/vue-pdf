@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { inject } from "vue";
-import { AnnotationFnRequestParams } from "../types";
+import { EditorFn, EditorRequest } from "../types";
 import { STAMP_EDITOR_KEY } from "../utils/symbols";
 
 const emits = defineEmits<{
   (event: "altText", payload: Function): void;
 }>();
 
-const addStampFn = inject<AnnotationFnRequestParams>(STAMP_EDITOR_KEY)!;
+const addStampFn = inject<EditorFn & EditorRequest>(STAMP_EDITOR_KEY)!;
 
 function addStamp(file: File | string | null = null) {
   addStampFn?.fn?.(file);

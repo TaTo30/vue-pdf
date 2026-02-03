@@ -4,13 +4,13 @@ import * as PDFJS from "pdfjs-dist";
 import { inject, ref, useTemplateRef } from "vue";
 
 import { COMMENT_EDITOR_KEY } from "../utils/symbols";
-import type { AnnotationFnRequestParams } from "../types";
+import type { EditorFn, EditorRequest } from "../types";
 
 const emits = defineEmits<{
   (event: "addComment", payload: Function): void;
 }>();
 
-const popupDispatcher = inject<AnnotationFnRequestParams>(COMMENT_EDITOR_KEY)!;
+const popupDispatcher = inject<EditorFn & EditorRequest>(COMMENT_EDITOR_KEY)!;
 
 const show = ref(false);
 const selected = ref(false);
@@ -64,20 +64,24 @@ function toggle(
     position.value.y = posY * 100;
   }
 
-  const { contentsObj, richText, creationDate, modificationDate } =
-    editor.getData();
+  try {
+    const { contentsObj, richText, creationDate, modificationDate } =
+      editor.getData();
 
-  const html =
-    richText?.str && (!contentsObj?.str || richText.str === contentsObj.str)
-      ? richText.html
-      : contentsObj?.str;
-  data.value = {
-    html,
-    creationDate,
-    modificationDate,
-  };
+    const html =
+      richText?.str && (!contentsObj?.str || richText.str === contentsObj.str)
+        ? richText.html
+        : contentsObj?.str;
+    data.value = {
+      html,
+      creationDate,
+      modificationDate,
+    };
 
-  currentEditor = editor;
+    currentEditor = editor;
+  } catch (e) {
+    // Ignore errors related to missing comments with editor that has none
+  }
 }
 
 function formatDate(input: string): string {

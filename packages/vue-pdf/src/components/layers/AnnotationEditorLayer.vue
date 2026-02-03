@@ -15,11 +15,7 @@ import {
   STAMP_EDITOR_KEY,
 } from "../utils/symbols";
 
-import type {
-  AnnotationFnParams,
-  AnnotationFnRequestParams,
-  HighlightEditorColors,
-} from "../types";
+import type { EditorFn, EditorRequest, HighlightEditorColors } from "../types";
 import type { IL10n } from "pdfjs-dist/types/web/interfaces";
 
 const DEFAULT_HIGHLIGHT_COLORS: HighlightEditorColors = {
@@ -36,16 +32,16 @@ const props = defineProps<{
   document?: PDFJS.PDFDocumentProxy;
   intent: string;
   editorType: number;
+  editorLayer: boolean;
 }>();
 
 const layer = useTemplateRef("layer");
 
-let uiManager: MinimalUiManager | null = null;
 let editor: PDFJS.AnnotationEditorLayer | null = null;
 
 const editorsParams: Function[] = [];
-const getHighlightColors: AnnotationFnParams = { fn: null };
-const addStampFn: AnnotationFnRequestParams = {
+const getHighlightColors: EditorFn = { fn: null };
+const addStampFn: EditorFn & EditorRequest = {
   fn: (source: File | string | null) => {
     if (props.editorType !== PDFJS.AnnotationEditorType.STAMP) {
       console.warn(
@@ -64,7 +60,7 @@ const addStampFn: AnnotationFnRequestParams = {
   },
   request: null,
 };
-const commentPopup: AnnotationFnRequestParams = {
+const commentPopup: EditorFn & EditorRequest = {
   fn: null,
   request: null,
 };
@@ -87,14 +83,17 @@ const annotationLayerProvider = inject(EDITOR_ANNOTATION_LAYER_OBJ_KEY)! as {
 const containerObj = inject(CONTAINER_OBJ_KEY)! as {
   wrapper: Ref<HTMLDivElement | undefined>;
   container: Ref<HTMLDivElement | undefined>;
+  uiManager: MinimalUiManager | null;
 };
 
 async function render() {
+  if (!containerObj.uiManager && !props.editorLayer) return;
+
   const page = props.page!;
   const viewport = props.viewport!;
 
-  if (!uiManager) {
-    uiManager = new MinimalUiManager(
+  if (!containerObj.uiManager) {
+    containerObj.uiManager = new MinimalUiManager(
       props.document,
       commentPopup,
       addStampFn,
@@ -114,11 +113,13 @@ async function render() {
   if (editor) {
     editor.pause(true);
     editor.update({ viewport: clonedViewport });
-    uiManager.onRotationChanging({ pagesRotation: clonedViewport.rotation });
-    uiManager.onScaleChanging({ scale: clonedViewport.scale });
-    uiManager.onPageChanging({ pageNumber: page.pageNumber });
+    containerObj.uiManager?.onRotationChanging({
+      pagesRotation: clonedViewport.rotation,
+    });
+    containerObj.uiManager?.onScaleChanging({ scale: clonedViewport.scale });
+    containerObj.uiManager?.onPageChanging({ pageNumber: page.pageNumber });
     editor.pause(false);
-    uiManager.updateMode(props.editorType);
+    containerObj.uiManager?.updateMode(props.editorType);
     return;
   }
 
@@ -126,7 +127,7 @@ async function render() {
   drawLayer.setParent(containerObj.wrapper.value);
 
   editor = new PDFJS.AnnotationEditorLayer({
-    uiManager: uiManager,
+    uiManager: containerObj.uiManager!,
     div: layer.value!,
     viewport: viewport!.clone({ dontFlip: true }),
     enabled: true,
@@ -150,10 +151,12 @@ async function render() {
   editor.render({ viewport: viewport!.clone({ dontFlip: true }) });
   editor.enable();
 
-  uiManager.onRotationChanging({ pagesRotation: clonedViewport.rotation });
-  uiManager.onScaleChanging({ scale: clonedViewport.scale });
-  uiManager.onPageChanging({ pageNumber: page.pageNumber });
-  uiManager.updateMode(props.editorType);
+  containerObj.uiManager?.onRotationChanging({
+    pagesRotation: clonedViewport.rotation,
+  });
+  containerObj.uiManager?.onScaleChanging({ scale: clonedViewport.scale });
+  containerObj.uiManager?.onPageChanging({ pageNumber: page.pageNumber });
+  containerObj.uiManager?.updateMode(props.editorType);
 }
 
 function checkEditorType() {
@@ -174,8 +177,23 @@ function checkEditorType() {
 }
 
 function unselectAll() {
-  uiManager?.unselectAll();
+  containerObj.uiManager?.unselectAll();
 }
+
+watch(
+  () => [props.editorLayer],
+  ([newVal]) => {
+    if (newVal && !containerObj.uiManager) {
+      if (props.page && props.viewport && layer.value) checkEditorType();
+    } else {
+      const svgsPath = containerObj.wrapper.value?.querySelectorAll("svg");
+      svgsPath?.forEach((svg) => {
+        if (newVal) svg.classList.remove("hidden");
+        else svg.classList.add("hidden");
+      });
+    }
+  },
+);
 
 watch(
   () => [props.viewport, props.editorType],
@@ -194,7 +212,12 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="layer" class="annotationEditorLayer" id="annotationEditorLayer" />
+  <div
+    v-show="editorLayer"
+    ref="layer"
+    class="annotationEditorLayer"
+    id="annotationEditorLayer"
+  />
   <slot></slot>
 </template>
 

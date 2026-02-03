@@ -131,10 +131,10 @@ export interface HighlightEditorColors {
   [key: string]: [string, string];
 }
 
-export interface AnnotationFnParams {
+export interface EditorFn {
   fn: Function | null;
 }
 
-export interface AnnotationFnRequestParams extends AnnotationFnParams {
+export interface EditorRequest {
   request: Function | null;
 }

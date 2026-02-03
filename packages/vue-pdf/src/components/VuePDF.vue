@@ -100,6 +100,7 @@ const canvasWrapper = useTemplateRef("canvasWrapper");
 const loadingLayer = useTemplateRef("loadingLayer");
 
 const loading = ref(false);
+const hasEditorLoaded = ref(false);
 let renderTask: RenderTask;
 
 const internalProps = computed(() => {
@@ -127,6 +128,7 @@ const tlayerProps = computed(() => {
 });
 const aelayerProps = computed(() => {
   return {
+    editorLayer: props.editorLayer,
     editorType: props.editorType,
     intent: props.intent,
   };
@@ -148,7 +150,11 @@ provide(EDITOR_TEXT_LAYER_OBJ_KEY, {
   }),
   resolve: (value: HTMLDivElement | undefined) => tlayerResolver(value),
 });
-provide(CONTAINER_OBJ_KEY, { wrapper: canvasWrapper, container: container });
+provide(CONTAINER_OBJ_KEY, {
+  wrapper: canvasWrapper,
+  container: container,
+  uiManager: null,
+});
 
 function getWatermarkOptionsWithDefaults(): WatermarkOptions {
   return Object.assign(
@@ -414,10 +420,7 @@ defineExpose({
       @annotation="emit('annotation', $event)"
       @annotation-loaded="emit('annotationLoaded', $event)"
     />
-    <AnnotationEditorLayer
-      v-if="editorLayer"
-      v-bind="{ ...internalProps, ...aelayerProps }"
-    >
+    <AnnotationEditorLayer v-bind="{ ...internalProps, ...aelayerProps }">
       <slot name="editors" />
     </AnnotationEditorLayer>
     <XFALayer v-bind="{ ...internalProps }" @xfa-loaded="emit('xfaLoaded')" />
