@@ -1,5 +1,4 @@
 import * as PDFJS from 'pdfjs-dist'
-import PDFWorker from 'pdfjs-dist/build/pdf.worker.min?url'
 import { isRef, shallowRef, watch } from 'vue'
 
 import type { PDFDocumentLoadingTask, PDFDocumentProxy } from 'pdfjs-dist'
@@ -8,12 +7,6 @@ import type { OnPasswordCallback, PDFDestination, PDFInfo, PDFOptions, PDFSrc } 
 import { getDestinationArray, getDestinationRef, getLocation, isSpecLike } from './utils/destination'
 import { addStylesToIframe, createIframe } from './utils/miscellaneous'
 
-// Could not find a way to make this work with vite, importing the worker entry bundle the whole worker to the the final output
-// https://erindoyle.dev/using-pdfjs-with-vite/
-// PDFJS.GlobalWorkerOptions.workerSrc = PDFWorker
-function configWorker(wokerSrc: string) {
-  PDFJS.GlobalWorkerOptions.workerSrc = wokerSrc
-}
 
 /**
  * @typedef {Object} UsePDFParameters
@@ -42,9 +35,6 @@ export function usePDF(src: PDFSrc | Ref<PDFSrc>,
     password: '',
   },
 ) {
-  if (!PDFJS.GlobalWorkerOptions?.workerSrc)
-    configWorker(PDFWorker)
-
   const pdf = shallowRef<PDFDocumentLoadingTask>()
   const pdfDoc = shallowRef<PDFDocumentProxy>()
   const pages = shallowRef(0)
