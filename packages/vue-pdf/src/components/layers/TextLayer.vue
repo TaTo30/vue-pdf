@@ -24,7 +24,7 @@ const emit = defineEmits<{
   (event: "textLoaded", payload: TextLayerLoadedEventPayload): void;
 }>();
 
-const layer = useTemplateRef("layer");
+const layer = useTemplateRef<HTMLDivElement>("layer");
 const endContent = ref<HTMLDivElement>();
 let textDivs: HTMLElement[] = [];
 let textLayerTask: PDFJS.TextLayer | undefined;

@@ -10,9 +10,14 @@ import {
 } from "../types";
 import { STAMP_EDITOR_KEY } from "../utils/symbols";
 
+import type { AnnotationEditor } from "pdfjs-dist/types/src/display/editor/tools";
+
 const emits = defineEmits<{
-  (event: "altText", editor: any, callback: Function): void;
-  (event: "dragging", payload: EditorEventPayload & EditorPositionPayload): void;
+  (event: "altText", editor: AnnotationEditor, callback: Function): void;
+  (
+    event: "dragging",
+    payload: EditorEventPayload & EditorPositionPayload,
+  ): void;
   (event: "resizing", payload: EditorEventPayload & EditorSizePayload): void;
 }>();
 
@@ -24,7 +29,7 @@ function addStamp(file: File | string | null = null) {
   manager?.fn?.(file);
 }
 
-function requestComment(editor: any, callback: Function) {
+function requestComment(editor: AnnotationEditor, callback: Function) {
   emits("altText", editor, (text: string | null) => {
     if (text !== null && text.length > 0) {
       callback(text);

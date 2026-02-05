@@ -45,10 +45,11 @@ const props = defineProps<{
 const emits = defineEmits<{
   (e: "editorAdded", payload: EditorEventPayload): void;
   (e: "editorRemoved", payload: EditorEventPayload): void;
+  (e: "editorSelected", payload: EditorEventPayload): void;
   (e: "editorLoaded"): void;
 }>();
 
-const layer = useTemplateRef("layer");
+const layer = useTemplateRef<HTMLDivElement>("layer");
 
 let editor: PDFJS.AnnotationEditorLayer | null = null;
 
@@ -115,7 +116,7 @@ async function render() {
       freeTextEditor.params,
       highlightEditor.params,
       inkEditor.params,
-    ].filter((e) => e !== null);
+    ].filter((e) => e !== null) as Function[];
 
     const emitters = {
       [PDFJS.AnnotationEditorType.FREETEXT]: freeTextEditor.emit,

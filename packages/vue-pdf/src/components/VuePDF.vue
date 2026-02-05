@@ -95,12 +95,13 @@ const emit = defineEmits<{
   (event: "editorLoaded"): void;
   (event: "editorAdded", payload: EditorEventPayload): void;
   (event: "editorRemoved", payload: EditorEventPayload): void;
+  (event: "editorSelected", payload: EditorEventPayload): void;
 }>();
 
 // Template Refs
-const container = useTemplateRef("container");
-const canvasWrapper = useTemplateRef("canvasWrapper");
-const loadingLayer = useTemplateRef("loadingLayer");
+const container = useTemplateRef<HTMLElement>("container");
+const canvasWrapper = useTemplateRef<HTMLElement>("canvasWrapper");
+const loadingLayer = useTemplateRef<HTMLElement>("loadingLayer");
 
 const loading = ref(false);
 let renderTask: RenderTask;
@@ -426,6 +427,7 @@ defineExpose({
       v-bind="{ ...internalProps, ...aelayerProps }"
       @editor-added="emit('editorAdded', $event)"
       @editor-removed="emit('editorRemoved', $event)"
+      @editor-selected="emit('editorSelected', $event)"
       @editor-loaded="emit('editorLoaded')"
     >
       <slot name="editors" />

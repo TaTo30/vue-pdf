@@ -5,10 +5,11 @@ import { inject, ref, useTemplateRef } from "vue";
 
 import { COMMENT_EDITOR_KEY } from "../utils/symbols";
 import type { EditorFn, EditorRequest } from "../types";
+import type { AnnotationEditor } from "pdfjs-dist/types/src/display/editor/tools";
 
 const emits = defineEmits<{
-  (event: "comment", editor: any, callback: Function): void;
-  (event: "removed", editor: any): void;
+  (event: "comment", editor: AnnotationEditor, callback: Function): void;
+  (event: "removed", editor: AnnotationEditor): void;
 }>();
 
 const popupDispatcher = inject<EditorFn & EditorRequest>(COMMENT_EDITOR_KEY)!;
@@ -18,12 +19,12 @@ const selected = ref(false);
 const data = ref<any | undefined>();
 
 const position = ref<{ x: number; y: number }>({ x: 0, y: 0 });
-const popupContainer = useTemplateRef("popupContainer");
+const popupContainer = useTemplateRef<HTMLElement>("popupContainer");
 
-let currentEditor: any | null = null;
+let currentEditor: AnnotationEditor | null = null;
 
 function toggle(
-  editor: any,
+  editor: AnnotationEditor | null,
   isSelected: boolean,
   visibility: any,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -60,7 +61,7 @@ function toggle(
 
   if (editor.hasComment && editor.commentPopupPosition) {
     let [posX, posY] = editor.commentPopupPosition;
-    editor.elementBeforePopup.after(popupContainer.value);
+    editor?.elementBeforePopup?.after(popupContainer.value!);
     position.value.x = posX * 100;
     position.value.y = posY * 100;
   }
@@ -99,20 +100,21 @@ function editComment() {
   show.value = false;
   selected.value = false;
   currentEditor?.editComment({ height: 0 });
-  currentEditor.focus();
+  currentEditor?.focus();
 }
 
 function deleteComment() {
   if (currentEditor) {
+    // @ts-ignore
     currentEditor.comment = null;
     show.value = false;
     selected.value = false;
     currentEditor.focus();
-    emits('removed', currentEditor);
+    emits("removed", currentEditor);
   }
 }
 
-function requestComment(editor: any, callback: Function) {
+function requestComment(editor: AnnotationEditor, callback: Function) {
   emits("comment", editor, (text: string | null) => {
     if (text !== null && text.length > 0) {
       callback(text);

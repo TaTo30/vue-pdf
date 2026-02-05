@@ -4,7 +4,9 @@ import {
   AnnotationEditorType,
   AnnotationEditorParamsType,
 } from "pdfjs-dist";
+
 import { FakeEventBus } from "./fake_evenbus";
+import { CommentManager } from "./comment_manager";
 
 import type {
   AnnotationEditorConstructor,
@@ -12,7 +14,7 @@ import type {
   EditorRequest,
   HighlightEditorColors,
 } from "../types";
-import { CommentManager } from "./comment_manager";
+import type { AnnotationEditor } from "pdfjs-dist/types/src/display/editor/tools";
 
 export default class MinimalUiManager extends AnnotationEditorUIManager {
   editorsAvailable: AnnotationEditorConstructor[] = [];
@@ -20,7 +22,7 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
   #stampOpts: EditorRequest;
   #container: HTMLElement;
   #emitters: { [key: number]: Function };
-  #draggingEditors: any[] = [];
+  #draggingEditors: AnnotationEditor[] = [];
 
   static LAYER_EMITTER_ID = 10000;
 
@@ -87,13 +89,17 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
   }
 
   get selectedEditors(): any[] {
-    const editors = this.getEditors(this.currentPageIndex).filter(
-      (editor: any) => editor.isSelected,
-    );
-    return editors.toArray();
+    const editors = [];
+
+    for (const editor of this.getEditors(this.currentPageIndex)) {
+      if (editor.isSelected) {
+        editors.push(editor);
+      }
+    }
+    return editors;
   }
 
-  editAltText(editor: any): void {
+  editAltText(editor: AnnotationEditor): void {
     if (this.#stampOpts.request) {
       this.#stampOpts.request(editor, (altText: string) => {
         editor.altTextData = {
@@ -133,8 +139,20 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
   addEditListeners(): void {}
   removeEditListeners(): void {}
 
+  setSelected(editor: AnnotationEditor): void {
+    super.setSelected(editor);
+
+    if (editor.isSelected) {
+      const emitter = this.#emitters[MinimalUiManager.LAYER_EMITTER_ID];
+      if (emitter)
+        emitter("editorSelected", {
+          editor,
+        });
+    }
+  }
+
   // Note: Important methods to customize its original behavior
-  addEditor(editor: any): void {
+  addEditor(editor: AnnotationEditor): void {
     super.addEditor(editor);
 
     if (editor.mode === AnnotationEditorType.STAMP) {
@@ -158,7 +176,7 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
       });
   }
 
-  removeEditor(editor: any): void {
+  removeEditor(editor: AnnotationEditor): void {
     super.removeEditor(editor);
 
     const emitter = this.#emitters[MinimalUiManager.LAYER_EMITTER_ID];
@@ -211,7 +229,7 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
       ];
       if (this.hasSelection && colorTypes.includes(type)) {
         const selectedEditors = this.selectedEditors;
-        selectedEditors.forEach((editor: any) => {
+        selectedEditors.forEach((editor: AnnotationEditor) => {
           const emitter = this.#emitters[editor.mode];
           if (emitter)
             emitter("colorChanged", {
@@ -241,7 +259,7 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
 
     this.#draggingEditors = [];
 
-    this.getEditors(this.currentPageIndex).forEach((editor: any) => {
+    this.selectedEditors.forEach((editor: AnnotationEditor) => {
       if (editor.isSelected) {
         this.#draggingEditors.push(editor);
       }
@@ -258,7 +276,7 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
 
   dragSelectedEditors(tx: number, ty: number): void {
     super.dragSelectedEditors(tx, ty);
-    this.#draggingEditors.forEach((editor: any) => {
+    this.#draggingEditors.forEach((editor: AnnotationEditor) => {
       const emitter = this.#emitters[editor.mode];
       if (emitter)
         emitter("dragging", {
@@ -268,7 +286,7 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
     });
   }
 
-  sizeSelectedEditors(editor: any) {
+  sizeSelectedEditors(editor: AnnotationEditor) {
     const emitter = this.#emitters[editor.mode];
     if (emitter)
       emitter("resizing", {
@@ -277,14 +295,14 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
       });
   }
 
-  #calculateEditorPosition(editor: any) {
+  #calculateEditorPosition(editor: AnnotationEditor) {
     return {
       x: editor.x * editor.pageDimensions[0],
       y: editor.y * editor.pageDimensions[1],
     };
   }
 
-  #calculateEditorSize(editor: any) {
+  #calculateEditorSize(editor: AnnotationEditor) {
     return {
       width: editor.width * editor.pageDimensions[0],
       height: editor.height * editor.pageDimensions[1],

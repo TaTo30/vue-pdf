@@ -6,6 +6,7 @@ import type {
   TextContent,
   TypedArray,
 } from "pdfjs-dist/types/src/display/api";
+import type { AnnotationEditor } from "pdfjs-dist/types/src/display/editor/tools";
 import type { Metadata } from "pdfjs-dist/types/src/display/metadata";
 
 export interface Match {
@@ -148,7 +149,7 @@ export interface EditorParams {
 }
 
 export interface EditorEventPayload {
-  editor: any;
+  editor: AnnotationEditor;
 }
 
 export interface EditorPositionPayload {

@@ -32,7 +32,7 @@ const emit = defineEmits<{
   (event: "annotationLoaded", payload: any[]): void;
 }>();
 
-const layer = useTemplateRef("layer");
+const layer = useTemplateRef<HTMLDivElement>("layer");
 const annotations = ref<any[]>();
 
 const annotationLayerProvider = inject(EDITOR_ANNOTATION_LAYER_OBJ_KEY)! as {
