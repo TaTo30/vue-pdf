@@ -38,7 +38,7 @@ export class CommentManager {
     posY: number,
     options: unknown,
   ): void {
-    this.commentPopup.request((text: string) => {
+    this.commentPopup.request(editor, (text: string) => {
       editor.comment = text;
       editor.focusCommentButton();
     });

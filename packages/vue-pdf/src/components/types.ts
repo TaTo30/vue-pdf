@@ -138,3 +138,29 @@ export interface EditorFn {
 export interface EditorRequest {
   request: Function | null;
 }
+
+export interface EditorEmitters {
+  emit: Function | null;
+}
+
+export interface EditorParams {
+  params: Function | null;
+}
+
+export interface EditorEventPayload {
+  editor: any;
+}
+
+export interface EditorPositionPayload {
+  x: number;
+  y: number;
+}
+
+export interface EditorSizePayload {
+  width: number;
+  height: number;
+}
+
+export interface EditorColorPayload {
+  color: string;
+}

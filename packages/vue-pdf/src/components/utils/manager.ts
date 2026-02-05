@@ -1,10 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { AnnotationEditorUIManager } from "pdfjs-dist";
+import {
+  AnnotationEditorUIManager,
+  AnnotationEditorType,
+  AnnotationEditorParamsType,
+} from "pdfjs-dist";
 import { FakeEventBus } from "./fake_evenbus";
 
 import type {
   AnnotationEditorConstructor,
-  AnnotationFnRequestParams,
+  EditorFn,
+  EditorRequest,
   HighlightEditorColors,
 } from "../types";
 import { CommentManager } from "./comment_manager";
@@ -12,16 +17,20 @@ import { CommentManager } from "./comment_manager";
 export default class MinimalUiManager extends AnnotationEditorUIManager {
   editorsAvailable: AnnotationEditorConstructor[] = [];
   #editorDefaultParams: Function[] = [];
-  #commentOpts: AnnotationFnRequestParams;
-  #stampOpts: AnnotationFnRequestParams;
+  #stampOpts: EditorRequest;
   #container: HTMLElement;
+  #emitters: { [key: number]: Function };
+  #draggingEditors: any[] = [];
+
+  static LAYER_EMITTER_ID = 10000;
 
   constructor(
     pdfDocument: any,
-    commentOpts: AnnotationFnRequestParams,
-    stampOpts: AnnotationFnRequestParams,
+    commentOpts: EditorFn,
+    stampOpts: EditorRequest,
     highlightColors: HighlightEditorColors,
     container: HTMLElement,
+    emitters: any,
     editorsParams: Function[] = [],
   ) {
     const eventBus = new FakeEventBus();
@@ -56,9 +65,9 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
     eventBus.setUiManager(this);
     this._eventBus = eventBus;
     this.#editorDefaultParams = editorsParams;
-    this.#commentOpts = commentOpts;
     this.#stampOpts = stampOpts;
     this.#container = container;
+    this.#emitters = emitters;
   }
 
   get direction(): any {
@@ -77,9 +86,16 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
     return false;
   }
 
+  get selectedEditors(): any[] {
+    const editors = this.getEditors(this.currentPageIndex).filter(
+      (editor: any) => editor.isSelected,
+    );
+    return editors.toArray();
+  }
+
   editAltText(editor: any): void {
     if (this.#stampOpts.request) {
-      this.#stampOpts.request((altText: string) => {
+      this.#stampOpts.request(editor, (altText: string) => {
         editor.altTextData = {
           altText,
           decorative: null,
@@ -120,6 +136,36 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
   // Note: Important methods to customize its original behavior
   addEditor(editor: any): void {
     super.addEditor(editor);
+
+    if (editor.mode === AnnotationEditorType.STAMP) {
+      editor._onResizing = () => {
+        this.sizeSelectedEditors(editor);
+      };
+    }
+
+    if (editor.mode === AnnotationEditorType.INK) {
+      const originalOnResizing: Function = editor._onResizing;
+      editor._onResizing = () => {
+        originalOnResizing.call(editor);
+        this.sizeSelectedEditors(editor);
+      };
+    }
+
+    const emitter = this.#emitters[MinimalUiManager.LAYER_EMITTER_ID];
+    if (emitter)
+      emitter("editorAdded", {
+        editor,
+      });
+  }
+
+  removeEditor(editor: any): void {
+    super.removeEditor(editor);
+
+    const emitter = this.#emitters[MinimalUiManager.LAYER_EMITTER_ID];
+    if (emitter)
+      emitter("editorRemoved", {
+        editor,
+      });
   }
 
   highlightSelection(methodOfCreation = "", comment = false) {
@@ -138,10 +184,6 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
     super.highlightSelection(methodOfCreation, comment);
   }
 
-  removeEditor(editor: any): void {
-    super.removeEditor(editor);
-  }
-
   addLayer(layer: any): void {
     super.addLayer(layer);
 
@@ -158,8 +200,27 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
     return super.getMode();
   }
 
-  updateParams(type: any, value: any): void {
+  updateParams(type: any, value: any, userSelected = false): void {
     super.updateParams(type, value);
+
+    if (!userSelected) {
+      const colorTypes = [
+        AnnotationEditorParamsType.FREETEXT_COLOR,
+        AnnotationEditorParamsType.HIGHLIGHT_COLOR,
+        AnnotationEditorParamsType.INK_COLOR,
+      ];
+      if (this.hasSelection && colorTypes.includes(type)) {
+        const selectedEditors = this.selectedEditors;
+        selectedEditors.forEach((editor: any) => {
+          const emitter = this.#emitters[editor.mode];
+          if (emitter)
+            emitter("colorChanged", {
+              editor,
+              color: value,
+            });
+        });
+      }
+    }
   }
 
   getId(): string {
@@ -169,5 +230,66 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
 
   get currentLayer() {
     return super.currentLayer;
+  }
+
+  setUpDragSession(): void {
+    super.setUpDragSession();
+
+    if (!this.hasSelection) {
+      return;
+    }
+
+    this.#draggingEditors = [];
+
+    this.getEditors(this.currentPageIndex).forEach((editor: any) => {
+      if (editor.isSelected) {
+        this.#draggingEditors.push(editor);
+      }
+    });
+  }
+
+  endDragSession(): boolean {
+    const result = super.endDragSession();
+    if (result) {
+      this.#draggingEditors = [];
+    }
+    return result;
+  }
+
+  dragSelectedEditors(tx: number, ty: number): void {
+    super.dragSelectedEditors(tx, ty);
+    this.#draggingEditors.forEach((editor: any) => {
+      const emitter = this.#emitters[editor.mode];
+      if (emitter)
+        emitter("dragging", {
+          editor,
+          ...this.#calculateEditorPosition(editor),
+        });
+    });
+  }
+
+  sizeSelectedEditors(editor: any) {
+    const emitter = this.#emitters[editor.mode];
+    if (emitter)
+      emitter("resizing", {
+        editor,
+        ...this.#calculateEditorSize(editor),
+      });
+  }
+
+  #calculateEditorPosition(editor: any) {
+    return {
+      x: editor.x * editor.pageDimensions[0],
+      y: editor.y * editor.pageDimensions[1],
+    };
+  }
+
+  #calculateEditorSize(editor: any) {
+    return {
+      width: editor.width * editor.pageDimensions[0],
+      height: editor.height * editor.pageDimensions[1],
+      x: editor.x * editor.pageDimensions[0],
+      y: editor.y * editor.pageDimensions[1],
+    };
   }
 }

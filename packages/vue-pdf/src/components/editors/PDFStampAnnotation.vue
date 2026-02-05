@@ -1,27 +1,39 @@
 <script setup lang="ts">
 import { inject } from "vue";
-import { EditorFn, EditorRequest } from "../types";
+import {
+  EditorEmitters,
+  EditorEventPayload,
+  EditorFn,
+  EditorPositionPayload,
+  EditorRequest,
+  EditorSizePayload,
+} from "../types";
 import { STAMP_EDITOR_KEY } from "../utils/symbols";
 
 const emits = defineEmits<{
-  (event: "altText", payload: Function): void;
+  (event: "altText", editor: any, callback: Function): void;
+  (event: "dragging", payload: EditorEventPayload & EditorPositionPayload): void;
+  (event: "resizing", payload: EditorEventPayload & EditorSizePayload): void;
 }>();
 
-const addStampFn = inject<EditorFn & EditorRequest>(STAMP_EDITOR_KEY)!;
+const manager = inject<EditorFn & EditorRequest & EditorEmitters>(
+  STAMP_EDITOR_KEY,
+)!;
 
 function addStamp(file: File | string | null = null) {
-  addStampFn?.fn?.(file);
+  manager?.fn?.(file);
 }
 
-function requestComment(callback: Function) {
-  emits("altText", (text: string | null) => {
+function requestComment(editor: any, callback: Function) {
+  emits("altText", editor, (text: string | null) => {
     if (text !== null && text.length > 0) {
       callback(text);
     }
   });
 }
 
-addStampFn.request = requestComment;
+manager.request = requestComment;
+manager.emit = emits;
 
 defineExpose({
   addStamp,

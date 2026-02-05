@@ -7,7 +7,8 @@ import { COMMENT_EDITOR_KEY } from "../utils/symbols";
 import type { EditorFn, EditorRequest } from "../types";
 
 const emits = defineEmits<{
-  (event: "addComment", payload: Function): void;
+  (event: "comment", editor: any, callback: Function): void;
+  (event: "removed", editor: any): void;
 }>();
 
 const popupDispatcher = inject<EditorFn & EditorRequest>(COMMENT_EDITOR_KEY)!;
@@ -107,11 +108,12 @@ function deleteComment() {
     show.value = false;
     selected.value = false;
     currentEditor.focus();
+    emits('removed', currentEditor);
   }
 }
 
-function requestComment(callback: Function) {
-  emits("addComment", (text: string | null) => {
+function requestComment(editor: any, callback: Function) {
+  emits("comment", editor, (text: string | null) => {
     if (text !== null && text.length > 0) {
       callback(text);
     }

@@ -2,14 +2,26 @@
 import { AnnotationEditorParamsType } from "pdfjs-dist";
 
 import { inject, watch } from "vue";
-import { ANNOTATION_EDITORS_PARAMS_KEY } from "../utils/symbols";
+import { FREE_TEXT_EDITOR_KEY } from "../utils/symbols";
+import {
+  EditorColorPayload,
+  EditorEmitters,
+  EditorEventPayload,
+  EditorParams,
+  EditorPositionPayload,
+} from "../types";
 
 const props = defineProps<{
   color: string;
   fontSize: number;
 }>();
 
-const params = inject<Function[]>(ANNOTATION_EDITORS_PARAMS_KEY);
+const emit = defineEmits<{
+  (event: "dragging", payload: EditorEventPayload & EditorPositionPayload): void;
+  (event: "colorChanged", payload: EditorEventPayload & EditorColorPayload): void;
+}>();
+
+const manager = inject<EditorParams & EditorEmitters>(FREE_TEXT_EDITOR_KEY)!;
 
 let updateParamsFn: Function | null = null;
 
@@ -19,11 +31,12 @@ function editorParam(fn: Function) {
 }
 
 function updateParams() {
-  updateParamsFn?.(AnnotationEditorParamsType.FREETEXT_COLOR, props.color);
-  updateParamsFn?.(AnnotationEditorParamsType.FREETEXT_SIZE, props.fontSize);
+  updateParamsFn?.(AnnotationEditorParamsType.FREETEXT_COLOR, props.color, true);
+  updateParamsFn?.(AnnotationEditorParamsType.FREETEXT_SIZE, props.fontSize, true);
 }
 
-params?.push(editorParam);
+manager.params = editorParam;
+manager.emit = emit;
 
 watch(
   () => [props.color, props.fontSize],

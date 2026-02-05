@@ -2,7 +2,15 @@
 import { AnnotationEditorParamsType } from "pdfjs-dist";
 
 import { inject, watch } from "vue";
-import { ANNOTATION_EDITORS_PARAMS_KEY } from "../utils/symbols";
+import { INK_EDITOR_KEY } from "../utils/symbols";
+import {
+  EditorColorPayload,
+  EditorEmitters,
+  EditorEventPayload,
+  EditorParams,
+  EditorPositionPayload,
+  EditorSizePayload,
+} from "../types";
 
 const props = defineProps<{
   color: string;
@@ -10,7 +18,13 @@ const props = defineProps<{
   opacity: number;
 }>();
 
-const params = inject<Function[]>(ANNOTATION_EDITORS_PARAMS_KEY);
+const emits = defineEmits<{
+  (event: "dragging", payload: EditorEventPayload & EditorPositionPayload): void;
+  (event: "resizing", payload: EditorEventPayload & EditorSizePayload): void;
+  (event: "colorChanged", payload: EditorEventPayload & EditorColorPayload): void;
+}>();
+
+const manager = inject<EditorParams & EditorEmitters>(INK_EDITOR_KEY)!;
 
 let updateParamsFn: Function | null = null;
 
@@ -20,12 +34,13 @@ function editorParam(fn: Function) {
 }
 
 function updateParams() {
-  updateParamsFn?.(AnnotationEditorParamsType.INK_COLOR, props.color);
-  updateParamsFn?.(AnnotationEditorParamsType.INK_THICKNESS, props.thickness);
-  updateParamsFn?.(AnnotationEditorParamsType.INK_OPACITY, props.opacity);
+  updateParamsFn?.(AnnotationEditorParamsType.INK_COLOR, props.color, true);
+  updateParamsFn?.(AnnotationEditorParamsType.INK_THICKNESS, props.thickness, true);
+  updateParamsFn?.(AnnotationEditorParamsType.INK_OPACITY, props.opacity, true);
 }
 
-params?.push(editorParam);
+manager.params = editorParam;
+manager.emit = emits;
 
 watch(
   () => [props.color, props.thickness, props.opacity],

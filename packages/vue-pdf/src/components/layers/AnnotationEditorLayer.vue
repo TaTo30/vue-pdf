@@ -2,21 +2,28 @@
 import * as PDFJS from "pdfjs-dist";
 import { inject, onMounted, provide, Ref, useTemplateRef, watch } from "vue";
 
-import type { PDFPageProxy, PageViewport } from "pdfjs-dist";
-
 import MinimalUiManager from "../utils/manager";
 import {
-  ANNOTATION_EDITORS_PARAMS_KEY,
   COMMENT_EDITOR_KEY,
   CONTAINER_OBJ_KEY,
   EDITOR_ANNOTATION_LAYER_OBJ_KEY,
   EDITOR_TEXT_LAYER_OBJ_KEY,
-  HIGHLIGHT_EDITOR_COLORS_KEY,
+  FREE_TEXT_EDITOR_KEY,
+  HIGHLIGHT_EDITOR_KEY,
+  INK_EDITOR_KEY,
   STAMP_EDITOR_KEY,
 } from "../utils/symbols";
 
-import type { EditorFn, EditorRequest, HighlightEditorColors } from "../types";
 import type { IL10n } from "pdfjs-dist/types/web/interfaces";
+import type { PDFPageProxy, PageViewport } from "pdfjs-dist";
+import type {
+  EditorEmitters,
+  EditorEventPayload,
+  EditorFn,
+  EditorParams,
+  EditorRequest,
+  HighlightEditorColors,
+} from "../types";
 
 const DEFAULT_HIGHLIGHT_COLORS: HighlightEditorColors = {
   yellow: ["#FFEB3B", "#FFFFCC"],
@@ -35,18 +42,31 @@ const props = defineProps<{
   editorLayer: boolean;
 }>();
 
+const emits = defineEmits<{
+  (e: "editorAdded", payload: EditorEventPayload): void;
+  (e: "editorRemoved", payload: EditorEventPayload): void;
+  (e: "editorLoaded"): void;
+}>();
+
 const layer = useTemplateRef("layer");
 
 let editor: PDFJS.AnnotationEditorLayer | null = null;
 
-const editorsParams: Function[] = [];
-const getHighlightColors: EditorFn = { fn: null };
-const addStampFn: EditorFn & EditorRequest = {
+const commentEditor: EditorFn & EditorRequest = { fn: null, request: null };
+const freeTextEditor: EditorParams & EditorEmitters = {
+  params: null,
+  emit: null,
+};
+const highlightEditor: EditorFn & EditorParams & EditorEmitters = {
+  fn: null,
+  params: null,
+  emit: null,
+};
+const inkEditor: EditorParams & EditorEmitters = { params: null, emit: null };
+const stampEditor: EditorFn & EditorRequest & EditorEmitters = {
   fn: (source: File | string | null) => {
     if (props.editorType !== PDFJS.AnnotationEditorType.STAMP) {
-      console.warn(
-        `[vue-pdf] Cannot add stamp editor when editor type is not STAMP.`,
-      );
+      console.warn(`[vue-pdf] Cannot add stamp when editor type is not STAMP.`);
       return;
     }
 
@@ -59,16 +79,14 @@ const addStampFn: EditorFn & EditorRequest = {
     }
   },
   request: null,
-};
-const commentPopup: EditorFn & EditorRequest = {
-  fn: null,
-  request: null,
+  emit: null,
 };
 
-provide(ANNOTATION_EDITORS_PARAMS_KEY, editorsParams);
-provide(HIGHLIGHT_EDITOR_COLORS_KEY, getHighlightColors);
-provide(COMMENT_EDITOR_KEY, commentPopup);
-provide(STAMP_EDITOR_KEY, addStampFn);
+provide(FREE_TEXT_EDITOR_KEY, freeTextEditor);
+provide(HIGHLIGHT_EDITOR_KEY, highlightEditor);
+provide(COMMENT_EDITOR_KEY, commentEditor);
+provide(STAMP_EDITOR_KEY, stampEditor);
+provide(INK_EDITOR_KEY, inkEditor);
 
 const textLayerProvider = inject(EDITOR_TEXT_LAYER_OBJ_KEY)! as {
   container: Ref<HTMLDivElement | undefined>;
@@ -93,12 +111,27 @@ async function render() {
   const viewport = props.viewport!;
 
   if (!containerObj.uiManager) {
+    const editorsParams = [
+      freeTextEditor.params,
+      highlightEditor.params,
+      inkEditor.params,
+    ].filter((e) => e !== null);
+
+    const emitters = {
+      [PDFJS.AnnotationEditorType.FREETEXT]: freeTextEditor.emit,
+      [PDFJS.AnnotationEditorType.INK]: inkEditor.emit,
+      [PDFJS.AnnotationEditorType.STAMP]: stampEditor.emit,
+      [PDFJS.AnnotationEditorType.HIGHLIGHT]: highlightEditor.emit,
+      [MinimalUiManager.LAYER_EMITTER_ID]: emits,
+    };
+
     containerObj.uiManager = new MinimalUiManager(
       props.document,
-      commentPopup,
-      addStampFn,
-      getHighlightColors.fn?.() ?? DEFAULT_HIGHLIGHT_COLORS,
+      commentEditor,
+      stampEditor,
+      highlightEditor.fn?.() ?? DEFAULT_HIGHLIGHT_COLORS,
       containerObj.wrapper.value!,
+      emitters,
       editorsParams,
     );
   }
@@ -147,7 +180,6 @@ async function render() {
     accessibilityManager: undefined,
     annotationLayer: annotationLayerInstance,
   });
-
   editor.toggleDrawing = (enabled: boolean) => {
     layer.value?.classList.toggle("drawing", !enabled);
   };
@@ -165,6 +197,8 @@ async function render() {
   containerObj.uiManager?.onScaleChanging({ scale: clonedViewport.scale });
   containerObj.uiManager?.onPageChanging({ pageNumber: page.pageNumber });
   containerObj.uiManager?.updateMode(props.editorType);
+
+  emits("editorLoaded");
 }
 
 function checkEditorType() {

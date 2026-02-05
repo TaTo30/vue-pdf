@@ -2,12 +2,9 @@
 import { AnnotationEditorParamsType } from "pdfjs-dist";
 
 import { inject, watch } from "vue";
-import {
-  ANNOTATION_EDITORS_PARAMS_KEY,
-  HIGHLIGHT_EDITOR_COLORS_KEY,
-} from "../utils/symbols";
+import { HIGHLIGHT_EDITOR_KEY } from "../utils/symbols";
 
-import type { HighlightEditorColors } from "../types";
+import type { EditorColorPayload, EditorEmitters, EditorEventPayload, EditorFn, EditorParams, HighlightEditorColors } from "../types";
 
 const props = defineProps<{
   color: string; // Note: color value must match with the values defined in HighlightEditorColors
@@ -15,10 +12,11 @@ const props = defineProps<{
   colorOptions?: HighlightEditorColors;
 }>();
 
-const params = inject<Function[]>(ANNOTATION_EDITORS_PARAMS_KEY);
-const highlightColors = inject<{ fn: Function | null }>(
-  HIGHLIGHT_EDITOR_COLORS_KEY,
-)!;
+const emits = defineEmits<{
+  (event: "colorChanged", payload: EditorEventPayload & EditorColorPayload): void;
+}>();
+
+const manager = inject<EditorFn & EditorParams & EditorEmitters>(HIGHLIGHT_EDITOR_KEY)!;
 
 let updateParamsFn: Function | null = null;
 
@@ -28,15 +26,13 @@ function editorParam(fn: Function) {
 }
 
 function updateParams() {
-  updateParamsFn?.(AnnotationEditorParamsType.HIGHLIGHT_COLOR, props.color);
-  updateParamsFn?.(
-    AnnotationEditorParamsType.HIGHLIGHT_THICKNESS,
-    props.thickness,
-  );
+  updateParamsFn?.(AnnotationEditorParamsType.HIGHLIGHT_COLOR, props.color, true);
+  updateParamsFn?.(AnnotationEditorParamsType.HIGHLIGHT_THICKNESS, props.thickness, true);
 }
 
-params?.push(editorParam);
-highlightColors.fn = () => {
+manager.params = editorParam;
+manager.emit = emits;
+manager.fn = () => {
   return props.colorOptions;
 };
 

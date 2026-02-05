@@ -27,6 +27,7 @@ import type {
 } from "pdfjs-dist/types/src/display/api";
 import type {
   AnnotationEventPayload,
+  EditorEventPayload,
   HighlightEventPayload,
   HighlightOptions,
   LoadedEventPayload,
@@ -72,7 +73,6 @@ const props = withDefaults(
     highlightText?: string | string[];
     highlightOptions?: HighlightOptions;
     highlightPages?: number[];
-    // TODO: this prop is currently not working properly when used reactively
     editorLayer?: boolean;
     editorType?: number;
   }>(),
@@ -92,6 +92,9 @@ const emit = defineEmits<{
   (event: "textLoaded", payload: TextLayerLoadedEventPayload): void;
   (event: "annotationLoaded", payload: any[]): void;
   (event: "xfaLoaded"): void;
+  (event: "editorLoaded"): void;
+  (event: "editorAdded", payload: EditorEventPayload): void;
+  (event: "editorRemoved", payload: EditorEventPayload): void;
 }>();
 
 // Template Refs
@@ -419,7 +422,12 @@ defineExpose({
       @annotation="emit('annotation', $event)"
       @annotation-loaded="emit('annotationLoaded', $event)"
     />
-    <AnnotationEditorLayer v-bind="{ ...internalProps, ...aelayerProps }">
+    <AnnotationEditorLayer
+      v-bind="{ ...internalProps, ...aelayerProps }"
+      @editor-added="emit('editorAdded', $event)"
+      @editor-removed="emit('editorRemoved', $event)"
+      @editor-loaded="emit('editorLoaded')"
+    >
       <slot name="editors" />
     </AnnotationEditorLayer>
     <XFALayer v-bind="{ ...internalProps }" @xfa-loaded="emit('xfaLoaded')" />
