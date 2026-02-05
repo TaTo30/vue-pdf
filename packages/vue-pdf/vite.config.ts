@@ -11,7 +11,8 @@ export default mergeConfig(
         entry: resolve(__dirname, './src/index.ts'),
         name: '@tato30/vue-pdf',
         fileName: 'index',
-        cssFileName: 'style'
+        cssFileName: 'style',
+        formats: ["es"]
       },
       rollupOptions: {
         external: ['vue', 'pdfjs-dist'],
