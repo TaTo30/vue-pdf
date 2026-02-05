@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as PDFJS from "pdfjs-dist";
-import { onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { inject, onMounted, ref, useTemplateRef, watch } from "vue";
 
 import type { PDFPageProxy, PageViewport } from "pdfjs-dist";
 import type {
@@ -9,6 +9,7 @@ import type {
   TextLayerLoadedEventPayload,
 } from "../types";
 import { findMatches, highlightMatches, resetDivs } from "../utils/highlight";
+import { EDITOR_TEXT_LAYER_OBJ_KEY } from "../utils/symbols";
 
 const props = defineProps<{
   page?: PDFPageProxy;
@@ -23,10 +24,15 @@ const emit = defineEmits<{
   (event: "textLoaded", payload: TextLayerLoadedEventPayload): void;
 }>();
 
-const layer = ref<HTMLDivElement>();
+const layer = useTemplateRef<HTMLDivElement>("layer");
 const endContent = ref<HTMLDivElement>();
 let textDivs: HTMLElement[] = [];
-let textLayerTask: PDFJS.TextLayer | null = null;
+let textLayerTask: PDFJS.TextLayer | undefined;
+
+const textLayerContainerProvider = inject(EDITOR_TEXT_LAYER_OBJ_KEY)! as {
+  promise: Promise<HTMLDivElement | undefined>;
+  resolve: (value: HTMLDivElement | undefined) => void;
+};
 
 function getHighlightOptionsWithDefaults(): HighlightOptions {
   return Object.assign(
@@ -35,7 +41,7 @@ function getHighlightOptionsWithDefaults(): HighlightOptions {
       ignoreCase: true,
       completeWords: false,
     },
-    props.highlightOptions
+    props.highlightOptions,
   );
 }
 
@@ -58,7 +64,7 @@ async function findAndHighlight(reset = false) {
     const matches = findMatches(
       queries,
       textContent!,
-      getHighlightOptionsWithDefaults()
+      getHighlightOptionsWithDefaults(),
     );
     highlightMatches(matches, textContent!, textDivs);
     emit("highlight", {
@@ -93,9 +99,9 @@ async function render() {
     textDivs = textLayer.textDivs;
     const textContent = await page?.getTextContent();
     emit("textLoaded", { textDivs, textContent });
-  
     setEOC();
     findAndHighlight();
+    textLayerContainerProvider.resolve(layer.value!);
   } catch (e) {
     // Ignore render cancelled errors
   }
@@ -120,17 +126,19 @@ function onMouseUp() {
 
 watch(
   () => props.viewport,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   (_) => {
     if (props.page && props.viewport && layer.value) render();
-  }
+  },
 );
 
 watch(
   () => [props.highlightText, props.highlightOptions],
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   (_) => {
     findAndHighlight(true);
   },
-  { deep: true }
+  { deep: true },
 );
 
 onMounted(() => {
@@ -142,7 +150,7 @@ onMounted(() => {
   <div
     ref="layer"
     class="textLayer"
-    style="display: block"
+    :data-main-page="page?._pageIndex"
     @mousedown="onMouseDown"
     @mouseup="onMouseUp"
   />

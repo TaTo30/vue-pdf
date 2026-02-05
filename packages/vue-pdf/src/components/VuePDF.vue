@@ -1,7 +1,16 @@
 <!-- eslint-disable no-case-declarations -->
 <script setup lang="ts">
 import * as PDFJS from "pdfjs-dist";
-import { computed, onMounted, onUnmounted, ref, toRaw, watch } from "vue";
+import {
+  computed,
+  onMounted,
+  onUnmounted,
+  provide,
+  ref,
+  toRaw,
+  useTemplateRef,
+  watch,
+} from "vue";
 
 import "pdfjs-dist/web/pdf_viewer.css";
 
@@ -18,6 +27,7 @@ import type {
 } from "pdfjs-dist/types/src/display/api";
 import type {
   AnnotationEventPayload,
+  EditorEventPayload,
   HighlightEventPayload,
   HighlightOptions,
   LoadedEventPayload,
@@ -26,8 +36,14 @@ import type {
 } from "./types";
 
 import AnnotationLayer from "./layers/AnnotationLayer.vue";
+import AnnotationEditorLayer from "./layers/AnnotationEditorLayer.vue";
 import TextLayer from "./layers/TextLayer.vue";
 import XFALayer from "./layers/XFALayer.vue";
+import {
+  CONTAINER_OBJ_KEY,
+  EDITOR_ANNOTATION_LAYER_OBJ_KEY,
+  EDITOR_TEXT_LAYER_OBJ_KEY,
+} from "./utils/symbols";
 
 interface InternalProps {
   page: PDFPageProxy | undefined;
@@ -57,13 +73,16 @@ const props = withDefaults(
     highlightText?: string | string[];
     highlightOptions?: HighlightOptions;
     highlightPages?: number[];
+    editorLayer?: boolean;
+    editorType?: number;
   }>(),
   {
     page: 1,
     scale: 1,
+    editorType: 0,
     intent: "display",
     autoDestroy: false,
-  }
+  },
 );
 
 const emit = defineEmits<{
@@ -73,11 +92,17 @@ const emit = defineEmits<{
   (event: "textLoaded", payload: TextLayerLoadedEventPayload): void;
   (event: "annotationLoaded", payload: any[]): void;
   (event: "xfaLoaded"): void;
+  (event: "editorLoaded"): void;
+  (event: "editorAdded", payload: EditorEventPayload): void;
+  (event: "editorRemoved", payload: EditorEventPayload): void;
+  (event: "editorSelected", payload: EditorEventPayload): void;
 }>();
 
 // Template Refs
-const container = ref<HTMLSpanElement>();
-const loadingLayer = ref<HTMLSpanElement>();
+const container = useTemplateRef<HTMLElement>("container");
+const canvasWrapper = useTemplateRef<HTMLElement>("canvasWrapper");
+const loadingLayer = useTemplateRef<HTMLElement>("loadingLayer");
+
 const loading = ref(false);
 let renderTask: RenderTask;
 
@@ -104,6 +129,35 @@ const tlayerProps = computed(() => {
     highlightPages: props.highlightPages,
   };
 });
+const aelayerProps = computed(() => {
+  return {
+    editorLayer: props.editorLayer,
+    editorType: props.editorType,
+    intent: props.intent,
+  };
+});
+
+// Promise resolvers for async dependency management
+let alayerResolver: (value: PDFJS.AnnotationLayer | undefined) => void;
+let tlayerResolver: (value: HTMLDivElement | undefined) => void;
+
+provide(EDITOR_ANNOTATION_LAYER_OBJ_KEY, {
+  promise: new Promise<PDFJS.AnnotationLayer | undefined>((resolve) => {
+    alayerResolver = resolve;
+  }),
+  resolve: (value: PDFJS.AnnotationLayer | undefined) => alayerResolver(value),
+});
+provide(EDITOR_TEXT_LAYER_OBJ_KEY, {
+  promise: new Promise<HTMLDivElement | undefined>((resolve) => {
+    tlayerResolver = resolve;
+  }),
+  resolve: (value: HTMLDivElement | undefined) => tlayerResolver(value),
+});
+provide(CONTAINER_OBJ_KEY, {
+  wrapper: canvasWrapper,
+  container: container,
+  uiManager: null,
+});
 
 function getWatermarkOptionsWithDefaults(): WatermarkOptions {
   return Object.assign(
@@ -115,7 +169,7 @@ function getWatermarkOptionsWithDefaults(): WatermarkOptions {
       fontSize: 18,
       color: "rgba(211, 210, 211, 0.4)",
     },
-    props.watermarkOptions
+    props.watermarkOptions,
   );
 }
 
@@ -130,8 +184,9 @@ function getRotation(rotation: number): number {
 function getScale(page: PDFPageProxy): number {
   let fscale = props.scale;
   if (props.fitParent) {
-    const parentWidth: number = (container.value!.parentNode! as HTMLElement)
-      .clientWidth;
+    const parentWidth: number = (
+      canvasWrapper.value!.parentNode! as HTMLElement
+    ).clientWidth;
     const scale1Width = page.getViewport({ scale: 1 }).width;
     fscale = parentWidth / scale1Width;
   } else if (props.width) {
@@ -182,7 +237,7 @@ function paintWatermark(zoomRatio = 1.0) {
 
 function getCurrentCanvas(): HTMLCanvasElement | null {
   let oldCanvas = null;
-  container.value?.childNodes.forEach((el) => {
+  canvasWrapper.value?.childNodes.forEach((el) => {
     if ((el as HTMLElement).tagName === "CANVAS") oldCanvas = el;
   });
   return oldCanvas;
@@ -206,10 +261,18 @@ function setupCanvas(viewport: PageViewport): HTMLCanvasElement {
   canvas.style.width = `${Math.floor(viewport.width)}px`;
   canvas.style.height = `${Math.floor(viewport.height)}px`;
 
-  // --scale-factor property
   container.value?.style.setProperty("--scale-factor", `${viewport.scale}`);
   container.value?.style.setProperty("--user-unit", `${viewport.userUnit}`);
-  container.value?.style.setProperty("--total-scale-factor", "calc(var(--scale-factor) * var(--user-unit))");
+
+  // TODO: this attributes should be calculated according to device pixel ratio and scale, 1px works well for several cases
+  // but may not be accurate in some specific cases
+  container.value?.style.setProperty("--scale-round-y", `1px`);
+  container.value?.style.setProperty("--scale-round-x", `1px`);
+  container.value?.style.setProperty(
+    "--total-scale-factor",
+    "calc(var(--scale-factor) * var(--user-unit))",
+  );
+
   // Also setting dimension properties for load layer
   loadingLayer.value!.style.width = `${Math.floor(viewport.width)}px`;
   loadingLayer.value!.style.height = `${Math.floor(viewport.height)}px`;
@@ -255,7 +318,7 @@ function renderPage(pageNum: number) {
       };
 
       if (canvas?.getAttribute("role") !== "main") {
-        if (oldCanvas) container.value?.replaceChild(canvas, oldCanvas);
+        if (oldCanvas) canvasWrapper.value?.replaceChild(canvas, oldCanvas);
       } else {
         canvas.removeAttribute("role");
       }
@@ -291,7 +354,7 @@ watch(
     }
     // For any changes on pdf, reinicialize all
     if (pdf !== undefined) initDoc(pdf);
-  }
+  },
 );
 
 watch(
@@ -307,7 +370,7 @@ watch(
   () => {
     // Props that should dispatch an render task
     renderPage(props.page);
-  }
+  },
 );
 
 onMounted(() => {
@@ -340,20 +403,35 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="container" style="position: relative; display: block">
-    <canvas dir="ltr" style="display: block" role="main" />
-    <AnnotationLayer
-      v-if="annotationLayer"
-      v-bind="{ ...internalProps, ...alayerProps }"
-      @annotation="emit('annotation', $event)"
-      @annotation-loaded="emit('annotationLoaded', $event)"
-    />
+  <div
+    ref="container"
+    class="page"
+    style="position: relative; background-clip: content-box"
+  >
+    <div ref="canvasWrapper" id="drawlayer" class="canvasWrapper">
+      <canvas dir="ltr" role="main" />
+    </div>
     <TextLayer
       v-if="textLayer"
       v-bind="{ ...internalProps, ...tlayerProps }"
       @highlight="emit('highlight', $event)"
       @text-loaded="emit('textLoaded', $event)"
     />
+    <AnnotationLayer
+      v-if="annotationLayer"
+      v-bind="{ ...internalProps, ...alayerProps }"
+      @annotation="emit('annotation', $event)"
+      @annotation-loaded="emit('annotationLoaded', $event)"
+    />
+    <AnnotationEditorLayer
+      v-bind="{ ...internalProps, ...aelayerProps }"
+      @editor-added="emit('editorAdded', $event)"
+      @editor-removed="emit('editorRemoved', $event)"
+      @editor-selected="emit('editorSelected', $event)"
+      @editor-loaded="emit('editorLoaded')"
+    >
+      <slot name="editors" />
+    </AnnotationEditorLayer>
     <XFALayer v-bind="{ ...internalProps }" @xfa-loaded="emit('xfaLoaded')" />
     <div v-show="loading" ref="loadingLayer" style="position: absolute">
       <slot />
