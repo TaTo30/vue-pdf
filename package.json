@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "npm run --prefix packages/playground dev",
     "dev:docs": "npm run --prefix packages/vue-pdf build:lib && npm run --prefix docs dev",
+    "test:setup": "npx playwright install --with-deps",
     "test": "npm run --prefix tests test",
     "build": "npm run test && npm run --prefix packages/vue-pdf build",
     "build:docs": "npm run --prefix packages/vue-pdf build:lib && npm run --prefix docs build",
