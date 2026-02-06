@@ -1,22 +1,21 @@
 import { resolve } from "node:path";
-import { version } from '../../packages/vue-pdf/package.json';
-
+import { version } from "../../packages/vue-pdf/package.json";
 
 export default {
   vite: {
     optimizeDeps: {
       esbuildOptions: {
         supported: {
-          "top-level-await": true
+          "top-level-await": true,
         },
       },
     },
     build: {
-      target: 'esnext'
+      target: "esnext",
     },
     resolve: {
       alias: {
-        "@tato30/vue-pdf": resolve(__dirname, "../../packages/vue-pdf/dist")
+        "@tato30/vue-pdf": resolve(__dirname, "../../packages/vue-pdf/dist"),
       },
     },
   },
@@ -58,6 +57,10 @@ export default {
           {
             text: "Events",
             link: "/examples/loaded_events/loaded.md",
+          },
+          {
+            text: "Editor",
+            link: "/examples/editor/combined.md",
           },
         ],
       },
@@ -110,6 +113,32 @@ export default {
               {
                 text: "Slots",
                 link: "slots",
+              },
+              {
+                text: "Editor",
+                link: "editor",
+                items: [
+                  {
+                    text: "FreeText",
+                    link: "editor/freetext",
+                  },
+                  {
+                    text: "Highlight",
+                    link: "editor/highlight",
+                  },
+                  {
+                    text: "Ink",
+                    link: "editor/ink",
+                  },
+                  {
+                    text: "Stamp",
+                    link: "editor/stamp",
+                  },
+                  {
+                    text: "Comment",
+                    link: "editor/comment",
+                  },
+                ],
               },
             ],
           },
@@ -222,6 +251,32 @@ export default {
                     link: "annotation_attachment",
                   },
                 ],
+              },
+            ],
+          },
+          {
+            text: "Editor",
+            base: "/examples/",
+            items: [
+              {
+                text: "FreeText",
+                link: "/editor/freetext",
+              },
+              {
+                text: "Highlight",
+                link: "/editor/highlight",
+              },
+              {
+                text: "Ink",
+                link: "/editor/ink",
+              },
+              {
+                text: "Stamp",
+                link: "/editor/stamp",
+              },
+              {
+                text: "Combined",
+                link: "/editor/combined",
               },
             ],
           },
