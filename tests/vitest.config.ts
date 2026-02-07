@@ -10,7 +10,11 @@ export default mergeConfig(
         provider: "playwright",
         enabled: true,
         headless: true,
-        instances: [{ browser: "firefox" }],
+        instances: [
+          { browser: "firefox" },
+          { browser: "chromium" },
+          { browser: "webkit" },
+        ],
       },
     },
     resolve: {
@@ -18,5 +22,5 @@ export default mergeConfig(
         "@tato30/vue-pdf": resolve(__dirname, "packages/vue-pdf/src"),
       },
     },
-  })
+  }),
 );
