@@ -45,10 +45,6 @@ function onAltText(editor, callback) {
 </template>
 ```
 
-::: tip
-Set `editor-type` to `13` (`AnnotationEditorType.STAMP`) to activate the stamp editor mode.
-:::
-
 ## Methods
 
 ### addStamp
@@ -59,9 +55,9 @@ Add a new stamp annotation to the page. This method can be called with different
 addStamp(source?: File | string | null): void
 ```
 
-| Parameter | Type                     | Description                                                             |
-| --------- | ------------------------ | ----------------------------------------------------------------------- |
-| `source`  | `File \| string \| null` | Image source: a `File` object, a URL string, or `null` to open a picker |
+| Parameter | Type                     | Description                                                                    |
+| --------- | ------------------------ | ------------------------------------------------------------------------------ |
+| `source`  | `File \| string \| null` | Image source: a `File` object, a URL string, or `null` to open the file picker |
 
 ```vue
 <script setup>
@@ -92,7 +88,7 @@ function addFromFile(file) {
 ```
 
 ::: warning
-`addStamp` can only be called when `editor-type` is set to `13` (STAMP). Calling it with a different editor type will log a warning.
+`addStamp` can only be called when `editor-type` is set to `13` (STAMP). Calling it with a different editor type will not work.
 :::
 
 ## Events

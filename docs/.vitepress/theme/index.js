@@ -26,7 +26,7 @@ import EditorFreeText from "../../components/EditorFreeText.vue";
 import EditorHighlight from "../../components/EditorHighlight.vue";
 import EditorInk from "../../components/EditorInk.vue";
 import EditorStamp from "../../components/EditorStamp.vue";
-import EditorCombined from "../../components/EditorCombined.vue";
+import EditorComment from "../../components/EditorComment.vue";
 
 /** @type {import('vitepress').Theme} */
 export default {
@@ -57,6 +57,6 @@ export default {
     app.component("EditorHighlight", EditorHighlight);
     app.component("EditorInk", EditorInk);
     app.component("EditorStamp", EditorStamp);
-    app.component("EditorCombined", EditorCombined);
+    app.component("EditorComment", EditorComment);
   },
 };

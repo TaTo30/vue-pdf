@@ -1,6 +1,11 @@
 <script setup>
 import { ref } from "vue";
-import { VuePDF, usePDF, PDFHighlightAnnotation } from "@tato30/vue-pdf";
+import {
+  VuePDF,
+  usePDF,
+  PDFHighlightAnnotation,
+  PDFCommentAnnotation,
+} from "@tato30/vue-pdf";
 import "pdfjs-dist/web/pdf_viewer.css";
 
 const { pdf, download } = usePDF(
@@ -10,6 +15,16 @@ const { pdf, download } = usePDF(
 const colorOptions = ["#FFEB3B", "#8BC34A", "#FFCBE6", "#F44336", "#2196F3"];
 const color = ref("#FFEB3B");
 const thickness = ref(12);
+
+function onComment(editor, callback) {
+  console.log("[Comment] comment:", editor);
+  const text = prompt("Enter comment:");
+  callback(text);
+}
+
+function onRemoved(editor) {
+  console.log("[Comment] removed:", editor);
+}
 
 function onColorChanged(event) {
   console.log("[Highlight] colorChanged:", event);
@@ -61,6 +76,7 @@ function onColorChanged(event) {
             :thickness="thickness"
             @color-changed="onColorChanged"
           />
+          <PDFCommentAnnotation @comment="onComment" @removed="onRemoved" />
         </template>
       </VuePDF>
     </div>

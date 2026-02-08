@@ -36,3 +36,7 @@ function onAltText(editor, callback) {
 <ClientOnly>
   <EditorStamp />
 </ClientOnly>
+
+::: tip
+Editor events are being logged to the browser console. Open DevTools to see them.
+:::

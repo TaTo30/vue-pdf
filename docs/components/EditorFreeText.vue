@@ -3,13 +3,21 @@ import { ref } from "vue";
 import { VuePDF, usePDF, PDFFreeTextAnnotation } from "@tato30/vue-pdf";
 import "pdfjs-dist/web/pdf_viewer.css";
 
-const { pdf } = usePDF(
+const { pdf, download } = usePDF(
   "https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf",
 );
 
 const colorOptions = ["#2196F3", "#F44336", "#4CAF50", "#FF9800", "#9C27B0"];
 const color = ref("#2196F3");
 const fontSize = ref(20);
+
+function onDragging(event) {
+  console.log("[FreeText] dragging:", event);
+}
+
+function onColorChanged(event) {
+  console.log("[FreeText] colorChanged:", event);
+}
 </script>
 
 <template>
@@ -25,10 +33,19 @@ const fontSize = ref(20);
               </option>
             </select>
           </td>
+        </tr>
+        <tr>
           <td>Font Size</td>
           <td>
             <input v-model.number="fontSize" type="range" min="8" max="72" />
             {{ fontSize }}px
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <button class="button-example" @click="download()">
+              Download PDF
+            </button>
           </td>
         </tr>
       </tbody>
@@ -43,7 +60,12 @@ const fontSize = ref(20);
         fit-parent
       >
         <template #editors>
-          <PDFFreeTextAnnotation :color="color" :fontSize="fontSize" />
+          <PDFFreeTextAnnotation
+            :color="color"
+            :fontSize="fontSize"
+            @dragging="onDragging"
+            @color-changed="onColorChanged"
+          />
         </template>
       </VuePDF>
     </div>

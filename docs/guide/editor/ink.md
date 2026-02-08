@@ -6,6 +6,9 @@ outline: deep
 
 The `PDFInkAnnotation` component configures the ink/drawing annotation editor, allowing users to draw freehand annotations on the PDF page.
 
+Using this component is ***optional***. It allows you to override default editor parameters and listen events, but if not used, the ink editor will still work with default parameters as long as `editor-type` is set to `15`.
+
+
 ## Import
 
 ```js
@@ -34,10 +37,6 @@ const opacity = ref(1.0)
   </VuePDF>
 </template>
 ```
-
-::: tip
-Set `editor-type` to `15` (`AnnotationEditorType.INK`) to activate the ink editor mode.
-:::
 
 ## Props
 
@@ -85,12 +84,7 @@ All props (`color`, `thickness`, and `opacity`) are reactive, changing their val
 Emitted when an ink annotation is being dragged.
 
 ```vue
-<PDFInkAnnotation
-  :color="color"
-  :thickness="thickness"
-  :opacity="opacity"
-  @dragging="onDragging"
-/>
+<PDFInkAnnotation @dragging="onDragging" />
 ```
 
 Payload:
@@ -107,12 +101,7 @@ Payload:
 Emitted when an ink annotation is being resized.
 
 ```vue
-<PDFInkAnnotation
-  :color="color"
-  :thickness="thickness"
-  :opacity="opacity"
-  @resizing="onResizing"
-/>
+<PDFInkAnnotation @resizing="onResizing" />
 ```
 
 Payload:
@@ -126,15 +115,10 @@ Payload:
 
 ### colorChanged
 
-Emitted when the color of an ink annotation has been changed.
+Emitted when the color of an ink annotation has been changed from editor's toolbar.
 
 ```vue
-<PDFInkAnnotation
-  :color="color"
-  :thickness="thickness"
-  :opacity="opacity"
-  @color-changed="onColorChanged"
-/>
+<PDFInkAnnotation @color-changed="onColorChanged" />
 ```
 
 Payload:

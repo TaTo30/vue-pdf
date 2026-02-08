@@ -3,7 +3,7 @@ import { useTemplateRef } from "vue";
 import { VuePDF, usePDF, PDFStampAnnotation } from "@tato30/vue-pdf";
 import "pdfjs-dist/web/pdf_viewer.css";
 
-const { pdf } = usePDF(
+const { pdf, download } = usePDF(
   "https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf",
 );
 
@@ -14,8 +14,17 @@ function addStamp() {
 }
 
 function onAltText(editor, callback) {
+  console.log("[Stamp] alt-text:", editor);
   const text = prompt("Enter alt text for the image:");
   callback(text);
+}
+
+function onDragging(event) {
+  console.log("[Stamp] dragging:", event);
+}
+
+function onResizing(event) {
+  console.log("[Stamp] resizing:", event);
 }
 </script>
 
@@ -23,6 +32,7 @@ function onAltText(editor, callback) {
   <div class="vue-pdf-container">
     <div>
       <button class="button-example" @click="addStamp">Add Stamp</button>
+      <button class="button-example" @click="download()">Download PDF</button>
     </div>
     <div style="width: 500px">
       <VuePDF
@@ -34,7 +44,12 @@ function onAltText(editor, callback) {
         fit-parent
       >
         <template #editors>
-          <PDFStampAnnotation ref="stamp" @alt-text="onAltText" />
+          <PDFStampAnnotation
+            ref="stamp"
+            @alt-text="onAltText"
+            @dragging="onDragging"
+            @resizing="onResizing"
+          />
         </template>
       </VuePDF>
     </div>

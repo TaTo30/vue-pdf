@@ -4,6 +4,10 @@ outline: deep
 
 # Editor
 
+::: warning Beta Feature
+The annotation editor is currently in beta as this is the first version of the feature. Some functionality may not work as expected or could have limitations. Please report any issues you encounter.
+:::
+
 VuePDF supports annotation editing through the **Annotation Editor Layer**, allowing users to create and manage annotations directly on PDF pages. This feature is powered by `pdf.js` built-in annotation editor capabilities.
 
 ## Setup
@@ -35,6 +39,10 @@ const editorType = ref(0)
 </template>
 ```
 
+> [!IMPORTANT]
+> For editor layer works properly both `annotation-layer` and `text-layer` must be always in `true`, switching those props two `false` will break editor behavior. 
+
+
 ## Props
 
 ### editor-layer
@@ -64,7 +72,6 @@ Sets the active editor mode. The following values are available:
 | `9`   | HIGHLIGHT | Highlight annotation editor                     |
 | `13`  | STAMP     | Stamp/image annotation editor                   |
 | `15`  | INK       | Ink/drawing annotation editor                   |
-| `-1`  | DISABLE   | Disable the editor layer completely             |
 
 ```vue
 <VuePDF :pdf="pdf" editor-layer :editor-type="3" />
@@ -80,7 +87,6 @@ import { AnnotationEditorType } from 'pdfjs-dist'
 // AnnotationEditorType.HIGHLIGHT = 9
 // AnnotationEditorType.STAMP     = 13
 // AnnotationEditorType.INK       = 15
-// AnnotationEditorType.DISABLE   = -1
 ```
 :::
 
@@ -141,7 +147,8 @@ Payload:
 
 ## Editors Slot
 
-Editor sub-components must be placed inside the `editors` named slot. These components don't render any visual elements but configure the behavior and parameters of each editor type.
+Editor sub-components must be placed inside the `editors` named slot. These components (Except `PDFCommentAnnotation`) don't render any visual elements but configure the ***global*** behavior and parameters of each editor type. They must only be placed once.
+
 
 ```vue
 <VuePDF :pdf="pdf" editor-layer :editor-type="editorType">
@@ -206,16 +213,6 @@ function onComment(editor, callback) {
 
 <template>
   <div>
-    <select v-model="editorType">
-      <option :value="0">None</option>
-      <option :value="3">FreeText</option>
-      <option :value="9">Highlight</option>
-      <option :value="15">Ink</option>
-      <option :value="13">Stamp</option>
-    </select>
-
-    <button @click="addImage">Add Stamp</button>
-
     <VuePDF
       :pdf="pdf"
       text-layer

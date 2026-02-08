@@ -1,9 +1,14 @@
-# Highlight Editor
+# Comment Editor
 
 ```vue
 <script setup>
 import { ref } from 'vue'
-import { VuePDF, usePDF, PDFHighlightAnnotation } from '@tato30/vue-pdf'
+import {
+  VuePDF,
+  usePDF,
+  PDFHighlightAnnotation,
+  PDFCommentAnnotation,
+} from '@tato30/vue-pdf'
 import '@tato30/vue-pdf/style.css'
 
 const { pdf } = usePDF('https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf')
@@ -11,6 +16,15 @@ const { pdf } = usePDF('https://mozilla.github.io/pdf.js/web/compressed.tracemon
 const colorOptions = ['#FFEB3B', '#8BC34A', '#FFCBE6', '#F44336', '#2196F3']
 const color = ref('#FFEB3B')
 const thickness = ref(12)
+
+function onComment(editor, callback) {
+  const text = prompt('Enter comment:')
+  callback(text)
+}
+
+function onRemoved(editor) {
+  console.log('Comment removed from editor:', editor)
+}
 </script>
 
 <template>
@@ -25,13 +39,14 @@ const thickness = ref(12)
     <VuePDF :pdf="pdf" text-layer annotation-layer editor-layer :editor-type="9">
       <template #editors>
         <PDFHighlightAnnotation :color="color" :thickness="thickness" />
+        <PDFCommentAnnotation @comment="onComment" @removed="onRemoved" />
       </template>
     </VuePDF>
   </div>
 </template>
 ```
 <ClientOnly>
-  <EditorHighlight />
+  <EditorComment />
 </ClientOnly>
 
 ::: tip

@@ -6,6 +6,9 @@ outline: deep
 
 The `PDFHighlightAnnotation` component configures the highlight annotation editor, allowing users to highlight text on the PDF page.
 
+Using this component is ***optional***. It allows you to override default editor parameters and listen events, but if not used, the highlight editor will still work with default parameters as long as `editor-type` is set to `9`.
+
+
 ## Import
 
 ```js
@@ -34,33 +37,8 @@ const thickness = ref(12)
 </template>
 ```
 
-::: tip
-Set `editor-type` to `9` (`AnnotationEditorType.HIGHLIGHT`) to activate the highlight editor mode.
-:::
-
 ## Props
 
-### color
-
-Type: `string` <br />
-Required: `true`
-
-The color of the highlight. The color value must match one of the values defined in [colorOptions](#coloroptions).
-
-```vue
-<PDFHighlightAnnotation color="#FFEB3B" :thickness="12" />
-```
-
-### thickness
-
-Type: `number` <br />
-Required: `true`
-
-The thickness of the highlight.
-
-```vue
-<PDFHighlightAnnotation color="#FFEB3B" :thickness="12" />
-```
 
 ### colorOptions
 
@@ -88,12 +66,34 @@ const customColors = {
 }
 </script>
 
-<PDFHighlightAnnotation color="#FFEB3B" :thickness="12" :color-options="customColors" />
+<PDFHighlightAnnotation :color-options="customColors" />
 ```
 
 ::: warning
 Highlight color options can only be set once during initialization. Changing them after the editor has been created will have no effect.
 :::
+
+### color
+
+Type: `string` <br />
+Required: `true`
+
+The color of the highlight. The color value must be one of the values defined in [colorOptions](#coloroptions).
+
+```vue
+<PDFHighlightAnnotation color="#FFEB3B"  />
+```
+
+### thickness
+
+Type: `number` <br />
+Required: `true`
+
+The thickness of the highlight.
+
+```vue
+<PDFHighlightAnnotation :thickness="12" />
+```
 
 ::: info
 Both `color` and `thickness` props are reactive, changing their values will update the editor parameters for new annotations.
@@ -103,14 +103,10 @@ Both `color` and `thickness` props are reactive, changing their values will upda
 
 ### colorChanged
 
-Emitted when the color of a highlight annotation has been changed.
+Emitted when the color of a highlight annotation has been changed from editor's toolbar.
 
 ```vue
-<PDFHighlightAnnotation
-  :color="color"
-  :thickness="thickness"
-  @color-changed="onColorChanged"
-/>
+<PDFHighlightAnnotation @color-changed="onColorChanged" />
 ```
 
 Payload:

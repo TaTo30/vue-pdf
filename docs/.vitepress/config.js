@@ -60,7 +60,7 @@ export default {
           },
           {
             text: "Editor",
-            link: "/examples/editor/combined.md",
+            link: "/examples/editor/comment.md",
           },
         ],
       },
@@ -275,8 +275,8 @@ export default {
                 link: "/editor/stamp",
               },
               {
-                text: "Combined",
-                link: "/editor/combined",
+                text: "Comment",
+                link: "/editor/comment",
               },
             ],
           },

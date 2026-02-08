@@ -36,3 +36,7 @@ const opacity = ref(1.0)
 <ClientOnly>
   <EditorInk />
 </ClientOnly>
+
+::: tip
+Editor events are being logged to the browser console. Open DevTools to see them.
+:::

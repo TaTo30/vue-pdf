@@ -41,7 +41,7 @@ function onRemoved(editor) {
 ```
 
 ::: info
-The `PDFCommentAnnotation` component works alongside any editor type (FreeText, Highlight, Ink, Stamp). It provides the comment popup UI and handles the comment creation flow.
+The `PDFCommentAnnotation` component works alongside any editor type (Highlight, Ink, Stamp). It provides the comment popup UI and handles the comment creation flow.
 :::
 
 ## Events
