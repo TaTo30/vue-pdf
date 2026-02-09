@@ -1,0 +1,4 @@
+{
+  "from": "/pdfjs-dist/g",
+  "to": "pdfjs-dist/legacy/build/pdf.mjs"
+}

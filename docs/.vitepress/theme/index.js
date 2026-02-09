@@ -1,13 +1,5 @@
 import DefaultTheme from "vitepress/theme";
 import "../styles/index.scss";
-import { GlobalWorkerOptions } from "pdfjs-dist/build/pdf";
-
-const PDF_WORKER_URL =
-  "https://unpkg.com/pdfjs-dist@5.4.624/build/pdf.worker.min.mjs";
-
-if (typeof window !== "undefined") {
-  GlobalWorkerOptions.workerSrc = PDF_WORKER_URL;
-}
 
 import AllPages from "../../components/AllPages.vue";
 import AnnoAttachment from "../../components/AnnoAttachment.vue";
