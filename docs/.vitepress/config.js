@@ -16,6 +16,10 @@ export default {
     resolve: {
       alias: {
         "@tato30/vue-pdf": resolve(__dirname, "../../packages/vue-pdf/dist"),
+        "@tato30/vue-pdf/minimal": resolve(
+          __dirname,
+          "../../packages/vue-pdf/dist/index.minimal.mjs",
+        ),
       },
     },
   },
