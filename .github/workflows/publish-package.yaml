@@ -21,7 +21,7 @@ jobs:
       - name: Setup NodeJS
         uses: actions/setup-node@v4
         with: 
-          node-version: 22
+          node-version: 24
           registry-url: https://registry.npmjs.org
 
       - name: Install packages
@@ -35,8 +35,6 @@ jobs:
 
       - name: Publish packages
         working-directory: packages/vue-pdf
-        run: npm publish --access public
-        env: 
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --provenance
        
       
