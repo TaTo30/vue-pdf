@@ -35,6 +35,6 @@ jobs:
 
       - name: Publish packages
         working-directory: packages/vue-pdf
-        run: npm publish --access public
+        run: npm publish --access public --provenance
        
       
