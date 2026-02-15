@@ -72,7 +72,7 @@ function addAltText(cb: Function) {
 
   <button @click="rotation = (rotation + 270) % 360">-90</button>
   <button @click="rotation = (rotation + 90) % 360">+90</button>
- <button @click="scale=zoomOut(scale)" > zoom - </button>
+ <button @click="scale=zoomOut(scale)" > zoom - </button> scale: {{ scale.toFixed(1) }} 
  <button @click="scale=zoomIn(scale)" > zoom+ </button>
  
   <label>
