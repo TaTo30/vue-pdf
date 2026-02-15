@@ -1,4 +1,5 @@
 <!-- eslint-disable unused-imports/no-unused-imports -->
+<!-- eslint-disable unused-imports/no-unused-imports -->
 <!-- Use this component to play with the main components -->
 <script setup lang="ts">
 import { ref, useTemplateRef } from "vue";
@@ -14,6 +15,7 @@ import {
 } from "@tato30/vue-pdf";
 
 import "pdfjs-dist/web/pdf_viewer.css";
+import { resourceLimits } from "worker_threads";
 const { pdf, download } = usePDF(pdf14);
 const colorOptions = ["#2196F3", "red", "green", "yellow", "purple", "orange"];
 const color = ref<string>(colorOptions[0]);
@@ -27,6 +29,7 @@ type EditorType = 0 | 3 | 9 | 13 | 101;
 const editorType = ref<EditorType>(101);
 
 const rotation = ref<number>(0);
+const scale = ref(1.0);
 
 const stamp = useTemplateRef("stamp01");
 
@@ -39,10 +42,27 @@ function addCommentText(cb: Function) {
   cb(data);
 }
 
+function zoomIn(value:number):number {
+  let result:number = value;
+  result = result < 10 ? result + 0.1 : result 
+  console.log('zoom:' + result)
+  return result;
+}
+
+function zoomOut(value:number):number {
+  let result:number = value;
+  result = result > 0.2 ? result - 0.1 : result 
+  console.log('zoom:' + result)
+  return result;
+}
+
 function addAltText(cb: Function) {
   const data = prompt("Enter alt text:");
   cb(data);
 }
+
+
+
 </script>
 
 <template>
@@ -52,7 +72,9 @@ function addAltText(cb: Function) {
 
   <button @click="rotation = (rotation + 270) % 360">-90</button>
   <button @click="rotation = (rotation + 90) % 360">+90</button>
-
+ <button @click="scale=zoomOut(scale)" > zoom - </button>
+ <button @click="scale=zoomIn(scale)" > zoom+ </button>
+ 
   <label>
     Editor:
     <select v-model="editorType">
@@ -88,14 +110,17 @@ function addAltText(cb: Function) {
     {{ opacity }}
   </label>
   {{ editorType }}
-  <div style="display: flex; align-items: center">
+  <div style="position: fixed;" >
     <VuePDF
       :pdf="pdf"
+      :scale="scale"
+      :style="{ overflow : 'visible' }"
       :rotation="rotation"
       annotation-layer
       text-layer
       :editor-layer="toggle"
       :editor-type="editorType"
+
     >
       <template #editors>
         <PDFFreeTextAnnotation :color="color" :fontSize="fontSize" />
