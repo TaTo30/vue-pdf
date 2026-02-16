@@ -110,11 +110,11 @@ function addAltText(cb: Function) {
     {{ opacity }}
   </label>
   {{ editorType }}
-  <div style="position: fixed;" >
+  <div style="position: fixed;width:100vw;height:100vh; overflow:scroll" >
     <VuePDF
       :pdf="pdf"
-      :scale="scale"
       :style="{ overflow : 'visible' }"
+      :scale="scale"
       :rotation="rotation"
       annotation-layer
       text-layer
