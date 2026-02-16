@@ -255,12 +255,11 @@ function setupCanvas(viewport: PageViewport): HTMLCanvasElement {
   }
 
   const outputScale = window.devicePixelRatio || 1;
-  canvas.width = Math.floor(viewport.width * outputScale);
+  canvas.width = Math.floor(viewport.width * outputScale );
   canvas.height = Math.floor(viewport.height * outputScale);
 
   canvas.style.width = `${Math.floor(viewport.width)}px`;
   canvas.style.height = `${Math.floor(viewport.height)}px`;
-
   container.value?.style.setProperty("--scale-factor", `${viewport.scale}`);
   container.value?.style.setProperty("--user-unit", `${viewport.userUnit}`);
 
