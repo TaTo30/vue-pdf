@@ -29,6 +29,10 @@
       "types": "./dist/types/index.minimal.d.ts",
       "import": "./dist/index.minimal.mjs"
     },
+    "./pdfjs": {
+      "types": "./index.pdfjs.d.ts",
+      "import": "./index.pdfjs.mjs"
+    },
     "./style.css": "./dist/style.css",
     "./src/*": "./src/*"
   },
@@ -37,7 +41,9 @@
   "types": "./dist/types/index.d.ts",
   "files": [
     "dist",
-    "src"
+    "src",
+    "index.pdfjs.mjs",
+    "index.pdfjs.d.ts"
   ],
   "scripts": {
     "build": "npm run build:lib && npm run build:dts",
