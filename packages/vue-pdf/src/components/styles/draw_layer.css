@@ -1,0 +1,135 @@
+/* Copyright 2014 Mozilla Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.canvasWrapper :deep(svg) {
+
+  transform: none;
+
+  &.moving {
+    z-index: 100000;
+  }
+
+  &.highlight,
+  &.highlightOutline {
+    &[data-main-rotation="90"] {
+
+      mask,
+      use:not(.clip, .mask) {
+        transform: matrix(0, 1, -1, 0, 1, 0);
+      }
+    }
+
+    &[data-main-rotation="180"] {
+
+      mask,
+      use:not(.clip, .mask) {
+        transform: matrix(-1, 0, 0, -1, 1, 1);
+      }
+    }
+
+    &[data-main-rotation="270"] {
+
+      mask,
+      use:not(.clip, .mask) {
+        transform: matrix(0, -1, 1, 0, 0, 1);
+      }
+    }
+  }
+
+  &.draw {
+    position: absolute;
+    mix-blend-mode: normal;
+
+    &[data-draw-rotation="90"] {
+      transform: rotate(90deg);
+    }
+
+    &[data-draw-rotation="180"] {
+      transform: rotate(180deg);
+    }
+
+    &[data-draw-rotation="270"] {
+      transform: rotate(270deg);
+    }
+  }
+
+  &.highlight {
+    --blend-mode: multiply;
+
+    @media screen and (forced-colors: active) {
+      --blend-mode: difference;
+    }
+
+    position: absolute;
+    mix-blend-mode: var(--blend-mode);
+
+    &:not(.free) {
+      fill-rule: evenodd;
+    }
+  }
+
+  &.highlightOutline {
+    position: absolute;
+    mix-blend-mode: normal;
+    fill-rule: evenodd;
+    fill: none;
+
+    &:not(.free) {
+      &.hovered:not(.selected) {
+        stroke: var(--hover-outline-color);
+        stroke-width: var(--outline-width);
+      }
+
+      &.selected {
+        .mainOutline {
+          stroke: var(--outline-around-color);
+          stroke-width: calc(var(--outline-width) + 2 * var(--outline-around-width));
+        }
+
+        .secondaryOutline {
+          stroke: var(--outline-color);
+          stroke-width: var(--outline-width);
+        }
+      }
+    }
+
+    &.free {
+
+      /*
+            When drawing the outline we use a mask in order to remove the parts
+            that are inside the shape. Unfortunately, this removes the part of the
+            outline that is inside the shape. To "fix" this we increase the width
+            to have what we want to be visible outside the shape.
+            This is not a perfect solution, but it works well enough.
+          */
+      &.hovered:not(.selected) {
+        stroke: var(--hover-outline-color);
+        stroke-width: calc(2 * var(--outline-width));
+      }
+
+      &.selected {
+        .mainOutline {
+          stroke: var(--outline-around-color);
+          stroke-width: calc(2 * (var(--outline-width) + var(--outline-around-width)));
+        }
+
+        .secondaryOutline {
+          stroke: var(--outline-color);
+          stroke-width: calc(2 * var(--outline-width));
+        }
+      }
+    }
+  }
+}
