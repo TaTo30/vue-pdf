@@ -131,7 +131,6 @@ popupDispatcher.request = requestComment;
     v-show="show"
     ref="popupContainer"
     class="commentPopup"
-    id="commentPopup"
     tabindex="-1"
     role="dialog"
     aria-modal="false"
@@ -171,13 +170,3 @@ popupDispatcher.request = requestComment;
     </div>
   </div>
 </template>
-
-<style>
-.commentPopupIcon::before {
-  background-color: white;
-}
-
-.commentPopupIcon:hover::before {
-  background-color: white !important;
-}
-</style>

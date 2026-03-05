@@ -1,22 +1,80 @@
-:root {
+/* Copyright 2021 Mozilla Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.page :deep(.xfaLayer) {
   --xfa-unfocused-field-background: url("data:image/svg+xml;charset=UTF-8,<svg width='1px' height='1px' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' style='fill:rgba(0, 54, 255, 0.13);'/></svg>");
   --xfa-focus-outline: auto;
 }
 
 @media screen and (forced-colors: active) {
-  :root {
+  .page :deep(.xfaLayer) {
     --xfa-focus-outline: 2px solid CanvasText;
   }
 
-  .xfaLayer :deep(*:required) {
+  .page :deep(.xfaLayer *:required) {
     outline: 1.5px solid selectedItem;
   }
 }
 
-.xfaLayer {
+.page :deep(.xfaLayer) {
   color-scheme: only light;
 
   background-color: transparent;
+}
+
+.page :deep(.xfaLayer .highlight) {
+  margin: -1px;
+  padding: 1px;
+  background-color: rgb(239 203 237);
+  border-radius: 4px;
+}
+
+.page :deep(.xfaLayer .highlight.appended) {
+  position: initial;
+}
+
+.page :deep(.xfaLayer .highlight.begin) {
+  border-radius: 4px 0 0 4px;
+}
+
+.page :deep(.xfaLayer .highlight.end) {
+  border-radius: 0 4px 4px 0;
+}
+
+.page :deep(.xfaLayer .highlight.middle) {
+  border-radius: 0;
+}
+
+.page :deep(.xfaLayer .highlight.selected) {
+  background-color: rgb(203 223 203);
+}
+
+.page :deep(.xfaPage) {
+  overflow: hidden;
+  position: relative;
+}
+
+.page :deep(.xfaContentarea) {
+  position: absolute;
+}
+
+.page :deep(.xfaPrintOnly) {
+  display: none;
+}
+
+.page :deep(.xfaLayer) {
   position: absolute;
   text-align: initial;
   top: 0;
@@ -25,47 +83,7 @@
   line-height: 1.2;
 }
 
-.xfaLayer :deep(.highlight) {
-  margin: -1px;
-  padding: 1px;
-  background-color: rgb(239 203 237);
-  border-radius: 4px;
-}
-
-.xfaLayer :deep(.highlight.appended) {
-  position: initial;
-}
-
-.xfaLayer :deep(.highlight.begin) {
-  border-radius: 4px 0 0 4px;
-}
-
-.xfaLayer :deep(.highlight.end) {
-  border-radius: 0 4px 4px 0;
-}
-
-.xfaLayer :deep(.highlight.middle) {
-  border-radius: 0;
-}
-
-.xfaLayer :deep(.highlight.selected) {
-  background-color: rgb(203 223 203);
-}
-
-.xfaLayer :deep(.xfaPage) {
-  overflow: hidden;
-  position: relative;
-}
-
-.xfaLayer :deep(.xfaContentarea) {
-  position: absolute;
-}
-
-.xfaLayer :deep(.xfaPrintOnly) {
-  display: none;
-}
-
-.xfaLayer :deep(*) {
+.page :deep(.xfaLayer *) {
   color: inherit;
   font: inherit;
   font-style: inherit;
@@ -82,25 +100,25 @@
   line-height: inherit;
 }
 
-.xfaLayer :deep(*:required) {
+.page :deep(.xfaLayer *:required) {
   outline: 1.5px solid red;
 }
 
-.xfaLayer :deep(div),
-.xfaLayer :deep(svg),
-.xfaLayer :deep(svg *) {
+.page :deep(.xfaLayer div),
+.page :deep(.xfaLayer svg),
+.page :deep(.xfaLayer svg *) {
   pointer-events: none;
 }
 
-.xfaLayer :deep(a) {
+.page :deep(.xfaLayer a) {
   color: blue;
 }
 
-.xfaLayer :deep(.xfaRich li) {
+.page :deep(.xfaRich li) {
   margin-left: 3em;
 }
 
-.xfaFont {
+.page :deep(.xfaFont) {
   color: black;
   font-weight: normal;
   font-kerning: none;
@@ -111,77 +129,77 @@
   vertical-align: 0;
 }
 
-.xfaLayer :deep(.xfaCaption) {
+.page :deep(.xfaCaption) {
   overflow: hidden;
   flex: 0 0 auto;
 }
 
-.xfaLayer :deep(.xfaCaptionForCheckButton) {
+.page :deep(.xfaCaptionForCheckButton) {
   overflow: hidden;
   flex: 1 1 auto;
 }
 
-.xfaLayer :deep(.xfaLabel) {
+.page :deep(.xfaLabel) {
   height: 100%;
   width: 100%;
 }
 
-.xfaLayer :deep(.xfaLeft) {
+.page :deep(.xfaLeft) {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
-.xfaLayer :deep(.xfaRight) {
+.page :deep(.xfaRight) {
   display: flex;
   flex-direction: row-reverse;
   align-items: center;
 }
 
-.xfaLayer :deep(:is(.xfaLeft, .xfaRight) > :is(.xfaCaption, .xfaCaptionForCheckButton)) {
+.page :deep(:is(.xfaLeft, .xfaRight)> :is(.xfaCaption, .xfaCaptionForCheckButton)) {
   max-height: 100%;
 }
 
-.xfaLayer :deep(.xfaTop) {
+.page :deep(.xfaTop) {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 
-.xfaLayer :deep(.xfaBottom) {
+.page :deep(.xfaBottom) {
   display: flex;
   flex-direction: column-reverse;
   align-items: flex-start;
 }
 
-.xfaLayer :deep(:is(.xfaTop, .xfaBottom) > :is(.xfaCaption, .xfaCaptionForCheckButton)) {
+.page :deep(:is(.xfaTop, .xfaBottom)> :is(.xfaCaption, .xfaCaptionForCheckButton)) {
   width: 100%;
 }
 
-.xfaLayer :deep(.xfaBorder) {
+.page :deep(.xfaBorder) {
   background-color: transparent;
   position: absolute;
   pointer-events: none;
 }
 
-.xfaLayer :deep(.xfaWrapped) {
+.page :deep(.xfaWrapped) {
   width: 100%;
   height: 100%;
 }
 
-.xfaLayer :deep(:is(.xfaTextfield, .xfaSelect):focus) {
+.page :deep(:is(.xfaTextfield, .xfaSelect):focus) {
   background-image: none;
   background-color: transparent;
   outline: var(--xfa-focus-outline);
   outline-offset: -1px;
 }
 
-.xfaLayer :deep(:is(.xfaCheckbox, .xfaRadio):focus) {
+.page :deep(:is(.xfaCheckbox, .xfaRadio):focus) {
   outline: var(--xfa-focus-outline);
 }
 
-.xfaLayer :deep(.xfaTextfield),
-.xfaLayer :deep(.xfaSelect) {
+.page :deep(.xfaTextfield),
+.page :deep(.xfaSelect) {
   height: 100%;
   width: 100%;
   flex: 1 1 auto;
@@ -190,15 +208,15 @@
   background-image: var(--xfa-unfocused-field-background);
 }
 
-.xfaLayer :deep(.xfaSelect) {
+.page :deep(.xfaSelect) {
   padding-inline: 2px;
 }
 
-.xfaLayer :deep(:is(.xfaTop, .xfaBottom) > :is(.xfaTextfield, .xfaSelect)) {
+.page :deep(:is(.xfaTop, .xfaBottom)> :is(.xfaTextfield, .xfaSelect)) {
   flex: 0 1 auto;
 }
 
-.xfaLayer :deep(.xfaButton) {
+.page :deep(.xfaButton) {
   cursor: pointer;
   width: 100%;
   height: 100%;
@@ -206,7 +224,7 @@
   text-align: center;
 }
 
-.xfaLayer :deep(.xfaLink) {
+.page :deep(.xfaLink) {
   width: 100%;
   height: 100%;
   position: absolute;
@@ -214,99 +232,99 @@
   left: 0;
 }
 
-.xfaLayer :deep(.xfaCheckbox),
-.xfaLayer :deep(.xfaRadio) {
+.page :deep(.xfaCheckbox),
+.page :deep(.xfaRadio) {
   width: 100%;
   height: 100%;
   flex: 0 0 auto;
   border: none;
 }
 
-.xfaLayer :deep(.xfaRich) {
+.page :deep(.xfaRich) {
   white-space: pre-wrap;
   width: 100%;
   height: 100%;
 }
 
-.xfaLayer :deep(.xfaImage) {
+.page :deep(.xfaImage) {
   object-position: left top;
   object-fit: contain;
   width: 100%;
   height: 100%;
 }
 
-.xfaLayer :deep(.xfaLrTb),
-.xfaLayer :deep(.xfaRlTb),
-.xfaLayer :deep(.xfaTb) {
+.page :deep(.xfaLrTb),
+.page :deep(.xfaRlTb),
+.page :deep(.xfaTb) {
   display: flex;
   flex-direction: column;
   align-items: stretch;
 }
 
-.xfaLayer :deep(.xfaLr) {
+.page :deep(.xfaLr) {
   display: flex;
   flex-direction: row;
   align-items: stretch;
 }
 
-.xfaLayer :deep(.xfaRl) {
+.page :deep(.xfaRl) {
   display: flex;
   flex-direction: row-reverse;
   align-items: stretch;
 }
 
-.xfaLayer :deep(.xfaTb > div) {
+.page :deep(.xfaTb>div) {
   justify-content: left;
 }
 
-.xfaLayer :deep(.xfaPosition) {
+.page :deep(.xfaPosition) {
   position: relative;
 }
 
-.xfaLayer :deep(.xfaArea) {
+.page :deep(.xfaArea) {
   position: relative;
 }
 
-.xfaLayer :deep(.xfaValignMiddle) {
+.page :deep(.xfaValignMiddle) {
   display: flex;
   align-items: center;
 }
 
-.xfaLayer :deep(.xfaTable) {
+.page :deep(.xfaTable) {
   display: flex;
   flex-direction: column;
   align-items: stretch;
 }
 
-.xfaLayer :deep(.xfaTable .xfaRow) {
+.page :deep(.xfaTable .xfaRow) {
   display: flex;
   flex-direction: row;
   align-items: stretch;
 }
 
-.xfaLayer :deep(.xfaTable .xfaRlRow) {
+.page :deep(.xfaTable .xfaRlRow) {
   display: flex;
   flex-direction: row-reverse;
   align-items: stretch;
   flex: 1;
 }
 
-.xfaLayer :deep(.xfaTable .xfaRlRow > div) {
+.page :deep(.xfaTable .xfaRlRow>div) {
   flex: 1;
 }
 
-.xfaLayer :deep(:is(.xfaNonInteractive, .xfaDisabled, .xfaReadOnly) :is(input, textarea)) {
+.page :deep(:is(.xfaNonInteractive, .xfaDisabled, .xfaReadOnly) :is(input, textarea)) {
   background: initial;
 }
 
 @media print {
 
-  .xfaLayer :deep(.xfaTextfield),
-  .xfaLayer :deep(.xfaSelect) {
+  .page :deep(.xfaTextfield),
+  .page :deep(.xfaSelect) {
     background: transparent;
   }
 
-  .xfaLayer :deep(.xfaSelect) {
+  .page :deep(.xfaSelect) {
     appearance: none;
     text-indent: 1px;
     text-overflow: "";

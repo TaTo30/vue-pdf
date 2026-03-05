@@ -1,0 +1,10 @@
+/*
+ * These variables MUST be on :root because the JavaScript code reads them
+ * from document.documentElement (see FreeTextEditor.initialize and
+ * AnnotationEditor.initialize in pdf.js source).
+ */
+:root {
+  --freetext-line-height: 1.35;
+  --freetext-padding: 2px;
+  --outline-width: 2px;
+}

@@ -12,15 +12,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/* @import url(draw_layer_builder.css);
+/* 
+@import url(draw_layer_builder.css);
 @import url(toggle_button.css);
 @import url(signature_manager.css);
 @import url(comment_manager.css); */
 
-:root {
+.page {
   --editor-toolbar-vert-offset: 6px;
-  --outline-width: 2px;
   --outline-color: #0060df;
   --outline-around-width: 1px;
   --outline-around-color: #f0f0f4;
@@ -31,22 +30,30 @@
   --hover-outline-color: #8f8f9d;
   --hover-outline: solid var(--outline-width) var(--hover-outline-color);
   --hover-outline-around: solid var(--outline-around-width) var(--hover-outline-around-color);
-  --freetext-line-height: 1.35;
-  --freetext-padding: 2px;
   --resizer-bg-color: var(--outline-color);
   --resizer-size: 6px;
   --resizer-shift: calc(0px - (var(--outline-width) + var(--resizer-size)) / 2 - var(--outline-around-width));
   --editorFreeText-editing-cursor: text;
   --editorInk-editing-cursor: url(images/cursor-editorInk.svg) 0 16, pointer;
-  --editorHighlight-editing-cursor:
-    url(images/cursor-editorTextHighlight.svg) 24 24, text;
-  --editorFreeHighlight-editing-cursor:
-    url(images/cursor-editorFreeHighlight.svg) 1 18, pointer;
-
+  --editorHighlight-editing-cursor: url(images/cursor-editorTextHighlight.svg) 24 24, text;
+  --editorFreeHighlight-editing-cursor: url(images/cursor-editorFreeHighlight.svg) 1 18, pointer;
   --new-alt-text-warning-image: url(images/altText_warning.svg);
+  --comment-edit-button-icon: url("data:image/svg+xml,%3csvg%20width='16'%20height='16'%20viewBox='0%200%2016%2016'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cg%3e%3cpath%20d='M10.75%207H12.25V5.5H10.75V7Z'%20fill='black'/%3e%3cpath%20d='M7.5%207H9V5.5H7.5V7Z'%20fill='black'/%3e%3cpath%20d='M4.25%207H5.75V5.5H4.25V7Z'%20fill='black'/%3e%3cpath%20fill-rule='evenodd'%20clip-rule='evenodd'%20d='M2%200C0.895786%200%200%200.895786%200%202V10.5C0%2011.6042%200.895786%2012.5%202%2012.5H3V15.25C3%2015.5405%203.16778%2015.805%203.43066%2015.9287C3.6937%2016.0523%204.00473%2016.0126%204.22852%2015.8271L8.27051%2012.4775L13.9941%2012.4961C15.1007%2012.4991%2015.9999%2011.6033%2016%2010.4961V2C16%200.895786%2015.1042%200%2014%200H2ZM14%201.5C14.2758%201.5%2014.5%201.72421%2014.5%202V10.4961C14.4999%2010.7727%2014.2753%2010.9969%2013.998%2010.9961L8.00195%2010.9775L7.87207%2010.9893C7.74389%2011.0115%207.62281%2011.0664%207.52148%2011.1504L4.5%2013.6543V11.75C4.5%2011.3358%204.16421%2011%203.75%2011H2C1.72421%2011%201.5%2010.7758%201.5%2010.5V2C1.5%201.72421%201.72421%201.5%202%201.5H14Z'%20fill='black'/%3e%3c/g%3e%3c/svg%3e");
+
+  @media (min-resolution: 1.1dppx) {
+    --editorFreeText-editing-cursor: url(images/cursor-editorFreeText.svg) 0 16, text;
+  }
+
+  @media screen and (forced-colors: active) {
+    --outline-color: CanvasText;
+    --outline-around-color: ButtonFace;
+    --resizer-bg-color: ButtonText;
+    --hover-outline-color: Highlight;
+    --hover-outline-around-color: SelectedItemText;
+  }
 }
 
-.textLayer {
+.page :deep(.textLayer) {
   &.highlighting {
     cursor: var(--editorFreeHighlight-editing-cursor);
 
@@ -64,71 +71,56 @@
   }
 }
 
-.page:has(.annotationEditorLayer.nonEditing) .annotationLayer :deep(.editorAnnotation) {
+.page:has(.annotationEditorLayer.nonEditing) :deep(.annotationLayer .editorAnnotation) {
   position: absolute;
   pointer-events: none;
 }
 
-#viewerContainer.pdfPresentationMode:fullscreen .annotationEditorLayer :deep(.noAltTextBadge),
-.annotationEditorLayer.disabled :deep(.noAltTextBadge) {
-  display: none !important;
-}
-
-@media (min-resolution: 1.1dppx) {
-  :root {
-    --editorFreeText-editing-cursor:
-      url(images/cursor-editorFreeText.svg) 0 16, text;
+.page :deep(#viewerContainer.pdfPresentationMode:fullscreen),
+.page :deep(.annotationEditorLayer.disabled) {
+  .noAltTextBadge {
+    display: none !important;
   }
 }
 
-@media screen and (forced-colors: active) {
-  :root {
-    --outline-color: CanvasText;
-    --outline-around-color: ButtonFace;
-    --resizer-bg-color: ButtonText;
-    --hover-outline-color: Highlight;
-    --hover-outline-around-color: SelectedItemText;
-  }
-}
-
-[data-editor-rotation="90"] {
+.page :deep([data-editor-rotation="90"]) {
   transform: rotate(90deg);
 }
 
-[data-editor-rotation="180"] {
+.page :deep([data-editor-rotation="180"]) {
   transform: rotate(180deg);
 }
 
-[data-editor-rotation="270"] {
+.page :deep([data-editor-rotation="270"]) {
   transform: rotate(270deg);
 }
 
-.annotationEditorLayer {
+.page :deep(.annotationEditorLayer) {
   background: transparent;
   position: absolute;
   inset: 0;
   font-size: calc(100px * var(--total-scale-factor));
   transform-origin: 0 0;
   cursor: auto;
+
+  .selectedEditor {
+    z-index: 100000 !important;
+  }
+
+  &.drawing * {
+    pointer-events: none !important;
+  }
+
+  &.getElements {
+    pointer-events: auto !important;
+
+    >div {
+      pointer-events: auto !important;
+    }
+  }
 }
 
-.annotationEditorLayer :deep(.selectedEditor) {
-  z-index: 100000 !important;
-}
-
-.annotationEditorLayer.drawing :deep(*) {
-  pointer-events: none !important;
-}
-
-.annotationEditorLayer.getElements {
-  pointer-events: auto !important;
-}
-
-.annotationEditorLayer.getElements :deep(> div) {
-  pointer-events: auto !important;
-}
-
-.annotationEditorLayer.waiting {
+.page :deep(.annotationEditorLayer.waiting) {
   content: "";
   cursor: wait;
   position: absolute;
@@ -137,27 +129,31 @@
   height: 100%;
 }
 
-.annotationEditorLayer.disabled {
+.page :deep(.annotationEditorLayer.disabled) {
   pointer-events: none;
+
+  &.highlightEditing :is(.freeTextEditor,
+    .inkEditor,
+    .stampEditor,
+    .signatureEditor,
+    .commentPopup) {
+    pointer-events: auto;
+  }
 }
 
-.annotationEditorLayer.disabled.highlightEditing :deep(:is(.freeTextEditor, .inkEditor, .stampEditor, .signatureEditor, .commentPopup)) {
-  pointer-events: auto;
-}
-
-.annotationEditorLayer.freetextEditing {
+.page :deep(.annotationEditorLayer.freetextEditing) {
   cursor: var(--editorFreeText-editing-cursor);
 }
 
-.annotationEditorLayer.inkEditing {
+.page :deep(.annotationEditorLayer.inkEditing) {
   cursor: var(--editorInk-editing-cursor);
 }
 
-.annotationEditorLayer :deep(.draw) {
+.page :deep(.annotationEditorLayer .draw) {
   box-sizing: border-box;
 }
 
-.annotationEditorLayer :deep(:is(.freeTextEditor, .inkEditor, .stampEditor, .signatureEditor)) {
+.page :deep(.annotationEditorLayer :is(.freeTextEditor, .inkEditor, .stampEditor, .signatureEditor)) {
   position: absolute;
   background: transparent;
   z-index: 1;
@@ -166,56 +162,61 @@
   max-width: 100%;
   max-height: 100%;
   border: var(--unfocus-outline);
-
-  &.draggable.selectedEditor {
-    cursor: move;
-  }
-
-  &.selectedEditor {
-    border: var(--focus-outline);
-    outline: var(--focus-outline-around);
-
-    &::before {
-      /*
-        This is a workaround for the lack of support for stripes(...) (see
-        https://drafts.csswg.org/css-images-4/#stripes).
-        The outline should be composed of 1px white, 2px blue and 1px white.
-        This could be achieved in different ways:
-          - using a linear-gradient;
-          - using a box-shadow;
-          - using an outline on the selected element and an outline+border on
-            the ::before pseudo-element.
-        All these options lead to incorrect rendering likely due to rounding
-        issues.
-        That said it doesn't mean that the current is ideal, but it's the best
-        we could come up with for the moment.
-        One drawback of this approach is that we use a border on the selected
-        element which means that we must take care of it when positioning the
-        div in js (see AnnotationEditor._borderLineWidth in editor.js).
-      */
-      content: "";
-      position: absolute;
-      inset: 0;
-      border: var(--focus-outline-around);
-      pointer-events: none;
-    }
-  }
-
-  &:hover:not(.selectedEditor) {
-    border: var(--hover-outline);
-    outline: var(--hover-outline-around);
-
-    &::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border: var(--focus-outline-around);
-    }
-  }
 }
 
-.annotationEditorLayer :deep( :is(.freeTextEditor, .inkEditor, .stampEditor, .highlightEditor, .signatureEditor)),
-.textLayer {
+.page :deep(.annotationEditorLayer :is(.freeTextEditor, .inkEditor, .stampEditor, .signatureEditor).draggable.selectedEditor) {
+  cursor: move;
+}
+
+.page :deep(.annotationEditorLayer :is(.freeTextEditor, .inkEditor, .stampEditor, .signatureEditor).selectedEditor) {
+  border: var(--focus-outline);
+  outline: var(--focus-outline-around);
+}
+
+.page :deep(.annotationEditorLayer :is(.freeTextEditor, .inkEditor, .stampEditor, .signatureEditor).selectedEditor::before) {
+  /*
+    This is a workaround for the lack of support for stripes(...) (see
+    https://drafts.csswg.org/css-images-4/#stripes).
+    The outline should be composed of 1px white, 2px blue and 1px white.
+    This could be achieved in different ways:
+      - using a linear-gradient;
+      - using a box-shadow;
+      - using an outline on the selected element and an outline+border on
+        the ::before pseudo-element.
+    All these options lead to incorrect rendering likely due to rounding
+    issues.
+    That said it doesn't mean that the current is ideal, but it's the best
+    we could come up with for the moment.
+    One drawback of this approach is that we use a border on the selected
+    element which means that we must take care of it when positioning the
+    div in js (see AnnotationEditor._borderLineWidth in editor.js).
+  */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: var(--focus-outline-around);
+  pointer-events: none;
+}
+
+.page :deep(.annotationEditorLayer :is(.freeTextEditor, .inkEditor, .stampEditor, .signatureEditor):hover:not(.selectedEditor)) {
+  border: var(--hover-outline);
+  outline: var(--hover-outline-around);
+}
+
+.page :deep(.annotationEditorLayer :is(.freeTextEditor, .inkEditor, .stampEditor, .signatureEditor):hover:not(.selectedEditor)::before) {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: var(--focus-outline-around);
+}
+
+
+.page :deep(.annotationEditorLayer :is(.freeTextEditor,
+    .inkEditor,
+    .stampEditor,
+    .highlightEditor,
+    .signatureEditor)),
+.page :deep(.textLayer) {
   .editToolbar {
     --editor-toolbar-delete-image: url(images/editor-toolbar-delete.svg);
     --editor-toolbar-bg-color: light-dark(#f0f0f4, #2b2a33);
@@ -487,14 +488,14 @@
   }
 }
 
-.annotationEditorLayer :deep(.freeTextEditor) {
+.page :deep(.annotationEditorLayer .freeTextEditor) {
   padding: calc(var(--freetext-padding) * var(--total-scale-factor));
   width: auto;
   height: auto;
   touch-action: none;
 }
 
-.annotationEditorLayer :deep(.freeTextEditor .internal) {
+.page :deep(.annotationEditorLayer .freeTextEditor .internal) {
   background: transparent;
   border: none;
   inset: 0;
@@ -506,7 +507,7 @@
   user-select: none;
 }
 
-.annotationEditorLayer :deep(.freeTextEditor .overlay) {
+.page :deep(.annotationEditorLayer .freeTextEditor .overlay) {
   position: absolute;
   display: none;
   background: transparent;
@@ -515,30 +516,30 @@
   height: 100%;
 }
 
-.annotationEditorLayer :deep(.freeTextEditor .overlay.enabled) {
+.page :deep(.annotationEditorLayer .freeTextEditor .overlay.enabled) {
   display: block;
 }
 
-.annotationEditorLayer :deep(.freeTextEditor .internal:empty::before) {
+.page :deep(.annotationEditorLayer .freeTextEditor .internal:empty::before) {
   content: attr(default-content);
   color: gray;
 }
 
-.annotationEditorLayer :deep(.freeTextEditor .internal:focus) {
+.page :deep(.annotationEditorLayer .freeTextEditor .internal:focus) {
   outline: none;
   user-select: auto;
 }
 
-.annotationEditorLayer :deep(.inkEditor) {
+.page :deep(.annotationEditorLayer .inkEditor) {
   width: 100%;
   height: 100%;
 }
 
-.annotationEditorLayer :deep(.inkEditor.editing) {
+.page :deep(.annotationEditorLayer .inkEditor.editing) {
   cursor: inherit;
 }
 
-.annotationEditorLayer :deep(.inkEditor .inkEditorCanvas) {
+.page :deep(.annotationEditorLayer .inkEditor .inkEditorCanvas) {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -546,7 +547,7 @@
   touch-action: none;
 }
 
-.annotationEditorLayer :deep(.stampEditor) {
+.page :deep(.annotationEditorLayer .stampEditor) {
   width: auto;
   height: auto;
 
@@ -598,161 +599,175 @@
   }
 }
 
-.annotationEditorLayer :deep(:is(.freeTextEditor, .inkEditor, .stampEditor, .signatureEditor) > .resizers) {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
+.page :deep(.annotationEditorLayer) {
+  :is(.freeTextEditor, .inkEditor, .stampEditor, .signatureEditor) {
+    &>.resizers {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
 
-  &.hidden {
-    display: none;
-  }
+      &.hidden {
+        display: none;
+      }
 
-  &>.resizer {
-    width: var(--resizer-size);
-    height: var(--resizer-size);
-    background: content-box var(--resizer-bg-color);
-    border: var(--focus-outline-around);
-    border-radius: 2px;
-    position: absolute;
+      &>.resizer {
+        width: var(--resizer-size);
+        height: var(--resizer-size);
+        background: content-box var(--resizer-bg-color);
+        border: var(--focus-outline-around);
+        border-radius: 2px;
+        position: absolute;
 
-    &.topLeft {
-      top: var(--resizer-shift);
-      left: var(--resizer-shift);
+        &.topLeft {
+          top: var(--resizer-shift);
+          left: var(--resizer-shift);
+        }
+
+        &.topMiddle {
+          top: var(--resizer-shift);
+          left: calc(50% + var(--resizer-shift));
+        }
+
+        &.topRight {
+          top: var(--resizer-shift);
+          right: var(--resizer-shift);
+        }
+
+        &.middleRight {
+          top: calc(50% + var(--resizer-shift));
+          right: var(--resizer-shift);
+        }
+
+        &.bottomRight {
+          bottom: var(--resizer-shift);
+          right: var(--resizer-shift);
+        }
+
+        &.bottomMiddle {
+          bottom: var(--resizer-shift);
+          left: calc(50% + var(--resizer-shift));
+        }
+
+        &.bottomLeft {
+          bottom: var(--resizer-shift);
+          left: var(--resizer-shift);
+        }
+
+        &.middleLeft {
+          top: calc(50% + var(--resizer-shift));
+          left: var(--resizer-shift);
+        }
+      }
     }
+  }
 
-    &.topMiddle {
-      top: var(--resizer-shift);
-      left: calc(50% + var(--resizer-shift));
-    }
+  &[data-main-rotation="0"] :is([data-editor-rotation="0"], [data-editor-rotation="180"]),
+  &[data-main-rotation="90"] :is([data-editor-rotation="270"], [data-editor-rotation="90"]),
+  &[data-main-rotation="180"] :is([data-editor-rotation="180"], [data-editor-rotation="0"]),
+  &[data-main-rotation="270"] :is([data-editor-rotation="90"], [data-editor-rotation="270"]) {
+    &>.resizers>.resizer {
 
-    &.topRight {
-      top: var(--resizer-shift);
-      right: var(--resizer-shift);
-    }
+      &.topLeft,
+      &.bottomRight {
+        cursor: nwse-resize;
+      }
 
-    &.middleRight {
-      top: calc(50% + var(--resizer-shift));
-      right: var(--resizer-shift);
-    }
+      &.topMiddle,
+      &.bottomMiddle {
+        cursor: ns-resize;
+      }
 
-    &.bottomRight {
-      bottom: var(--resizer-shift);
-      right: var(--resizer-shift);
-    }
+      &.topRight,
+      &.bottomLeft {
+        cursor: nesw-resize;
+      }
 
-    &.bottomMiddle {
-      bottom: var(--resizer-shift);
-      left: calc(50% + var(--resizer-shift));
-    }
-
-    &.bottomLeft {
-      bottom: var(--resizer-shift);
-      left: var(--resizer-shift);
-    }
-
-    &.middleLeft {
-      top: calc(50% + var(--resizer-shift));
-      left: var(--resizer-shift);
+      &.middleRight,
+      &.middleLeft {
+        cursor: ew-resize;
+      }
     }
   }
-}
 
-.annotationEditorLayer[data-main-rotation="0"] :deep( :is([data-editor-rotation="0"], [data-editor-rotation="180"]) > .resizers > .resizer),
-.annotationEditorLayer[data-main-rotation="90"] :deep( :is([data-editor-rotation="270"], [data-editor-rotation="90"]) > .resizers > .resizer),
-.annotationEditorLayer[data-main-rotation="180"] :deep( :is([data-editor-rotation="180"], [data-editor-rotation="0"]) > .resizers > .resizer),
-.annotationEditorLayer[data-main-rotation="270"] :deep( :is([data-editor-rotation="90"], [data-editor-rotation="270"]) > .resizers > .resizer) {
+  &[data-main-rotation="0"] :is([data-editor-rotation="90"], [data-editor-rotation="270"]),
+  &[data-main-rotation="90"] :is([data-editor-rotation="0"], [data-editor-rotation="180"]),
+  &[data-main-rotation="180"] :is([data-editor-rotation="270"], [data-editor-rotation="90"]),
+  &[data-main-rotation="270"] :is([data-editor-rotation="180"], [data-editor-rotation="0"]) {
+    &>.resizers>.resizer {
 
-  &.topLeft,
-  &.bottomRight {
-    cursor: nwse-resize;
+      &.topLeft,
+      &.bottomRight {
+        cursor: nesw-resize;
+      }
+
+      &.topMiddle,
+      &.bottomMiddle {
+        cursor: ew-resize;
+      }
+
+      &.topRight,
+      &.bottomLeft {
+        cursor: nwse-resize;
+      }
+
+      &.middleRight,
+      &.middleLeft {
+        cursor: ns-resize;
+      }
+    }
   }
 
-  &.topMiddle,
-  &.bottomMiddle {
-    cursor: ns-resize;
-  }
-
-  &.topRight,
-  &.bottomLeft {
-    cursor: nesw-resize;
-  }
-
-  &.middleRight,
-  &.middleLeft {
-    cursor: ew-resize;
-  }
-}
-
-.annotationEditorLayer[data-main-rotation="0"] :deep( :is([data-editor-rotation="90"], [data-editor-rotation="270"]) > .resizers > .resizer),
-.annotationEditorLayer[data-main-rotation="90"] :deep( :is([data-editor-rotation="0"], [data-editor-rotation="180"]) > .resizers > .resizer),
-.annotationEditorLayer[data-main-rotation="180"] :deep( :is([data-editor-rotation="270"], [data-editor-rotation="90"]) > .resizers > .resizer),
-.annotationEditorLayer[data-main-rotation="270"] :deep( :is([data-editor-rotation="180"], [data-editor-rotation="0"]) > .resizers > .resizer) {
-
-  &.topLeft,
-  &.bottomRight {
-    cursor: nesw-resize;
-  }
-
-  &.topMiddle,
-  &.bottomMiddle {
-    cursor: ew-resize;
-  }
-
-  &.topRight,
-  &.bottomLeft {
-    cursor: nwse-resize;
-  }
-
-  &.middleRight,
-  &.middleLeft {
-    cursor: ns-resize;
-  }
-}
-
-.annotationEditorLayer :deep( :is([data-main-rotation="0"] [data-editor-rotation="90"],
+  & :is([data-main-rotation="0"] [data-editor-rotation="90"],
     [data-main-rotation="90"] [data-editor-rotation="0"],
     [data-main-rotation="180"] [data-editor-rotation="270"],
-    [data-main-rotation="270"] [data-editor-rotation="180"]) .editToolbar) {
-  rotate: 270deg;
+    [data-main-rotation="270"] [data-editor-rotation="180"]) {
+    .editToolbar {
+      rotate: 270deg;
 
-  &:dir(ltr) {
-    inset-inline-end: calc(0px - var(--editor-toolbar-vert-offset));
-    inset-block-start: 0;
+      &:dir(ltr) {
+        inset-inline-end: calc(0px - var(--editor-toolbar-vert-offset));
+        inset-block-start: 0;
+      }
+
+      &:dir(rtl) {
+        inset-inline-end: calc(100% + var(--editor-toolbar-vert-offset));
+        inset-block-start: 0;
+      }
+    }
   }
 
-  &:dir(rtl) {
-    inset-inline-end: calc(100% + var(--editor-toolbar-vert-offset));
-    inset-block-start: 0;
-  }
-}
-
-.annotationEditorLayer :deep( :is([data-main-rotation="0"] [data-editor-rotation="180"],
+  & :is([data-main-rotation="0"] [data-editor-rotation="180"],
     [data-main-rotation="90"] [data-editor-rotation="90"],
     [data-main-rotation="180"] [data-editor-rotation="0"],
-    [data-main-rotation="270"] [data-editor-rotation="270"]) .editToolbar) {
-  rotate: 180deg;
-  inset-inline-end: 100%;
-  inset-block-start: calc(0px - var(--editor-toolbar-vert-offset));
-}
+    [data-main-rotation="270"] [data-editor-rotation="270"]) {
+    .editToolbar {
+      rotate: 180deg;
+      inset-inline-end: 100%;
+      inset-block-start: calc(0px - var(--editor-toolbar-vert-offset));
+    }
+  }
 
-.annotationEditorLayer :deep( :is([data-main-rotation="0"] [data-editor-rotation="270"],
+  & :is([data-main-rotation="0"] [data-editor-rotation="270"],
     [data-main-rotation="90"] [data-editor-rotation="180"],
     [data-main-rotation="180"] [data-editor-rotation="90"],
-    [data-main-rotation="270"] [data-editor-rotation="0"]) .editToolbar) {
-  rotate: 90deg;
+    [data-main-rotation="270"] [data-editor-rotation="0"]) {
+    .editToolbar {
+      rotate: 90deg;
 
-  &:dir(ltr) {
-    inset-inline-end: calc(100% + var(--editor-toolbar-vert-offset));
-    inset-block-start: 100%;
-  }
+      &:dir(ltr) {
+        inset-inline-end: calc(100% + var(--editor-toolbar-vert-offset));
+        inset-block-start: 100%;
+      }
 
-  &:dir(rtl) {
-    inset-inline-start: calc(0px - var(--editor-toolbar-vert-offset));
-    inset-block-start: 0;
+      &:dir(rtl) {
+        inset-inline-start: calc(0px - var(--editor-toolbar-vert-offset));
+        inset-block-start: 0;
+      }
+    }
   }
 }
 
-.dialog.altText {
+.page :deep(.dialog.altText) {
   &::backdrop {
     /* This is needed to avoid to darken the image the user want to describe. */
     mask: url(#alttext-manager-mask);
@@ -816,7 +831,7 @@
   }
 }
 
-.dialog.newAltText {
+.page :deep(.dialog.newAltText) {
   --new-alt-text-ai-disclaimer-icon: url(images/altText_disclaimer.svg);
   --new-alt-text-spinner-icon: url(images/altText_spinner.svg);
   --preview-image-bg-color: light-dark(#f0f0f4, #2b2a33);
@@ -999,7 +1014,7 @@
   }
 }
 
-.colorPicker {
+.page :deep(.colorPicker) {
   --hover-outline-color: light-dark(#0250bb, #80ebff);
   --selected-outline-color: light-dark(#0060df, #aaf2ff);
   --swatch-border-color: light-dark(#cfcfd8, #52525e);
@@ -1009,23 +1024,23 @@
     --selected-outline-color: var(--hover-outline-color);
     --swatch-border-color: ButtonText;
   }
+
+  .swatch {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--swatch-border-color);
+    border-radius: 100%;
+    outline-offset: 2px;
+    box-sizing: border-box;
+    forced-color-adjust: none;
+  }
+
+  button:is(:hover, .selected)>.swatch {
+    border: none;
+  }
 }
 
-.colorPicker :deep(.swatch) {
-  width: 16px;
-  height: 16px;
-  border: 1px solid var(--swatch-border-color);
-  border-radius: 100%;
-  outline-offset: 2px;
-  box-sizing: border-box;
-  forced-color-adjust: none;
-}
-
-.colorPicker :deep(button:is(:hover, .selected) > .swatch) {
-  border: none;
-}
-
-.basicColorPicker {
+.page :deep(.basicColorPicker) {
   width: 28px;
 
   &::-moz-color-swatch {
@@ -1040,134 +1055,144 @@
   /*#endif*/
 }
 
-.annotationEditorLayer[data-main-rotation="0"] :deep(.highlightEditor:not(.free) > .editToolbar) {
-  rotate: 0deg;
-}
-
-.annotationEditorLayer[data-main-rotation="90"] :deep(.highlightEditor:not(.free) > .editToolbar) {
-  rotate: 270deg;
-}
-
-.annotationEditorLayer[data-main-rotation="180"] :deep(.highlightEditor:not(.free) > .editToolbar) {
-  rotate: 180deg;
-}
-
-.annotationEditorLayer[data-main-rotation="270"] :deep(.highlightEditor:not(.free) > .editToolbar) {
-  rotate: 90deg;
-}
-
-.annotationEditorLayer :deep(.highlightEditor) {
-  position: absolute;
-  background: transparent;
-  z-index: 1;
-  cursor: auto;
-  max-width: 100%;
-  max-height: 100%;
-  border: none;
-  outline: none;
-  pointer-events: none;
-  transform-origin: 0 0;
-
-  &:not(.free) {
-    transform: none;
-  }
-
-  .internal {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: auto;
-  }
-
-  &.disabled .internal {
-    pointer-events: none;
-  }
-
-  &.selectedEditor {
-    .internal {
-      cursor: pointer;
+.page :deep(.annotationEditorLayer) {
+  &[data-main-rotation="0"] {
+    .highlightEditor:not(.free)>.editToolbar {
+      rotate: 0deg;
     }
   }
 
-  .editToolbar {
-    --editor-toolbar-colorpicker-arrow-image: url(images/toolbarButton-menuArrow.svg);
+  &[data-main-rotation="90"] {
+    .highlightEditor:not(.free)>.editToolbar {
+      rotate: 270deg;
+    }
+  }
 
-    transform-origin: center !important;
+  &[data-main-rotation="180"] {
+    .highlightEditor:not(.free)>.editToolbar {
+      rotate: 180deg;
+    }
+  }
 
-    .buttons {
-      .colorPicker {
-        position: relative;
-        width: auto;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 4px;
-        padding: 4px;
+  &[data-main-rotation="270"] {
+    .highlightEditor:not(.free)>.editToolbar {
+      rotate: 90deg;
+    }
+  }
 
-        &::after {
-          content: "";
-          mask-image: var(--editor-toolbar-colorpicker-arrow-image);
-          mask-repeat: no-repeat;
-          mask-position: center;
-          display: inline-block;
-          background-color: var(--editor-toolbar-fg-color);
-          width: 12px;
-          height: 12px;
-        }
+  .highlightEditor {
+    position: absolute;
+    background: transparent;
+    z-index: 1;
+    cursor: auto;
+    max-width: 100%;
+    max-height: 100%;
+    border: none;
+    outline: none;
+    pointer-events: none;
+    transform-origin: 0 0;
 
-        &:hover::after {
-          background-color: var(--editor-toolbar-hover-fg-color);
-        }
+    &:not(.free) {
+      transform: none;
+    }
 
-        &:has(.dropdown:not(.hidden)) {
-          background-color: var(--editor-toolbar-hover-bg-color);
+    .internal {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: auto;
+    }
 
-          &::after {
-            scale: -1;
-          }
-        }
+    &.disabled .internal {
+      pointer-events: none;
+    }
 
-        .dropdown {
-          position: absolute;
+    &.selectedEditor {
+      .internal {
+        cursor: pointer;
+      }
+    }
+
+    .editToolbar {
+      --editor-toolbar-colorpicker-arrow-image: url(images/toolbarButton-menuArrow.svg);
+
+      transform-origin: center !important;
+
+      .buttons {
+        .colorPicker {
+          position: relative;
+          width: auto;
           display: flex;
           justify-content: center;
           align-items: center;
-          flex-direction: column;
-          gap: 11px;
-          padding-block: 8px;
-          border-radius: 6px;
-          background-color: var(--editor-toolbar-bg-color);
-          border: 1px solid var(--editor-toolbar-border-color);
-          box-shadow: var(--editor-toolbar-shadow);
-          inset-block-start: calc(100% + 4px);
-          width: calc(100% + 2 * var(--editor-toolbar-padding));
+          gap: 4px;
+          padding: 4px;
 
-          button {
-            width: 100%;
-            height: auto;
-            border: none;
-            cursor: pointer;
+          &::after {
+            content: "";
+            mask-image: var(--editor-toolbar-colorpicker-arrow-image);
+            mask-repeat: no-repeat;
+            mask-position: center;
+            display: inline-block;
+            background-color: var(--editor-toolbar-fg-color);
+            width: 12px;
+            height: 12px;
+          }
+
+          &:hover::after {
+            background-color: var(--editor-toolbar-hover-fg-color);
+          }
+
+          &:has(.dropdown:not(.hidden)) {
+            background-color: var(--editor-toolbar-hover-bg-color);
+
+            &::after {
+              scale: -1;
+            }
+          }
+
+          .dropdown {
+            position: absolute;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: none;
+            flex-direction: column;
+            gap: 11px;
+            padding-block: 8px;
+            border-radius: 6px;
+            background-color: var(--editor-toolbar-bg-color);
+            border: 1px solid var(--editor-toolbar-border-color);
+            box-shadow: var(--editor-toolbar-shadow);
+            inset-block-start: calc(100% + 4px);
+            width: calc(100% + 2 * var(--editor-toolbar-padding));
 
-            &:is(:active, :focus-visible) {
-              outline: none;
-            }
+            button {
+              width: 100%;
+              height: auto;
+              border: none;
+              cursor: pointer;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              background: none;
 
-            >.swatch {
-              outline-offset: 2px;
-            }
+              &:is(:active, :focus-visible) {
+                outline: none;
+              }
 
-            &[aria-selected="true"]>.swatch {
-              outline: 2px solid var(--selected-outline-color);
-            }
+              >.swatch {
+                outline-offset: 2px;
+              }
 
-            &:is(:hover, :active, :focus-visible)>.swatch {
-              outline: 2px solid var(--hover-outline-color);
+              &[aria-selected="true"]>.swatch {
+                outline: 2px solid var(--selected-outline-color);
+              }
+
+              &:is(:hover, :active, :focus-visible)>.swatch {
+                outline: 2px solid var(--hover-outline-color);
+              }
             }
           }
         }
@@ -1176,11 +1201,11 @@
   }
 }
 
-.editorParamsToolbar:has(#highlightParamsToolbarContainer) {
+.page :deep(.editorParamsToolbar:has(#highlightParamsToolbarContainer)) {
   padding: unset;
 }
 
-#highlightParamsToolbarContainer {
+.page :deep(#highlightParamsToolbarContainer) {
   gap: 16px;
   padding-inline: 10px;
   padding-block-end: 12px;
@@ -1307,7 +1332,7 @@
   }
 }
 
-#altTextSettingsDialog {
+.page :deep(#altTextSettingsDialog) {
   padding: 16px;
 
   #altTextSettingsContainer {
