@@ -61,8 +61,19 @@ class SimpleLinkService implements IPDFLinkService {
      * @param {string} url
      * @param {boolean} [_newWindow]
      */
-  addLinkAttributes(link: HTMLAnchorElement, url: string, _newWindow = false) { }
+  addLinkAttributes(link: HTMLAnchorElement, url: string, _newWindow = false) {
+  if (!this.externalLinkEnabled) return;
 
+    try {
+      const safeUrl = new URL(url, window.location.href)
+      link.href = safeUrl.toString()
+    } catch {
+      return
+    }
+
+    link.target = "_blank"
+    link.rel = "noopener noreferrer"
+  }
   /**
      * @param _dest - The PDF destination object.
      * @returns {string} The hyperlink to the PDF object.
