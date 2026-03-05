@@ -6,7 +6,7 @@ import {
   PDFHighlightAnnotation,
   PDFCommentAnnotation,
 } from "@tato30/vue-pdf";
-import "@tato30/vue-pdf/style.css";
+import "pdfjs-dist/web/pdf_viewer.css";
 
 const { pdf, download } = usePDF(
   "https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf",
