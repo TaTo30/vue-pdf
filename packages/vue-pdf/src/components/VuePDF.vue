@@ -12,8 +12,6 @@ import {
   watch,
 } from "vue";
 
-// import "pdfjs-dist/web/pdf_viewer.css";
-
 import type {
   PDFDocumentLoadingTask,
   PDFPageProxy,
