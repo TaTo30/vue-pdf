@@ -42,6 +42,7 @@ import {
   EDITOR_ANNOTATION_LAYER_OBJ_KEY,
   EDITOR_TEXT_LAYER_OBJ_KEY,
 } from "./utils/symbols";
+import { VueLinkService } from "./utils/link_service";
 
 interface InternalProps {
   page: PDFPageProxy | undefined;
@@ -151,12 +152,18 @@ provide(EDITOR_TEXT_LAYER_OBJ_KEY, {
   }),
   resolve: (value: HTMLDivElement | undefined) => tlayerResolver(value),
 });
-provide(CONTAINER_OBJ_KEY, {
+
+// Global state are objects that will work across layers.
+// not all object might initialized at the beginning but can be initialized later when
+// its main layer make use of it.
+const globalState = {
   wrapper: canvasWrapper,
   container: container,
   rootEmit: emit,
   uiManager: null,
-});
+  linkService: new VueLinkService(),
+};
+provide(CONTAINER_OBJ_KEY, globalState);
 
 function getWatermarkOptionsWithDefaults(): WatermarkOptions {
   return Object.assign(
@@ -322,6 +329,8 @@ function renderPage(pageNum: number) {
         canvas.removeAttribute("role");
       }
 
+      globalState.linkService.setDocument(internalProps.value.document!);
+      globalState.linkService.setRootEmit(emit);
       internalProps.value.page = page;
       internalProps.value.viewport = viewport;
       renderTask = page.render(renderContext);

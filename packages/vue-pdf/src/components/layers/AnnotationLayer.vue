@@ -10,13 +10,13 @@ import {
   EVENTS_TO_HANDLER,
   annotationEventsHandler,
 } from "../utils/annotations";
-import { SimpleLinkService } from "../utils/link_service";
 
 import type { AnnotationEventPayload } from "../types";
 import {
   CONTAINER_OBJ_KEY,
   EDITOR_ANNOTATION_LAYER_OBJ_KEY,
 } from "../utils/symbols";
+import { VueLinkService } from "../utils/link_service";
 
 const props = defineProps<{
   page?: PDFPageProxy;
@@ -45,6 +45,7 @@ const annotationLayerProvider = inject(EDITOR_ANNOTATION_LAYER_OBJ_KEY)! as {
 
 const containerObj = inject(CONTAINER_OBJ_KEY)! as {
   rootEmit: Function;
+  linkService: VueLinkService;
 };
 
 function annotationsEvents(evt: Event) {
@@ -128,7 +129,7 @@ async function render() {
       annotationStorage.setValue(key, value);
   }
 
-  const linkService = new SimpleLinkService(pdf, containerObj.rootEmit);
+  const linkService = containerObj.linkService;
 
   const layerParameters = {
     accessibilityManager: undefined,

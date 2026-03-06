@@ -5,7 +5,7 @@ import { onMounted, toRaw, useTemplateRef, watch } from "vue";
 import type { PDFDocumentProxy, PDFPageProxy, PageViewport } from "pdfjs-dist";
 import type { XfaLayerParameters } from "pdfjs-dist/types/src/display/xfa_layer";
 
-import { SimpleLinkService } from "../utils/link_service";
+import { VueLinkService } from "../utils/link_service";
 
 const props = defineProps<{
   page?: PDFPageProxy;
@@ -31,7 +31,7 @@ async function render() {
     const parameters: XfaLayerParameters = {
       div: layer.value!,
       viewport: viewport!.clone({ dontFlip: true }),
-      linkService: new SimpleLinkService(),
+      linkService: new VueLinkService(),
       annotationStorage: pdf?.annotationStorage,
       xfaHtml: xfaHTML!,
     };
