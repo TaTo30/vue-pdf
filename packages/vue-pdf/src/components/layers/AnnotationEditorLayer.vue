@@ -231,8 +231,8 @@ watch(
     } else {
       const svgsPath = containerObj.wrapper.value?.querySelectorAll("svg");
       svgsPath?.forEach((svg) => {
-        if (newVal) svg.classList.remove("hidden");
-        else svg.classList.add("hidden");
+        if (newVal) svg.classList.remove("svg-editor-hidden");
+        else svg.classList.add("svg-editor-hidden");
       });
     }
   },
