@@ -1,0 +1,646 @@
+/* Copyright 2025 Mozilla Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.page :deep(.commentPopup),
+.page :deep(#commentManagerDialog) {
+  width: 360px;
+  max-width: 100%;
+  min-width: 200px;
+  position: absolute;
+  padding: 8px 16px 16px;
+  margin-left: 0;
+  margin-top: 0;
+  box-sizing: border-box;
+
+  border-radius: 8px;
+}
+
+.page :deep(#commentManagerDialog) {
+  --comment-close-button-icon: url(images/comment-closeButton.svg);
+}
+
+.page :deep(#commentManagerDialog .mainContainer) {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.page :deep(#commentManagerDialog .mainContainer #commentManagerToolbar) {
+  width: 100%;
+  height: 32px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 8px;
+  align-self: stretch;
+
+  cursor: move;
+}
+
+.page :deep(#commentManagerDialog .mainContainer #commentManagerTextInput) {
+  width: 100%;
+  min-height: 132px;
+  margin-bottom: 12px;
+}
+
+.page :deep(.annotationLayer.disabled :is(.annotationCommentButton)) {
+  display: none;
+}
+
+.page :deep(:is(.annotationLayer, .annotationEditorLayer) .annotationCommentButton) {
+  color-scheme: light dark;
+  --comment-button-bg: light-dark(white, #1c1b22);
+  --comment-button-fg: light-dark(#5b5b66, #fbfbfe);
+  --comment-button-active-bg: light-dark(#0041a4, #a6ecf4);
+  --comment-button-active-fg: light-dark(white, #15141a);
+  --comment-button-hover-bg: light-dark(#0053cb, #61dce9);
+  --comment-button-hover-fg: light-dark(white, #15141a);
+  --comment-button-selected-bg: light-dark(#0062fa, #00cadb);
+  --comment-button-border-color: light-dark(#8f8f9d, #bfbfc9);
+  --comment-button-active-border-color: var(--comment-button-active-bg);
+  --comment-button-focus-border-color: light-dark(#cfcfd8, #3a3944);
+  --comment-button-hover-border-color: var(--comment-button-hover-bg);
+  --comment-button-selected-border-color: var(--comment-button-selected-bg);
+  --comment-button-selected-fg: light-dark(white, #15141a);
+  --comment-button-dim: 24px;
+  --comment-button-box-shadow:
+    0 0.25px 0.75px 0 light-dark(rgb(0 0 0 / 0.05), rgb(0 0 0 / 0.2)),
+    0 2px 6px 0 light-dark(rgb(0 0 0 / 0.1), rgb(0 0 0 / 0.4));
+  --comment-button-focus-outline-color: light-dark(#0062fa, #00cadb);
+
+  @media screen and (forced-colors: active) {
+    --comment-button-bg: ButtonFace;
+    --comment-button-fg: ButtonText;
+    --comment-button-hover-bg: SelectedItemText;
+    --comment-button-hover-fg: SelectedItem;
+    --comment-button-active-bg: SelectedItemText;
+    --comment-button-active-fg: SelectedItem;
+    --comment-button-border-color: ButtonBorder;
+    --comment-button-active-border-color: ButtonBorder;
+    --comment-button-hover-border-color: SelectedItem;
+    --comment-button-box-shadow: none;
+    --comment-button-focus-outline-color: CanvasText;
+    --comment-button-selected-bg: ButtonBorder;
+    --comment-button-selected-fg: ButtonFace;
+  }
+
+  position: absolute;
+  width: var(--comment-button-dim);
+  height: var(--comment-button-dim);
+  background-color: var(--comment-button-bg);
+  border-radius: 6px 6px 6px 0;
+  border: 1px solid var(--comment-button-border-color);
+  box-shadow: var(--comment-button-box-shadow);
+  cursor: auto;
+  z-index: 1;
+  padding: 4px;
+  margin: 0;
+  box-sizing: border-box;
+  pointer-events: auto;
+}
+
+.page :deep(:is(.annotationLayer, .annotationEditorLayer) .annotationCommentButton:dir(rtl)) {
+  border-radius: 6px 6px 0;
+}
+
+.page :deep(:is(.annotationLayer, .annotationEditorLayer) .annotationCommentButton::before) {
+  content: "";
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  mask-repeat: no-repeat;
+  mask-size: cover;
+  mask-image: var(--comment-edit-button-icon);
+  background-color: var(--comment-button-fg);
+  margin: 0;
+  padding: 0;
+  transform: scaleX(var(--dir-factor));
+}
+
+.page :deep(:is(.annotationLayer, .annotationEditorLayer) .annotationCommentButton:focus-visible) {
+  outline: 2px solid var(--comment-button-focus-outline-color);
+  outline-offset: 1px;
+  border-color: var(--comment-button-focus-border-color);
+}
+
+.page :deep(:is(.annotationLayer, .annotationEditorLayer) .annotationCommentButton:hover) {
+  background-color: var(--comment-button-hover-bg) !important;
+  border-color: var(--comment-button-hover-border-color);
+}
+
+.page :deep(:is(.annotationLayer, .annotationEditorLayer) .annotationCommentButton:hover::before) {
+  background-color: var(--comment-button-hover-fg);
+}
+
+.page :deep(:is(.annotationLayer, .annotationEditorLayer) .annotationCommentButton:active) {
+  background-color: var(--comment-button-active-bg) !important;
+  border-color: var(--comment-button-active-border-color);
+}
+
+.page :deep(:is(.annotationLayer, .annotationEditorLayer) .annotationCommentButton:active::before) {
+  background-color: var(--comment-button-active-fg);
+}
+
+.page :deep(:is(.annotationLayer, .annotationEditorLayer) .annotationCommentButton.selected) {
+  background-color: var(--comment-button-selected-bg) !important;
+  border-color: var(--comment-button-selected-border-color);
+}
+
+.page :deep(:is(.annotationLayer, .annotationEditorLayer) .annotationCommentButton.selected::before) {
+  background-color: var(--comment-button-selected-fg);
+}
+
+.page :deep(#editorCommentsSidebar),
+.page :deep(.commentPopup) {
+  --comment-close-button-icon: url(images/comment-closeButton.svg);
+  --comment-popup-edit-button-icon: url(images/comment-popup-editButton.svg);
+  --comment-popup-delete-button-icon: url(images/editor-toolbar-delete.svg);
+
+  --comment-date-fg-color: light-dark(rgb(21 20 26 / 0.69),
+      rgb(251 251 254 / 0.69));
+  --comment-bg-color: light-dark(#f9f9fb, #1c1b22);
+  --comment-hover-bg-color: light-dark(#e0e0e6, #2c2b33);
+  --comment-active-bg-color: light-dark(#d1d1d9, #3a3944);
+  --comment-hover-brightness: 0.89;
+  --comment-hover-filter: brightness(var(--comment-hover-brightness));
+  --comment-active-brightness: 0.825;
+  --comment-active-filter: brightness(var(--comment-active-brightness));
+  --comment-border-color: light-dark(#f0f0f4, #52525e);
+  --comment-focus-outline-color: light-dark(#0062fa, #00cadb);
+  --comment-fg-color: light-dark(#15141a, #fbfbfe);
+  --comment-count-bg-color: light-dark(#e2f7ff, #00317e);
+  --comment-indicator-active-fg-color: light-dark(#0041a4, #a6ecf4);
+  --comment-indicator-active-filter: brightness(calc(1 / var(--comment-active-brightness)));
+  --comment-indicator-focus-fg-color: light-dark(#5b5b66, #fbfbfe);
+  --comment-indicator-hover-fg-color: light-dark(#0053cb, #61dce9);
+  --comment-indicator-hover-filter: brightness(calc(1 / var(--comment-hover-brightness)));
+  --comment-indicator-selected-fg-color: light-dark(#0062fa, #00cadb);
+
+  --button-comment-bg: transparent;
+  --button-comment-color: var(--main-color);
+  --button-comment-active-bg: light-dark(#cfcfd8, #5b5b66);
+  --button-comment-active-border: none;
+  --button-comment-active-color: var(--button-comment-color);
+  --button-comment-border: none;
+  --button-comment-hover-bg: light-dark(#e0e0e6, #52525e);
+  --button-comment-hover-color: var(--button-comment-color);
+
+  --link-fg-color: light-dark(#0060df, #0df);
+  --link-hover-fg-color: light-dark(#0250bb, #80ebff);
+
+  @media screen and (forced-colors: active) {
+    --comment-date-fg-color: CanvasText;
+    --comment-bg-color: Canvas;
+    --comment-hover-bg-color: Canvas;
+    --comment-hover-filter: none;
+    --comment-active-bg-color: Canvas;
+    --comment-active-filter: none;
+    --comment-border-color: CanvasText;
+    --comment-fg-color: CanvasText;
+    --comment-count-bg-color: Canvas;
+    --comment-indicator-active-fg-color: SelectedItem;
+    --comment-indicator-focus-fg-color: CanvasText;
+    --comment-indicator-hover-fg-color: CanvasText;
+    --comment-indicator-selected-fg-color: SelectedItem;
+    --button-comment-bg: ButtonFace;
+    --button-comment-color: ButtonText;
+    --button-comment-active-bg: Highlight;
+    --button-comment-active-color: HighlightText;
+    --button-comment-border: 1px solid ButtonText;
+    --button-comment-hover-bg: Highlight;
+    --button-comment-hover-color: HighlightText;
+    --link-fg-color: LinkText;
+    --link-hover-fg-color: LinkText;
+  }
+}
+
+.page :deep(#editorCommentsSidebar) {
+  display: flex;
+  height: auto;
+  padding-bottom: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  overflow-y: visible;
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarHeader) {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarHeader .commentCount) {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  user-select: none;
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarHeader .commentCount #editorCommentsSidebarTitle) {
+  font: menu;
+  font-style: normal;
+  font-weight: 590;
+  line-height: normal;
+  font-size: 17px;
+  color: var(--comment-fg-color);
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarHeader .commentCount #editorCommentsSidebarCount) {
+  padding: 0 4px;
+  border-radius: 4px;
+  background-color: var(--comment-count-bg-color);
+  color: var(--comment-fg-color);
+  text-align: center;
+  font: menu;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarHeader #editorCommentsSidebarCloseButton) {
+  width: 32px;
+  height: 32px;
+  padding: 8px;
+  border-radius: 4px;
+  border: var(--button-comment-border);
+  background-color: var(--button-comment-bg);
+  cursor: pointer;
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarHeader #editorCommentsSidebarCloseButton::before) {
+  content: "";
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-image: var(--comment-close-button-icon);
+  background-color: var(--button-comment-color);
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarHeader #editorCommentsSidebarCloseButton:hover) {
+  background-color: var(--button-comment-hover-bg);
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarHeader #editorCommentsSidebarCloseButton:hover::before) {
+  background-color: var(--button-comment-hover-color);
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarHeader #editorCommentsSidebarCloseButton:active) {
+  border: var(--button-comment-active-border);
+  background-color: var(--button-comment-active-bg);
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarHeader #editorCommentsSidebarCloseButton:active::before) {
+  background-color: var(--button-comment-active-color);
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarHeader #editorCommentsSidebarCloseButton:focus-visible) {
+  outline: var(--focus-ring-outline);
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarHeader #editorCommentsSidebarCloseButton > span) {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarListContainer) {
+  overflow: auto;
+  width: 100%;
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarListContainer #editorCommentsSidebarList) {
+  display: flex;
+  width: auto;
+  padding: 4px 16px;
+  gap: 10px;
+  align-items: flex-start;
+  flex-direction: column;
+  list-style-type: none;
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarListContainer #editorCommentsSidebarList .sidebarComment) {
+  display: flex;
+  width: auto;
+  padding: 8px 16px 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: stretch;
+  gap: 4px;
+  border-radius: 8px;
+  border: 0.5px solid var(--comment-border-color);
+  background-color: var(--comment-bg-color);
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarListContainer #editorCommentsSidebarList .sidebarComment:not(.noComments):hover) {
+  filter: var(--comment-hover-filter);
+
+  @media screen and (forced-colors: active) {
+    background-color: var(--comment-hover-bg-color);
+  }
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarListContainer #editorCommentsSidebarList .sidebarComment:not(.noComments):hover time::after) {
+  display: inline-block;
+  background-color: var(--comment-indicator-hover-fg-color);
+  filter: var(--comment-indicator-hover-filter);
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarListContainer #editorCommentsSidebarList .sidebarComment:not(.noComments):active) {
+  filter: var(--comment-active-filter);
+
+  @media screen and (forced-colors: active) {
+    background-color: var(--comment-active-bg-color);
+  }
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarListContainer #editorCommentsSidebarList .sidebarComment:not(.noComments):active time::after) {
+  display: inline-block;
+  background-color: var(--comment-indicator-active-fg-color);
+  filter: var(--comment-indicator-active-filter);
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarListContainer #editorCommentsSidebarList .sidebarComment:not(.noComments):is(:focus, :focus-visible) time::after) {
+  display: inline-block;
+  background-color: var(--comment-indicator-focus-fg-color);
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarListContainer #editorCommentsSidebarList .sidebarComment:not(.noComments):focus-visible) {
+  outline: 2px solid var(--comment-focus-outline-color);
+  outline-offset: 2px;
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarListContainer #editorCommentsSidebarList .sidebarComment:not(.noComments).selected .sidebarCommentText) {
+  max-height: fit-content;
+  -webkit-line-clamp: unset;
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarListContainer #editorCommentsSidebarList .sidebarComment:not(.noComments).selected time::after) {
+  display: inline-block;
+  background-color: var(--comment-indicator-selected-fg-color);
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarListContainer #editorCommentsSidebarList .sidebarComment .sidebarCommentText) {
+  font: menu;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  font-size: 15px;
+  width: 100%;
+  height: fit-content;
+  max-height: 80px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: break-word;
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarListContainer #editorCommentsSidebarList .sidebarComment .sidebarCommentText .richText) {
+  --total-scale-factor: 1.5;
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarListContainer #editorCommentsSidebarList .sidebarComment.noComments .sidebarCommentText) {
+  max-height: fit-content;
+  -webkit-line-clamp: unset;
+  user-select: none;
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarListContainer #editorCommentsSidebarList .sidebarComment.noComments a) {
+  font: menu;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  font-size: 15px;
+  width: 100%;
+  height: auto;
+  overflow-wrap: break-word;
+  margin-block-start: 15px;
+  color: var(--link-fg-color);
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarListContainer #editorCommentsSidebarList .sidebarComment.noComments a:focus-visible) {
+  outline: var(--focus-ring-outline);
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarListContainer #editorCommentsSidebarList .sidebarComment.noComments a:hover) {
+  color: var(--link-hover-fg-color);
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarListContainer #editorCommentsSidebarList .sidebarComment time) {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  font: menu;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  font-size: 13px;
+}
+
+.page :deep(#editorCommentsSidebar #editorCommentsSidebarListContainer #editorCommentsSidebarList .sidebarComment time::after) {
+  content: "";
+  display: none;
+  width: 16px;
+  height: 16px;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-image: var(--comment-edit-button-icon);
+  transform: scaleX(var(--dir-factor));
+}
+
+.page :deep(.commentPopup) {
+  color-scheme: light dark;
+
+  --divider-color: light-dark(#cfcfd8, #3a3944);
+  --comment-shadow:
+    0 0.5px 2px 0 light-dark(rgb(0 0 0 / 0.05), rgb(0 0 0 / 0.2)),
+    0 4px 16px 0 light-dark(rgb(0 0 0 / 0.1), rgb(0 0 0 / 0.4));
+
+  @media screen and (forced-colors: active) {
+    --divider-color: CanvasText;
+    --comment-shadow: none;
+  }
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  z-index: 100001;
+  /* above selected annotation editor */
+  pointer-events: auto;
+  margin-top: 2px;
+
+  border: 0.5px solid var(--comment-border-color);
+  background: var(--comment-bg-color);
+  box-shadow: var(--comment-shadow);
+}
+
+.page :deep(.commentPopup:focus-visible) {
+  outline: none;
+}
+
+.page :deep(.commentPopup.dragging) {
+  cursor: move !important;
+}
+
+.page :deep(.commentPopup.dragging *) {
+  cursor: move !important;
+}
+
+.page :deep(.commentPopup.dragging button) {
+  pointer-events: none !important;
+}
+
+.page :deep(.commentPopup:not(.selected) .commentPopupButtons) {
+  visibility: hidden !important;
+}
+
+.page :deep(.commentPopup hr) {
+  width: 100%;
+  height: 1px;
+  border: none;
+  border-top: 1px solid var(--divider-color);
+  margin: 0;
+  padding: 0;
+}
+
+.page :deep(.commentPopup .commentPopupTop) {
+  display: flex;
+  width: 100%;
+  height: auto;
+  padding-bottom: 4px;
+  justify-content: space-between;
+  align-items: center;
+  align-self: stretch;
+  cursor: move;
+  user-select: none;
+}
+
+.page :deep(.commentPopup .commentPopupTop .commentPopupTime) {
+  font: menu;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  font-size: 13px;
+  color: var(--comment-date-fg-color);
+}
+
+.page :deep(.commentPopup .commentPopupTop .commentPopupButtons) {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  cursor: default;
+}
+
+.page :deep(.commentPopup .commentPopupTop .commentPopupButtons > button) {
+  width: 32px;
+  height: 32px;
+  padding: 8px;
+  border: var(--button-comment-border);
+  border-radius: 4px;
+  background-color: var(--button-comment-bg);
+  color: var(--button-comment-color);
+}
+
+.page :deep(.commentPopup .commentPopupTop .commentPopupButtons > button:hover) {
+  background-color: var(--button-comment-hover-bg);
+}
+
+.page :deep(.commentPopup .commentPopupTop .commentPopupButtons > button:hover::before) {
+  background-color: var(--button-comment-hover-color);
+}
+
+.page :deep(.commentPopup .commentPopupTop .commentPopupButtons > button:active) {
+  border: var(--button-comment-active-border);
+  background-color: var(--button-comment-active-bg);
+  color: var(--button-comment-active-color);
+}
+
+.page :deep(.commentPopup .commentPopupTop .commentPopupButtons > button:active::before) {
+  background-color: var(--button-comment-active-color);
+}
+
+.page :deep(.commentPopup .commentPopupTop .commentPopupButtons > button:focus-visible) {
+  background-color: var(--button-comment-hover-bg);
+  outline: 2px solid var(--comment-focus-outline-color);
+  outline-offset: 0;
+}
+
+.page :deep(.commentPopup .commentPopupTop .commentPopupButtons > button::before) {
+  content: "";
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
+
+.page :deep(.commentPopup .commentPopupTop .commentPopupButtons > button.commentPopupEdit::before) {
+  mask-image: var(--comment-popup-edit-button-icon);
+}
+
+.page :deep(.commentPopup .commentPopupTop .commentPopupButtons > button.commentPopupDelete::before) {
+  mask-image: var(--comment-popup-delete-button-icon);
+}
+
+.page :deep(.commentPopup .commentPopupText) {
+  width: 100%;
+  height: auto;
+
+  font: menu;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  font-size: 15px;
+  color: var(--comment-fg-color);
+}
+
+.page :deep(.commentPopupText),
+.page :deep(.sidebarCommentText .richText) {
+  margin-block: 0;
+}
+
+.page :deep(.commentPopupText p:first-of-type),
+.page :deep(.sidebarCommentText .richText p:first-of-type) {
+  margin-block: 0;
+}
+
+.page :deep(.commentPopupText > *),
+.page :deep(.sidebarCommentText .richText > *) {
+  white-space: pre-wrap;
+  font-size: max(15px, calc(10px * var(--total-scale-factor)));
+  overflow-wrap: break-word;
+}
+
+.page :deep(.commentPopupText span),
+.page :deep(.sidebarCommentText .richText span) {
+  color: var(--comment-fg-color) !important;
+}
+
+.page :deep(.commentPopupIcon::before),
+.page :deep(.commentPopupIcon:hover::before) {
+  background-color: white !important;
+}

@@ -55,10 +55,3 @@ onMounted(() => {
 <template>
   <div ref="layer" style="display: block" />
 </template>
-
-<style>
-/* Make this layer over other layers */
-.xfaLayer {
-  z-index: 5;
-}
-</style>

@@ -12,8 +12,6 @@ import {
   watch,
 } from "vue";
 
-import "pdfjs-dist/web/pdf_viewer.css";
-
 import type {
   PDFDocumentLoadingTask,
   PDFPageProxy,
@@ -408,7 +406,7 @@ defineExpose({
     class="page"
     style="position: relative; background-clip: content-box"
   >
-    <div ref="canvasWrapper" id="drawlayer" class="canvasWrapper">
+    <div ref="canvasWrapper" class="canvasWrapper">
       <canvas dir="ltr" role="main" />
     </div>
     <TextLayer
@@ -443,3 +441,11 @@ defineExpose({
     />
   </div>
 </template>
+
+<style scoped src="./styles/text_layer.css"></style>
+<style scoped src="./styles/annotation_layer.css"></style>
+<style scoped src="./styles/xfa_layer.css"></style>
+<style scoped src="./styles/draw_layer.css"></style>
+<style scoped src="./styles/editor_layer.css"></style>
+<style scoped src="./styles/comment_editor.css"></style>
+<style src="./styles/root.css"></style>

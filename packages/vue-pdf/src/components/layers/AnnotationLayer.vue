@@ -177,15 +177,3 @@ onMounted(() => {
 <template>
   <div ref="layer" class="annotationLayer" style="display: block" />
 </template>
-
-<style>
-.annotationLayer {
-  right: 0;
-  bottom: 0;
-}
-
-/* Make annotation sections available over text layer */
-.annotationLayer section {
-  z-index: 1 !important;
-}
-</style>
