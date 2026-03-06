@@ -21,6 +21,10 @@
       z-index: 100000;
     }
 
+    &.hidden {
+      display: none;
+    }
+
     &.highlight,
     &.highlightOutline {
       &[data-main-rotation="90"] {
