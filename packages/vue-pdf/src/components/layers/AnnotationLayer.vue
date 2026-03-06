@@ -13,7 +13,10 @@ import {
 import { SimpleLinkService } from "../utils/link_service";
 
 import type { AnnotationEventPayload } from "../types";
-import { EDITOR_ANNOTATION_LAYER_OBJ_KEY } from "../utils/symbols";
+import {
+  CONTAINER_OBJ_KEY,
+  EDITOR_ANNOTATION_LAYER_OBJ_KEY,
+} from "../utils/symbols";
 
 const props = defineProps<{
   page?: PDFPageProxy;
@@ -38,6 +41,10 @@ const annotations = ref<any[]>();
 const annotationLayerProvider = inject(EDITOR_ANNOTATION_LAYER_OBJ_KEY)! as {
   promise: Promise<PDFJS.AnnotationLayer | undefined>;
   resolve: (value: PDFJS.AnnotationLayer | undefined) => void;
+};
+
+const containerObj = inject(CONTAINER_OBJ_KEY)! as {
+  rootEmit: Function;
 };
 
 function annotationsEvents(evt: Event) {
@@ -121,6 +128,8 @@ async function render() {
       annotationStorage.setValue(key, value);
   }
 
+  const linkService = new SimpleLinkService(pdf, containerObj.rootEmit);
+
   const layerParameters = {
     accessibilityManager: undefined,
     annotationCanvasMap: canvasMap,
@@ -130,7 +139,7 @@ async function render() {
     annotationEditorUIManager: null,
     l10n: null,
     annotationStorage,
-    linkService: new SimpleLinkService(),
+    linkService,
     commentManager: null,
     structTreeLayer: null,
   };
@@ -138,7 +147,7 @@ async function render() {
   const renderParameters: AnnotationLayerParameters = {
     annotations: annotations.value!,
     viewport: viewport!.clone({ dontFlip: true }),
-    linkService: new SimpleLinkService(),
+    linkService,
     annotationCanvasMap: canvasMap,
     div: layer.value!,
     annotationStorage,

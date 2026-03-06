@@ -154,6 +154,7 @@ provide(EDITOR_TEXT_LAYER_OBJ_KEY, {
 provide(CONTAINER_OBJ_KEY, {
   wrapper: canvasWrapper,
   container: container,
+  rootEmit: emit,
   uiManager: null,
 });
 
