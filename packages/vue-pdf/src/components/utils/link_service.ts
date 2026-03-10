@@ -8,9 +8,9 @@ import type {
 import type {
   PDFDocumentProxy,
   PDFPageProxy,
-  TextItem,
 } from "pdfjs-dist/types/src/display/api";
-import type { TextContent } from "pdfjs-dist/types/src/display/text_layer";
+import type { Match } from "../types";
+import { convertMatches, processText } from "./highlight";
 
 function DOMRectToPDF(
   { width, height, left, top }: any,
@@ -118,118 +118,25 @@ interface LinkMatch {
   length: number;
 }
 
-interface ConvertedMatch {
-  begin: { divIdx: number; offset: number };
-  end: { divIdx: number; offset: number };
-}
-
-/**
- * Converts match indices from the joined text string to text div indices and offsets.
- * This is needed because the text content is split across multiple text divs.
- */
-function convertMatches(
-  matches: LinkMatch[],
-  textContent: TextContent,
-): Array<LinkMatch & ConvertedMatch> {
-  function endOfLineOffset(
-    item: TextItem,
-    prevItem: TextItem | null,
-    nextItem: TextItem | null,
-  ): number {
-    // When textitem has a EOL flag and the string has a hyphen at the end
-    // the hyphen should be removed (-1 len) so the sentence could be searched as a joined one.
-    // In other cases the EOL flag introduce a whitespace (+1 len) between two different sentences
-    // In cases where the EOL is between two CJK characters, no offset is added
-    if (item.hasEOL && item.str.length === 0) {
-      const lastchar = prevItem?.str[prevItem.str.length - 1];
-      const nextchar = nextItem?.str[0];
-
-      const isCJK = new RegExp(/(\p{Ideographic}|[\u3040-\u30FF])/u);
-      if (lastchar && isCJK.test(lastchar) && nextchar && isCJK.test(nextchar))
-        return 0;
-    }
-
-    if (item.hasEOL) {
-      if (item.str.endsWith("-")) return -1;
-      else return 1;
-    }
-    return 0;
-  }
-
-  let index = 0;
-  let tindex = 0;
-  const textItems = textContent.items as TextItem[];
-  const end = textItems.length - 1;
-
-  const convertedMatches: Array<LinkMatch & ConvertedMatch> = [];
-
-  // iterate over all matches
-  for (let m = 0; m < matches.length; m++) {
-    let mindex = matches[m].index;
-
-    while (index !== end && mindex >= tindex + textItems[index].str.length) {
-      const item = textItems[index];
-      tindex +=
-        item.str.length +
-        endOfLineOffset(
-          item,
-          index - 1 < 0 ? null : textItems[index - 1],
-          index + 1 >= textItems.length ? null : textItems[index + 1],
-        );
-      index++;
-    }
-    const divStart = {
-      divIdx: index,
-      offset: mindex - tindex,
-    };
-
-    mindex += matches[m].length;
-
-    while (index !== end && mindex > tindex + textItems[index].str.length) {
-      const item = textItems[index];
-      tindex +=
-        item.str.length +
-        endOfLineOffset(
-          item,
-          index - 1 < 0 ? null : textItems[index - 1],
-          index + 1 >= textItems.length ? null : textItems[index + 1],
-        );
-      index++;
-    }
-
-    const divEnd = {
-      divIdx: index,
-      offset: mindex - tindex,
-    };
-
-    convertedMatches.push({
-      ...matches[m],
-      begin: divStart,
-      end: divEnd,
-    });
-  }
-
-  return convertedMatches;
-}
-
 function createLinkAnnotation(
-  match: LinkMatch & ConvertedMatch,
+  match: Match,
+  url: string,
   viewport: PageViewport,
   textDivs: HTMLElement[],
   textLayerDiv: HTMLDivElement,
   id: number,
 ) {
-  const { url, begin, end } = match;
+  const { start, end } = match;
 
-  const beginDiv = textDivs[begin.divIdx];
-  const endDiv = textDivs[end.divIdx];
+  const beginDiv = textDivs[start.idx];
+  const endDiv = textDivs[end.idx];
 
   if (!beginDiv || !endDiv) {
     return null;
   }
 
   const range = new Range();
-  const [startNode, startOffset] = textPosition(beginDiv, begin.offset);
+  const [startNode, startOffset] = textPosition(beginDiv, start.offset);
   const [endNode, endOffset] = textPosition(endDiv, end.offset);
 
   range.setStart(startNode, startOffset);
@@ -447,33 +354,6 @@ class VueLinkService implements IPDFLinkService {
   goToXY(pageNumber: number, x: number, y: number): void {}
 
   /**
-   * Process text content into a searchable string, handling line breaks
-   * and hyphenation properly.
-   */
-  static processText(textContent: TextContent): string {
-    const strs: string[] = [];
-    for (const textItem of textContent.items as TextItem[]) {
-      strs.push(textItem.str);
-      if (textItem.hasEOL) strs.push("\n");
-    }
-
-    let textJoined = strs.join("");
-    // Join the text as is presented in textlayer and then perform these replacements to build up broken words
-    // 1. newline between CJK characters should be removed
-    // 2. hyphen at the end of a line should be removed
-    textJoined = textJoined.replace(
-      /(?<=\p{Ideographic}|[\u3040-\u30FF])\n(\p{Ideographic}|[\u3040-\u30FF])/gmu,
-      "$1",
-    );
-    textJoined = textJoined.replace(/(?<=\S)-\n/gmu, "");
-
-    // Replace all "valid" newlines with a space
-    textJoined = textJoined.replace(/\n/g, " ");
-
-    return textJoined;
-  }
-
-  /**
    * Find all URLs and email addresses in the given text.
    * Regex can be tested and verified at https://regex101.com/r/rXoLiT/2
    */
@@ -538,10 +418,20 @@ class VueLinkService implements IPDFLinkService {
     // Use consistent options for text content - NO marked content
     const textContent = await page.getTextContent({
       disableNormalization: true,
+      includeMarkedContent: true,
     });
-    const text = this.processText(textContent);
+    const text = processText(textContent);
+    console.log(text);
     const links = this.findLinks(text);
-    const convertedMatches = convertMatches(links, textContent);
+    console.log(links);
+
+    // Convert LinkMatch[] to the format expected by convertMatches from highlight.ts
+    const matchesForConvert: (number | string)[][] = links.map((link) => [
+      link.index,
+      link.length,
+      link.url,
+    ]);
+    const convertedMatches = convertMatches(matchesForConvert, textContent);
 
     const annotations = [];
     if (convertedMatches.length > 0) {
@@ -552,9 +442,7 @@ class VueLinkService implements IPDFLinkService {
 
       // Use same options as getTextContent - NO marked content
       const mockTextLayer = new PDFJS.TextLayer({
-        textContentSource: page.streamTextContent({
-          disableNormalization: true,
-        }),
+        textContentSource: page.streamTextContent(),
         container: mockTextContainer,
         viewport: page.getViewport({ scale: 1 }),
       });
@@ -562,9 +450,12 @@ class VueLinkService implements IPDFLinkService {
       await mockTextLayer.render();
       const textDivs = mockTextLayer.textDivs;
 
-      for (const match of convertedMatches) {
+      for (let i = 0; i < convertedMatches.length; i++) {
+        const match = convertedMatches[i];
+        const url = links[i].url;
         const annotation = createLinkAnnotation(
           match,
+          url,
           viewport,
           textDivs,
           mockTextContainer,

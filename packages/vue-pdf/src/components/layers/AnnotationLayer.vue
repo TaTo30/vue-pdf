@@ -165,6 +165,15 @@ async function render() {
   const task = instance.render(renderParameters);
   task.then(async () => {
     annotationLayerProvider.resolve(instance);
+
+    const inferredLinks = await VueLinkService.processLinks(
+      page!,
+      layer.value!,
+      viewport!.clone(),
+    );
+
+    instance.addLinkAnnotations(inferredLinks);
+
     emit("annotationLoaded", (await getAnnotations())!);
   });
 
