@@ -8,3 +8,12 @@
   --freetext-padding: 2px;
   --outline-width: 2px;
 }
+
+.hiddenCanvasElement {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  display: none;
+}
