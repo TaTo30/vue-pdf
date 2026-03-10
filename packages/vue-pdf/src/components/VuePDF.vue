@@ -442,6 +442,20 @@ defineExpose({
   </div>
 </template>
 
+<style scoped>
+.page :deep([data-main-rotation="90"]) {
+  transform: rotate(90deg) translateY(-100%);
+}
+
+.page :deep([data-main-rotation="180"]) {
+  transform: rotate(180deg) translate(-100%, -100%);
+}
+
+.page :deep([data-main-rotation="270"]) {
+  transform: rotate(270deg) translateX(-100%);
+}
+</style>
+
 <style scoped src="./styles/text_layer.css"></style>
 <style scoped src="./styles/annotation_layer.css"></style>
 <style scoped src="./styles/xfa_layer.css"></style>
