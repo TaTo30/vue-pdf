@@ -1,40 +1,160 @@
 import type { TextItem } from "pdfjs-dist/types/src/display/api";
 import type { TextContent } from "pdfjs-dist/types/src/display/text_layer";
-import type { HighlightOptions, Match } from "../types";
+import type { HighlightOptions, Match, PositionDiffs } from "../types";
+
+/**
+ * Binary search to find the first item where the predicate returns true.
+ */
+function binarySearchFirstItem(
+  arr: Uint32Array,
+  predicate: (x: number) => boolean,
+  start = 0,
+): number {
+  let minIndex = start;
+  let maxIndex = arr.length - 1;
+
+  while (minIndex < maxIndex) {
+    const currentIndex = (minIndex + maxIndex) >> 1;
+    if (predicate(arr[currentIndex])) {
+      maxIndex = currentIndex;
+    } else {
+      minIndex = currentIndex + 1;
+    }
+  }
+
+  return minIndex;
+}
+
+/**
+ * Get the original index from the normalized index using the position diffs.
+ * Similar to pdf_find_controller.js getOriginalIndex.
+ */
+function getOriginalIndex(
+  diffs: PositionDiffs | null,
+  pos: number,
+  len: number,
+): [number, number] {
+  if (!diffs) {
+    return [pos, len];
+  }
+
+  const [starts, shifts] = diffs;
+  const start = pos;
+  const end = pos + len - 1;
+
+  let i = binarySearchFirstItem(starts, (x) => x >= start);
+  if (starts[i] > start) {
+    --i;
+  }
+
+  let j = binarySearchFirstItem(starts, (x) => x >= end, i);
+  if (starts[j] > end) {
+    --j;
+  }
+
+  const oldStart = start + shifts[i];
+  const oldEnd = end + shifts[j];
+  const oldLen = oldEnd + 1 - oldStart;
+
+  return [oldStart, oldLen];
+}
+
+/**
+ * Normalize text content into a searchable string, tracking position changes.
+ * Returns [normalizedText, positionDiffs] where positionDiffs allows mapping
+ * from normalized positions back to original positions.
+ *
+ * Similar to pdf_find_controller.js normalize function but simplified for
+ * text content items.
+ */
+function normalizeText(
+  textContent: TextContent,
+): [string, PositionDiffs | null] {
+  const textItems = textContent.items as TextItem[];
+
+  // Build the raw text with EOL markers
+  const strs: string[] = [];
+  for (const textItem of textItems) {
+    strs.push(textItem.str);
+    if (textItem.hasEOL) strs.push("\n");
+  }
+  const rawText = strs.join("");
+
+  if (rawText.length === 0) {
+    return ["", null];
+  }
+
+  // Track position shifts as we normalize
+  const positions: number[] = [0, 0];
+  let shift = 0;
+
+  // Normalization regex that handles:
+  // p1: CJK followed by \n followed by CJK (remove \n)
+  // p2: Non-whitespace followed by - and \n (remove -\n, hyphenation)
+  // p3: Any other \n (replace with space)
+  const normalizationRegex =
+    /([\p{Ideographic}\u3040-\u30FF])\n([\p{Ideographic}\u3040-\u30FF])|(\S)-\n|(\n)/gmu;
+
+  const normalized = rawText.replace(
+    normalizationRegex,
+    (match, p1, p2, p3, p4, offset) => {
+      if (p1 && p2) {
+        // CJK\nCJK -> CJKCJK (remove \n, shift +1)
+        // The \n is at offset + p1.length
+        const nlPos = offset + p1.length;
+        positions.push(nlPos - shift, shift + 1);
+        shift += 1;
+        return p1 + p2;
+      }
+
+      if (p3) {
+        // X-\n -> X (remove -\n, shift +2)
+        // The - is at offset + p3.length, the \n is at offset + p3.length + 1
+        const dashPos = offset + p3.length;
+        positions.push(dashPos - shift, shift + 2);
+        shift += 2;
+        return p3;
+      }
+
+      if (p4) {
+        // \n -> space (no shift change, just replacement)
+        return " ";
+      }
+
+      return match;
+    },
+  );
+
+  // Add final position
+  positions.push(normalized.length, shift);
+
+  // Convert to typed arrays for efficient binary search
+  const starts = new Uint32Array(positions.length >> 1);
+  const shifts = new Int32Array(positions.length >> 1);
+  for (let i = 0, ii = positions.length; i < ii; i += 2) {
+    starts[i >> 1] = positions[i];
+    shifts[i >> 1] = positions[i + 1];
+  }
+
+  return [normalized, [starts, shifts]];
+}
 
 /**
  * Process text content into a searchable string, handling line breaks
  * and hyphenation properly.
+ * @deprecated Use normalizeText instead for accurate position mapping.
  */
 function processText(textContent: TextContent): string {
-  const strs: string[] = [];
-  for (const textItem of textContent.items as TextItem[]) {
-    strs.push(textItem.str);
-    if (textItem.hasEOL) strs.push("\n");
-  }
-
-  let textJoined = strs.join("");
-  // Join the text as is presented in textlayer and then perform these replacements to build up broken words
-  // 1. newline between CJK characters should be removed
-  // 2. hyphen at the end of a line should be removed
-  textJoined = textJoined.replace(
-    /(?<=\p{Ideographic}|[\u3040-\u30FF])\n(\p{Ideographic}|[\u3040-\u30FF])/gmu,
-    "$1",
-  );
-  textJoined = textJoined.replace(/(?<=\S)-\n/gmu, "");
-
-  // Replace all "valid" newlines with a space
-  textJoined = textJoined.replace(/\n/g, " ");
-
-  return textJoined;
+  const [normalized] = normalizeText(textContent);
+  return normalized;
 }
 
 function searchQuery(
   textContent: TextContent,
   query: string,
   options: HighlightOptions,
-) {
-  const textJoined = processText(textContent);
+): [(number | string)[][], PositionDiffs | null] {
+  const [normalizedText, diffs] = normalizeText(textContent);
 
   const regexFlags = ["g"];
   if (options.ignoreCase) regexFlags.push("i");
@@ -45,98 +165,112 @@ function searchQuery(
 
   const regex = new RegExp(fquery, regexFlags.join(""));
 
-  const matches = [];
+  const matches: (number | string)[][] = [];
   let match;
 
   // eslint-disable-next-line no-cond-assign
-  while ((match = regex.exec(textJoined)) !== null)
+  while ((match = regex.exec(normalizedText)) !== null)
     matches.push([match.index, match[0].length, match[0]]);
 
-  return matches;
+  return [matches, diffs];
+}
+
+/**
+ * Build cumulative position map for text items.
+ * Returns array where cumPositions[i] is the starting position of textItems[i] in raw text.
+ */
+function buildCumulativePositions(textContent: TextContent): number[] {
+  const textItems = textContent.items as TextItem[];
+  const cumPositions: number[] = [0];
+  let pos = 0;
+
+  for (const item of textItems) {
+    pos += item.str.length;
+    if (item.hasEOL) pos += 1; // Account for \n
+    cumPositions.push(pos);
+  }
+
+  return cumPositions;
+}
+
+/**
+ * Find the text item index and offset for a given raw text position.
+ */
+function findTextItemPosition(
+  rawPos: number,
+  textContent: TextContent,
+  cumPositions: number[],
+): { idx: number; offset: number } {
+  const textItems = textContent.items as TextItem[];
+
+  // Binary search to find which text item contains this position
+  let low = 0;
+  let high = textItems.length - 1;
+
+  while (low < high) {
+    const mid = (low + high + 1) >> 1;
+    if (cumPositions[mid] <= rawPos) {
+      low = mid;
+    } else {
+      high = mid - 1;
+    }
+  }
+
+  const idx = low;
+  const offset = rawPos - cumPositions[idx];
+
+  // Clamp offset to string length (position might be in EOL)
+  const item = textItems[idx];
+  const clampedOffset = Math.min(offset, item ? item.str.length : 0);
+
+  return { idx, offset: clampedOffset };
 }
 
 function convertMatches(
   matches: (number | string)[][],
   textContent: TextContent,
+  diffs?: PositionDiffs | null,
 ): Match[] {
-  function endOfLineOffset(
-    item: TextItem,
-    prevItem: TextItem | null,
-    nextItem: TextItem | null,
-  ): number {
-    // When textitem has a EOL flag and the string has a hyphen at the end
-    // the hyphen should be removed (-1 len) so the sentence could be searched as a joined one.
-    // In other cases the EOL flag introduce a whitespace (+1 len) between two different sentences
-    // In cases where the EOL is between two CJK characters, no offset is added
-    if (item.hasEOL && item.str.length === 0) {
-      const lastchar = prevItem?.str[prevItem.str.length - 1];
-      const nextchar = nextItem?.str[0];
+  const textItems = textContent.items as TextItem[];
 
-      const isCJK = new RegExp(/(\p{Ideographic}|[\u3040-\u30FF])/u);
-      if (lastchar && isCJK.test(lastchar) && nextchar && isCJK.test(nextchar))
-        return 0;
-    }
-
-    if (item.hasEOL) {
-      if (item.str.endsWith("-")) return -1;
-      else return 1;
-    }
-    return 0;
+  if (textItems.length === 0) {
+    return [];
   }
 
-  let index = 0;
-  let tindex = 0;
-  const textItems = textContent.items as TextItem[];
-  const end = textItems.length - 1;
+  const cumPositions = buildCumulativePositions(textContent);
+  const convertedMatches: Match[] = [];
 
-  const convertedMatches = [];
+  for (const match of matches) {
+    const normalizedIndex = match[0] as number;
+    const normalizedLength = match[1] as number;
+    const matchStr = match[2] as string;
 
-  // iterate over all matches
-  for (let m = 0; m < matches.length; m++) {
-    let mindex = matches[m][0] as number;
+    // Convert normalized positions to raw positions
+    const [rawStart, rawLen] = diffs
+      ? getOriginalIndex(diffs, normalizedIndex, normalizedLength)
+      : [normalizedIndex, normalizedLength];
 
-    while (index !== end && mindex >= tindex + textItems[index].str.length) {
-      const item = textItems[index];
-      tindex +=
-        item.str.length +
-        endOfLineOffset(
-          item,
-          index - 1 < 0 ? null : textItems[index - 1],
-          index + 1 >= textItems.length ? null : textItems[index + 1],
-        );
-      index++;
-    }
-    const divStart = {
-      idx: index,
-      offset: mindex - tindex,
-    };
+    const rawEnd = rawStart + rawLen - 1;
 
-    mindex += matches[m][1] as number;
+    // Find text item positions
+    const start = findTextItemPosition(rawStart, textContent, cumPositions);
+    const end = findTextItemPosition(rawEnd, textContent, cumPositions);
 
-    while (index !== end && mindex > tindex + textItems[index].str.length) {
-      const item = textItems[index];
-      tindex +=
-        item.str.length +
-        endOfLineOffset(
-          item,
-          index - 1 < 0 ? null : textItems[index - 1],
-          index + 1 >= textItems.length ? null : textItems[index + 1],
-        );
-      index++;
-    }
-
-    const divEnd = {
-      idx: index,
-      offset: mindex - tindex,
-    };
+    // Adjust end offset to be exclusive (point after the last char)
+    const endItem = textItems[end.idx];
+    const endOffset = Math.min(
+      end.offset + 1,
+      endItem ? endItem.str.length : 0,
+    );
 
     convertedMatches.push({
-      start: divStart,
-      end: divEnd,
-      str: matches[m][2] as string,
-      oindex: matches[m][0] as number,
+      start,
+      end: { idx: end.idx, offset: endOffset },
+      str: matchStr,
+      oindex: normalizedIndex,
     });
   }
+
   return convertedMatches;
 }
 
@@ -253,10 +387,10 @@ function findMatches(
   textContent: TextContent,
   options: HighlightOptions,
 ) {
-  const convertedMatches = [];
+  const convertedMatches: Match[] = [];
   for (const query of queries) {
-    const matches = searchQuery(textContent, query, options);
-    convertedMatches.push(...convertMatches(matches, textContent));
+    const [matches, diffs] = searchQuery(textContent, query, options);
+    convertedMatches.push(...convertMatches(matches, textContent, diffs));
   }
   return convertedMatches;
 }
@@ -264,7 +398,10 @@ function findMatches(
 export {
   convertMatches,
   findMatches,
+  getOriginalIndex,
   highlightMatches,
+  normalizeText,
   processText,
   resetDivs,
 };
+export type { PositionDiffs };

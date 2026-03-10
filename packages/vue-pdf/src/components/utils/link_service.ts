@@ -10,7 +10,10 @@ import type {
   PDFPageProxy,
 } from "pdfjs-dist/types/src/display/api";
 import type { Match } from "../types";
-import { convertMatches, processText } from "./highlight";
+import { convertMatches, normalizeText } from "./highlight";
+
+const LINK = "link";
+const INTERNAL_LINK = "internal-link";
 
 function DOMRectToPDF(
   { width, height, left, top }: any,
@@ -285,7 +288,7 @@ class VueLinkService implements IPDFLinkService {
     }
 
     this.#rootEmit("annotation", {
-      type: "internal-link",
+      type: INTERNAL_LINK,
       data: {
         referencedPage: pageNumber,
         offset,
@@ -328,6 +331,16 @@ class VueLinkService implements IPDFLinkService {
 
     const rel = this.externalLinkRel || "noopener noreferrer";
     link.rel = rel.includes("noopener") ? rel : `noopener ${rel}`.trim();
+
+    link.addEventListener("click", (evt) => {
+      this.#rootEmit("annotation", {
+        type: LINK,
+        data: {
+          url: safeUrl,
+          unsafeUrl: url,
+        },
+      });
+    });
   }
 
   getDestinationHash(_dest: any): string {
@@ -420,10 +433,8 @@ class VueLinkService implements IPDFLinkService {
       disableNormalization: true,
       includeMarkedContent: true,
     });
-    const text = processText(textContent);
-    console.log(text);
+    const [text, diffs] = normalizeText(textContent);
     const links = this.findLinks(text);
-    console.log(links);
 
     // Convert LinkMatch[] to the format expected by convertMatches from highlight.ts
     const matchesForConvert: (number | string)[][] = links.map((link) => [
@@ -431,7 +442,11 @@ class VueLinkService implements IPDFLinkService {
       link.length,
       link.url,
     ]);
-    const convertedMatches = convertMatches(matchesForConvert, textContent);
+    const convertedMatches = convertMatches(
+      matchesForConvert,
+      textContent,
+      diffs,
+    );
 
     const annotations = [];
     if (convertedMatches.length > 0) {

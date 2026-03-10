@@ -3,20 +3,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable no-case-declarations */
 import type { PDFDocumentProxy } from 'pdfjs-dist'
-import type { RefProxy } from 'pdfjs-dist/types/src/display/api'
 import type { AnnotationEventPayload } from '../types'
 
 interface PopupArgs {
   [key: string]: string
 }
 
-interface LinkAnnotation {
-  dest: Array<any> | string
-  url: string
-  unsafeurl: string
-}
-
-const LINK = 'link'
 const FILE_ATTACHMENT = 'file-attachment'
 const FORM_TEXT = 'form-text'
 const FORM_SELECT = 'form-select'
@@ -93,18 +85,6 @@ function fileAnnotation(annotation: any) {
   return buildAnnotationData(FILE_ATTACHMENT, annotation.file)
 }
 
-async function linkAnnotation(annotation: {
-  dest?: any
-  url?: string
-  unsafeUrl?: string
-}, PDFDoc: PDFDocumentProxy) {
-  if (annotation.url) {
-    return buildAnnotationData(LINK, {
-      url: annotation.url,
-      unsafeUrl: annotation.unsafeUrl,
-    })
-  }
-}
 
 function mergePopupArgs(annotation: HTMLElement) {
   for (const spanElement of annotation.getElementsByTagName('span')) {
@@ -126,12 +106,8 @@ function annotationEventsHandler(evt: Event, PDFDoc: PDFDocumentProxy, Annotatio
   if (annotation.tagName !== 'SECTION')
     annotation = annotation.parentNode! as HTMLElement
 
-  if (annotation.className === 'linkAnnotation' && evt.type === 'click') {
-    const id: string | undefined = annotation.dataset?.annotationId
-    if (id)
-      return linkAnnotation(getAnnotationsByKey('id', id, Annotations)[0] as LinkAnnotation, PDFDoc)
-  }
-  else if (annotation.className.includes('popupAnnotation') || annotation.className.includes('textAnnotation')) {
+
+  if (annotation.className.includes('popupAnnotation') || annotation.className.includes('textAnnotation')) {
     mergePopupArgs(annotation)
   }
   else if (annotation.className.includes('fileAttachmentAnnotation')) {

@@ -9,6 +9,8 @@ import type {
 import type { AnnotationEditor } from "pdfjs-dist/types/src/display/editor/tools";
 import type { Metadata } from "pdfjs-dist/types/src/display/metadata";
 
+export type PositionDiffs = [Uint32Array, Int32Array];
+
 export interface Match {
   start: {
     idx: number;
