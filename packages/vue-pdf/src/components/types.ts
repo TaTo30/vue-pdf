@@ -24,6 +24,12 @@ export interface Match {
   oindex: number;
 }
 
+export interface LinkMatch {
+  url: string;
+  index: number;
+  length: number;
+}
+
 export type LoadedEventPayload = PageViewport;
 
 export interface AnnotationEventPayload {

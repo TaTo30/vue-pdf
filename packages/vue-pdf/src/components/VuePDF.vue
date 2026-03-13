@@ -42,7 +42,7 @@ import {
   EDITOR_ANNOTATION_LAYER_OBJ_KEY,
   EDITOR_TEXT_LAYER_OBJ_KEY,
 } from "./utils/symbols";
-import { VueLinkService } from "./utils/link_service";
+import { LinkService } from "./utils/link_service";
 
 interface InternalProps {
   page: PDFPageProxy | undefined;
@@ -161,7 +161,7 @@ const globalState = {
   container: container,
   rootEmit: emit,
   uiManager: null,
-  linkService: new VueLinkService(),
+  linkService: new LinkService(),
 };
 provide(CONTAINER_OBJ_KEY, globalState);
 

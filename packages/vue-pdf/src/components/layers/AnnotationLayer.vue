@@ -5,6 +5,7 @@ import { inject, onMounted, ref, toRaw, useTemplateRef, watch } from "vue";
 import type { PDFDocumentProxy, PDFPageProxy, PageViewport } from "pdfjs-dist";
 import type { AnnotationLayerParameters } from "pdfjs-dist/types/src/display/annotation_layer";
 import type { IDownloadManager } from "pdfjs-dist/types/web/interfaces";
+import type { LinkService } from "../utils/link_service";
 
 import {
   EVENTS_TO_HANDLER,
@@ -16,7 +17,7 @@ import {
   CONTAINER_OBJ_KEY,
   EDITOR_ANNOTATION_LAYER_OBJ_KEY,
 } from "../utils/symbols";
-import { VueLinkService } from "../utils/link_service";
+import { processLinks } from "../utils/inferred_links";
 
 const props = defineProps<{
   page?: PDFPageProxy;
@@ -45,7 +46,7 @@ const annotationLayerProvider = inject(EDITOR_ANNOTATION_LAYER_OBJ_KEY)! as {
 
 const containerObj = inject(CONTAINER_OBJ_KEY)! as {
   rootEmit: Function;
-  linkService: VueLinkService;
+  linkService: LinkService;
 };
 
 function annotationsEvents(evt: Event) {
@@ -166,7 +167,7 @@ async function render() {
   task.then(async () => {
     annotationLayerProvider.resolve(instance);
 
-    const inferredLinks = await VueLinkService.processLinks(
+    const inferredLinks = await processLinks(
       page!,
       layer.value!,
       viewport!.clone(),

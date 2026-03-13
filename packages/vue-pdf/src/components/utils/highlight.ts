@@ -404,4 +404,3 @@ export {
   processText,
   resetDivs,
 };
-export type { PositionDiffs };
