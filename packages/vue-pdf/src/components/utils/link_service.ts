@@ -7,8 +7,8 @@ class SimpleLinkService implements IPDFLinkService {
   externalLinkRel: string
 
 
-  constructor() {
-    this.externalLinkEnabled = true
+  constructor(externalLinkEnabled: boolean = true) {
+    this.externalLinkEnabled = externalLinkEnabled
 
     this.externalLinkTarget = ""
     this.externalLinkRel = "noopener noreferrer"

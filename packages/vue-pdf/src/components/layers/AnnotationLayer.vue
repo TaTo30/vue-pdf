@@ -24,6 +24,7 @@ const props = defineProps<{
   imageResourcesPath?: string;
   hideForms?: boolean;
   enableScripting?: boolean;
+  externalLinkEnabled?: boolean;
   intent: string;
 }>();
 
@@ -130,7 +131,7 @@ async function render() {
     annotationEditorUIManager: null,
     l10n: null,
     annotationStorage,
-    linkService: new SimpleLinkService(),
+    linkService: new SimpleLinkService(props.externalLinkEnabled),
     commentManager: null,
     structTreeLayer: null,
   };
@@ -138,7 +139,7 @@ async function render() {
   const renderParameters: AnnotationLayerParameters = {
     annotations: annotations.value!,
     viewport: viewport!.clone({ dontFlip: true }),
-    linkService: new SimpleLinkService(),
+    linkService: new SimpleLinkService(props.externalLinkEnabled),
     annotationCanvasMap: canvasMap,
     div: layer.value!,
     annotationStorage,

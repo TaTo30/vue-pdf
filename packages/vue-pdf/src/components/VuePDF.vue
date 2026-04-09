@@ -73,6 +73,7 @@ const props = withDefaults(
     highlightPages?: number[];
     editorLayer?: boolean;
     editorType?: number;
+    externalLinkEnabled?: boolean;
   }>(),
   {
     page: 1,
@@ -80,6 +81,7 @@ const props = withDefaults(
     editorType: 0,
     intent: "display",
     autoDestroy: false,
+    externalLinkEnabled: true,
   },
 );
 
@@ -115,6 +117,7 @@ const alayerProps = computed(() => {
   return {
     annotationsMap: props.annotationsMap,
     annotationsFilter: props.annotationsFilter,
+    externalLinkEnabled: props.externalLinkEnabled,
     imageResourcesPath: props.imageResourcesPath,
     hideForms: props.hideForms,
     intent: props.intent,
