@@ -147,8 +147,7 @@ class LinkService implements PDFLinkService {
   }
 
   addLinkAttributes(link: HTMLAnchorElement, url: string, newWindow = false) {
-    if (!this.externalLinkEnabled) return;
-
+    link.style.cursor = "pointer"; // Make sure that the hand cursor is shown on hover.
     const baseHref =
       typeof window !== "undefined" && window.location
         ? window.location.href
@@ -160,6 +159,19 @@ class LinkService implements PDFLinkService {
     } catch {
       return;
     }
+
+    link.addEventListener("click", (evt) => {
+      this.#eventEmitter("annotation", {
+        type: LINK,
+        data: {
+          url: safeUrl,
+          unsafeUrl: url,
+        },
+      });
+    });
+
+    // If external link is not enabled skip setting the href attribute, but still allow the click event to be handled
+    if (!this.externalLinkEnabled) return;
 
     const protocol = safeUrl.protocol.toLowerCase();
     const allowed =
@@ -181,16 +193,6 @@ class LinkService implements PDFLinkService {
 
     const rel = this.externalLinkRel;
     link.rel = rel.includes("noopener") ? rel : `noopener ${rel}`.trim();
-
-    link.addEventListener("click", (evt) => {
-      this.#eventEmitter("annotation", {
-        type: LINK,
-        data: {
-          url: safeUrl,
-          unsafeUrl: url,
-        },
-      });
-    });
   }
 
   getDestinationHash(_dest: any): string {

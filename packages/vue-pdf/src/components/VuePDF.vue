@@ -85,7 +85,6 @@ const props = withDefaults(
     intent: "display",
     autoDestroy: false,
     externalLinkEnabled: true,
-    externalLinkRel: "noopener noreferrer",
     externalLinkTarget: "_blank",
   },
 );
@@ -123,7 +122,6 @@ const alayerProps = computed(() => {
     annotationsMap: props.annotationsMap,
     annotationsFilter: props.annotationsFilter,
     externalLinkEnabled: props.externalLinkEnabled,
-    externalLinkRel: props.externalLinkRel,
     externalLinkTarget: props.externalLinkTarget,
     imageResourcesPath: props.imageResourcesPath,
     hideForms: props.hideForms,

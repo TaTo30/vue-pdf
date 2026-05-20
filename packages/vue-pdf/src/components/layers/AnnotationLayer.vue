@@ -29,7 +29,6 @@ const props = defineProps<{
   enableScripting?: boolean;
   intent: string;
   externalLinkEnabled?: boolean;
-  externalLinkRel?: string;
   externalLinkTarget?: string;
 }>();
 
@@ -134,7 +133,6 @@ async function render() {
 
   const linkService = containerObj.linkService;
   linkService.setExternalLinkEnabled(props.externalLinkEnabled ?? true);
-  linkService.setExternalLinkRel(props.externalLinkRel ?? "noopener noreferrer");
   linkService.setExternalLinkTarget(props.externalLinkTarget ?? "_blank");
 
   const layerParameters = {
