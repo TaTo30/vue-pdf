@@ -1,23 +1,38 @@
-import type { IPDFLinkService } from "pdfjs-dist/types/web/interfaces";
 import type { PDFDocumentProxy } from "pdfjs-dist/types/src/display/api";
+import { EventBus } from "pdfjs-dist/types/web/event_utils";
+import type { PDFLinkService } from "pdfjs-dist/types/web/pdf_link_service";
 
 const LINK = "link";
 const INTERNAL_LINK = "internal-link";
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
-class LinkService implements IPDFLinkService {
+class LinkService implements PDFLinkService {
+  targets = ["_blank", "_self", "_parent", "_top"];
   externalLinkEnabled: boolean;
-
-  externalLinkTarget: string;
+  externalLinkTarget: number;
   externalLinkRel: string;
   #pdfDocument: PDFDocumentProxy | null = null;
-  #rootEmit: any = null;
+  #eventEmitter: any = null;
+  eventBus: EventBus = null as any;
+  baseUrl: any;
+  _ignoreDestinationZoom: boolean = false;
+  pdfDocument: any;
+  pdfHistory: any;
+  pdfViewer: any;
 
-  constructor() {
+  constructor(eventEmitter: any) {
     this.externalLinkEnabled = true;
-
-    this.externalLinkTarget = "";
+    this.externalLinkTarget = this.targets.indexOf("_blank");
     this.externalLinkRel = "noopener noreferrer";
+    this.#eventEmitter = eventEmitter;
+  }
+
+  setHistory(pdfHistory: any): void {
+    this.pdfHistory = pdfHistory;
+  }
+
+  setViewer(pdfViewer: any): void {
+    this.pdfViewer = pdfViewer;
   }
 
   setDocument(pdfDocument: PDFDocumentProxy) {
@@ -25,7 +40,7 @@ class LinkService implements IPDFLinkService {
   }
 
   setRootEmit(rootEmit: any) {
-    this.#rootEmit = rootEmit;
+    this.#eventEmitter = rootEmit;
   }
 
   get pagesCount() {
@@ -122,7 +137,7 @@ class LinkService implements IPDFLinkService {
         break;
     }
 
-    this.#rootEmit("annotation", {
+    this.#eventEmitter("annotation", {
       type: INTERNAL_LINK,
       data: {
         referencedPage: pageNumber,
@@ -158,17 +173,17 @@ class LinkService implements IPDFLinkService {
 
     if (newWindow) {
       link.target = "_blank";
-    } else if (this.externalLinkTarget) {
-      link.target = this.externalLinkTarget;
+    } else if (this.externalLinkTarget !== -1) {
+      link.target = this.targets[this.externalLinkTarget];
     } else {
       link.removeAttribute("target");
     }
 
-    const rel = this.externalLinkRel || "noopener noreferrer";
+    const rel = this.externalLinkRel;
     link.rel = rel.includes("noopener") ? rel : `noopener ${rel}`.trim();
 
     link.addEventListener("click", (evt) => {
-      this.#rootEmit("annotation", {
+      this.#eventEmitter("annotation", {
         type: LINK,
         data: {
           url: safeUrl,
@@ -187,16 +202,22 @@ class LinkService implements IPDFLinkService {
   }
 
   setExternalLinkTarget(target: string) {
-    this.externalLinkTarget = target;
+    this.externalLinkTarget = this.targets.indexOf(target);
   }
 
   setExternalLinkRel(rel: string) {
     this.externalLinkRel = rel;
   }
 
+  setExternalLinkEnabled(enabled: boolean) {
+    this.externalLinkEnabled = enabled;
+  }
+
   setHash(_hash: string) {}
   executeNamedAction(_action: string) {}
-  executeSetOCGState(_action: object) {}
+  executeSetOCGState(_action: object): Promise<void> {
+    return new Promise(() => {});
+  }
   cachePageRef(_pageNum: number, _pageRef: object) {}
   goToPage(_val: number | string) {}
   goToXY(pageNumber: number, x: number, y: number): void {}

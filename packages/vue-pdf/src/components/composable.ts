@@ -22,7 +22,7 @@ import { addStylesToIframe, createIframe } from './utils/miscellaneous'
 
 /**
  *
- * @param {string | URL | TypedArray | PDFDataRangeTransport | DocumentInitParameters} src
+ * @param {string | URL | ArrayBuffer | TypedArray | DocumentInitParameters} src
  * Can be a URL where a PDF file is located, a typed array (Uint8Array) already populated with data, or a parameter object.
  * @param {UsePDFParameters} options
  * UsePDF object parameters
@@ -120,7 +120,7 @@ export function usePDF(src: PDFSrc | Ref<PDFSrc>,
 
   async function download(filename = 'filename') {
     const bytes = await getBytes()
-    const blobBytes = new Blob([bytes], { type: 'application/pdf' })
+    const blobBytes = new Blob([bytes] as BlobPart[], { type: 'application/pdf' })
     const blobUrl = URL.createObjectURL(blobBytes)
 
     const anchorDownload = document.createElement('a')

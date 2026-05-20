@@ -1,9 +1,8 @@
 import * as PDFJS from "pdfjs-dist";
-import { convertMatches, normalizeText } from "./highlight";
+import { convertMatches, normalizeText } from "./text_utils";
 
-import type { PageViewport } from "pdfjs-dist/types/web/interfaces";
 import type { PDFPageProxy } from "pdfjs-dist/types/src/display/api";
-
+import type { PageViewport } from "pdfjs-dist";
 import type { Match, LinkMatch } from "../types";
 
 function DOMRectToPDF(

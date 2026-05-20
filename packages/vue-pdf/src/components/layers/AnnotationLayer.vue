@@ -3,8 +3,7 @@ import * as PDFJS from "pdfjs-dist";
 import { inject, onMounted, ref, toRaw, useTemplateRef, watch } from "vue";
 
 import type { PDFDocumentProxy, PDFPageProxy, PageViewport } from "pdfjs-dist";
-import type { AnnotationLayerParameters } from "pdfjs-dist/types/src/display/annotation_layer";
-import type { IDownloadManager } from "pdfjs-dist/types/web/interfaces";
+import type { AnnotationLayerParameters, BaseDownloadManager } from "pdfjs-dist/types/src/display/annotation_layer";
 import type { LinkService } from "../utils/link_service";
 
 import {
@@ -29,6 +28,9 @@ const props = defineProps<{
   hideForms?: boolean;
   enableScripting?: boolean;
   intent: string;
+  externalLinkEnabled?: boolean;
+  externalLinkRel?: string;
+  externalLinkTarget?: string;
 }>();
 
 const emit = defineEmits<{
@@ -131,6 +133,9 @@ async function render() {
   }
 
   const linkService = containerObj.linkService;
+  linkService.setExternalLinkEnabled(props.externalLinkEnabled ?? true);
+  linkService.setExternalLinkRel(props.externalLinkRel ?? "noopener noreferrer");
+  linkService.setExternalLinkTarget(props.externalLinkTarget ?? "_blank");
 
   const layerParameters = {
     accessibilityManager: undefined,
@@ -158,7 +163,7 @@ async function render() {
     enableScripting: false,
     hasJSActions: await getHasJSActions(),
     fieldObjects: await getFieldObjects(),
-    downloadManager: null as unknown as IDownloadManager,
+    downloadManager: null as unknown as BaseDownloadManager,
     imageResourcesPath: props.imageResourcesPath,
   };
 

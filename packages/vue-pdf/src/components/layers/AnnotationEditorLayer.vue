@@ -14,7 +14,7 @@ import {
   STAMP_EDITOR_KEY,
 } from "../utils/symbols";
 
-import type { IL10n } from "pdfjs-dist/types/web/interfaces";
+import type { L10n } from "pdfjs-dist/types/web/l10n";
 import type { PDFPageProxy, PageViewport } from "pdfjs-dist";
 import type {
   EditorEmitters,
@@ -171,13 +171,13 @@ async function render() {
     viewport: viewport!.clone({ dontFlip: true }),
     enabled: true,
     pageIndex: page!.pageNumber - 1,
-    l10n: null as any as IL10n,
+    l10n: null as any as L10n,
     textLayer: textLayerElement
       ? ({ div: textLayerElement } as any as HTMLDivElement)
       : undefined, // <-- Type casting to satisfy typescript bllsht :)
     drawLayer: drawLayer,
     mode: props.editorType,
-    structTreeLayer: null,
+    structTreeLayer: null as any,
     accessibilityManager: undefined,
     annotationLayer: annotationLayerInstance,
   });

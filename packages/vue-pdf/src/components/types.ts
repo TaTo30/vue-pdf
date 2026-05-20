@@ -99,8 +99,8 @@ export type OnErrorCallback = (error: any) => void;
 export type PDFSrc =
   | string
   | URL
+  | ArrayBuffer
   | TypedArray
-  | PDFDataRangeTransport
   | DocumentInitParameters
   | undefined
   | null;

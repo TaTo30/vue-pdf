@@ -74,6 +74,9 @@ const props = withDefaults(
     highlightPages?: number[];
     editorLayer?: boolean;
     editorType?: number;
+    externalLinkEnabled?: boolean;
+    externalLinkRel?: string;
+    externalLinkTarget?: string;
   }>(),
   {
     page: 1,
@@ -81,6 +84,9 @@ const props = withDefaults(
     editorType: 0,
     intent: "display",
     autoDestroy: false,
+    externalLinkEnabled: true,
+    externalLinkRel: "noopener noreferrer",
+    externalLinkTarget: "_blank",
   },
 );
 
@@ -116,6 +122,9 @@ const alayerProps = computed(() => {
   return {
     annotationsMap: props.annotationsMap,
     annotationsFilter: props.annotationsFilter,
+    externalLinkEnabled: props.externalLinkEnabled,
+    externalLinkRel: props.externalLinkRel,
+    externalLinkTarget: props.externalLinkTarget,
     imageResourcesPath: props.imageResourcesPath,
     hideForms: props.hideForms,
     intent: props.intent,
@@ -156,12 +165,12 @@ provide(EDITOR_TEXT_LAYER_OBJ_KEY, {
 // Global state are objects that will work across layers.
 // not all object might initialized at the beginning but can be initialized later when
 // its main layer make use of it.
+
 const globalState = {
   wrapper: canvasWrapper,
   container: container,
-  rootEmit: emit,
   uiManager: null,
-  linkService: new LinkService(),
+  linkService: new LinkService(emit),
 };
 provide(CONTAINER_OBJ_KEY, globalState);
 
