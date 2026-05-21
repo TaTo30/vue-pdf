@@ -3,21 +3,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable no-case-declarations */
 import type { PDFDocumentProxy } from 'pdfjs-dist'
-import type { RefProxy } from 'pdfjs-dist/types/src/display/api'
 import type { AnnotationEventPayload } from '../types'
 
 interface PopupArgs {
   [key: string]: string
 }
 
-interface LinkAnnotation {
-  dest: Array<any> | string
-  url: string
-  unsafeurl: string
-}
-
-const INTERNAL_LINK = 'internal-link'
-const LINK = 'link'
 const FILE_ATTACHMENT = 'file-attachment'
 const FORM_TEXT = 'form-text'
 const FORM_SELECT = 'form-select'
@@ -94,65 +85,6 @@ function fileAnnotation(annotation: any) {
   return buildAnnotationData(FILE_ATTACHMENT, annotation.file)
 }
 
-async function linkAnnotation(annotation: {
-  dest?: any
-  url?: string
-  unsafeUrl?: string
-}, PDFDoc: PDFDocumentProxy) {
-  if (annotation.dest) {
-    let explicitDest
-    if (typeof annotation.dest === 'string')
-      explicitDest = await PDFDoc.getDestination(annotation.dest)
-    else
-      explicitDest = annotation.dest
-
-    if (!Array.isArray(explicitDest)) {
-      console.warn(`Destination "${explicitDest}" is not a valid destination (dest="${annotation.dest}")`)
-      return buildAnnotationData(INTERNAL_LINK, {
-        referencedPage: null,
-        offset: null,
-      })
-    }
-
-    let offset = null
-    if (explicitDest.length === 5) {
-      offset = {
-        left: annotation.dest[2],
-        bottom: annotation.dest[3],
-      }
-    }
-
-    const [destRef] = explicitDest
-    if (Number.isInteger(destRef)) {
-      return buildAnnotationData(INTERNAL_LINK, {
-        referencedPage: Number(destRef) + 1,
-        offset,
-      })
-    }
-    else if (typeof destRef === 'object') {
-      const pageNumber = await PDFDoc.getPageIndex(destRef as RefProxy)
-      return buildAnnotationData(INTERNAL_LINK, {
-        referencedPage: pageNumber + 1,
-        offset,
-      })
-    }
-    else {
-      console.warn(
-        `Destination "${destRef}" is not a valid destination (dest="${annotation.dest}")`,
-      )
-      return buildAnnotationData(INTERNAL_LINK, {
-        referencedPage: null,
-        offset: null,
-      })
-    }
-  }
-  else if (annotation.url) {
-    return buildAnnotationData(LINK, {
-      url: annotation.url,
-      unsafeUrl: annotation.unsafeUrl,
-    })
-  }
-}
 
 function mergePopupArgs(annotation: HTMLElement) {
   for (const spanElement of annotation.getElementsByTagName('span')) {
@@ -174,12 +106,8 @@ function annotationEventsHandler(evt: Event, PDFDoc: PDFDocumentProxy, Annotatio
   if (annotation.tagName !== 'SECTION')
     annotation = annotation.parentNode! as HTMLElement
 
-  if (annotation.className === 'linkAnnotation' && evt.type === 'click') {
-    const id: string | undefined = annotation.dataset?.annotationId
-    if (id)
-      return linkAnnotation(getAnnotationsByKey('id', id, Annotations)[0] as LinkAnnotation, PDFDoc)
-  }
-  else if (annotation.className.includes('popupAnnotation') || annotation.className.includes('textAnnotation')) {
+
+  if (annotation.className.includes('popupAnnotation') || annotation.className.includes('textAnnotation')) {
     mergePopupArgs(annotation)
   }
   else if (annotation.className.includes('fileAttachmentAnnotation')) {

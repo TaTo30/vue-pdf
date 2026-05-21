@@ -42,6 +42,7 @@ import {
   EDITOR_ANNOTATION_LAYER_OBJ_KEY,
   EDITOR_TEXT_LAYER_OBJ_KEY,
 } from "./utils/symbols";
+import { LinkService } from "./utils/link_service";
 
 interface InternalProps {
   page: PDFPageProxy | undefined;
@@ -74,6 +75,7 @@ const props = withDefaults(
     editorLayer?: boolean;
     editorType?: number;
     externalLinkEnabled?: boolean;
+    externalLinkTarget?: string;
   }>(),
   {
     page: 1,
@@ -82,6 +84,7 @@ const props = withDefaults(
     intent: "display",
     autoDestroy: false,
     externalLinkEnabled: true,
+    externalLinkTarget: "_blank",
   },
 );
 
@@ -118,6 +121,7 @@ const alayerProps = computed(() => {
     annotationsMap: props.annotationsMap,
     annotationsFilter: props.annotationsFilter,
     externalLinkEnabled: props.externalLinkEnabled,
+    externalLinkTarget: props.externalLinkTarget,
     imageResourcesPath: props.imageResourcesPath,
     hideForms: props.hideForms,
     intent: props.intent,
@@ -154,11 +158,18 @@ provide(EDITOR_TEXT_LAYER_OBJ_KEY, {
   }),
   resolve: (value: HTMLDivElement | undefined) => tlayerResolver(value),
 });
-provide(CONTAINER_OBJ_KEY, {
+
+// Global state are objects that will work across layers.
+// not all object might initialized at the beginning but can be initialized later when
+// its main layer make use of it.
+
+const globalState = {
   wrapper: canvasWrapper,
   container: container,
   uiManager: null,
-});
+  linkService: new LinkService(emit),
+};
+provide(CONTAINER_OBJ_KEY, globalState);
 
 function getWatermarkOptionsWithDefaults(): WatermarkOptions {
   return Object.assign(
@@ -324,6 +335,7 @@ function renderPage(pageNum: number) {
         canvas.removeAttribute("role");
       }
 
+      globalState.linkService.setDocument(internalProps.value.document!);
       internalProps.value.page = page;
       internalProps.value.viewport = viewport;
       renderTask = page.render(renderContext);

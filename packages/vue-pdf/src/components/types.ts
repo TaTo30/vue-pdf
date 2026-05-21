@@ -9,6 +9,8 @@ import type {
 import type { AnnotationEditor } from "pdfjs-dist/types/src/display/editor/tools";
 import type { Metadata } from "pdfjs-dist/types/src/display/metadata";
 
+export type PositionDiffs = [Uint32Array, Int32Array];
+
 export interface Match {
   start: {
     idx: number;
@@ -20,6 +22,12 @@ export interface Match {
   };
   str: string;
   oindex: number;
+}
+
+export interface LinkMatch {
+  url: string;
+  index: number;
+  length: number;
 }
 
 export type LoadedEventPayload = PageViewport;
@@ -91,8 +99,8 @@ export type OnErrorCallback = (error: any) => void;
 export type PDFSrc =
   | string
   | URL
+  | ArrayBuffer
   | TypedArray
-  | PDFDataRangeTransport
   | DocumentInitParameters
   | undefined
   | null;

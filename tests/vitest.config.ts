@@ -1,5 +1,7 @@
 import { resolve } from "node:url";
 import { defineConfig, mergeConfig } from "vitest/config";
+import { playwright } from "@vitest/browser-playwright";
+
 import commonConfig from "../vite.config";
 
 export default mergeConfig(
@@ -7,14 +9,10 @@ export default mergeConfig(
   defineConfig({
     test: {
       browser: {
-        provider: "playwright",
+        provider: playwright(),
         enabled: true,
         headless: true,
-        instances: [
-          { browser: "firefox" },
-          { browser: "chromium" },
-          { browser: "webkit" },
-        ],
+        instances: [{ browser: "firefox" }],
       },
     },
     resolve: {

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import * as PDFJS from "pdfjs-dist";
-import { onMounted, toRaw, useTemplateRef, watch } from "vue";
+import { inject, onMounted, toRaw, useTemplateRef, watch } from "vue";
 
 import type { PDFDocumentProxy, PDFPageProxy, PageViewport } from "pdfjs-dist";
 import type { XfaLayerParameters } from "pdfjs-dist/types/src/display/xfa_layer";
-
-import { SimpleLinkService } from "../utils/link_service";
+import type { LinkService } from "../utils/link_service";
+import { CONTAINER_OBJ_KEY } from "../utils/symbols";
 
 const props = defineProps<{
   page?: PDFPageProxy;
@@ -18,6 +18,7 @@ const emit = defineEmits<{
 }>();
 
 const layer = useTemplateRef<HTMLDivElement>("layer");
+const globalState = inject(CONTAINER_OBJ_KEY)! as { linkService: LinkService };
 
 async function render() {
   layer.value!.replaceChildren?.();
@@ -31,7 +32,7 @@ async function render() {
     const parameters: XfaLayerParameters = {
       div: layer.value!,
       viewport: viewport!.clone({ dontFlip: true }),
-      linkService: new SimpleLinkService(),
+      linkService: globalState.linkService,
       annotationStorage: pdf?.annotationStorage,
       xfaHtml: xfaHTML!,
     };

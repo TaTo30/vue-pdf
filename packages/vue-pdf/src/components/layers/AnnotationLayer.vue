@@ -1,19 +1,18 @@
 <script setup lang="ts">
 import * as PDFJS from "pdfjs-dist";
 import { inject, onMounted, ref, toRaw, useTemplateRef, watch } from "vue";
+import { EVENTS_TO_HANDLER, annotationEventsHandler } from "../utils/annotations";
 
 import type { PDFDocumentProxy, PDFPageProxy, PageViewport } from "pdfjs-dist";
-import type { AnnotationLayerParameters } from "pdfjs-dist/types/src/display/annotation_layer";
-import type { IDownloadManager } from "pdfjs-dist/types/web/interfaces";
-
-import {
-  EVENTS_TO_HANDLER,
-  annotationEventsHandler,
-} from "../utils/annotations";
-import { SimpleLinkService } from "../utils/link_service";
+import type { AnnotationLayerParameters, BaseDownloadManager } from "pdfjs-dist/types/src/display/annotation_layer";
+import type { LinkService } from "../utils/link_service";
 
 import type { AnnotationEventPayload } from "../types";
-import { EDITOR_ANNOTATION_LAYER_OBJ_KEY } from "../utils/symbols";
+import {
+  CONTAINER_OBJ_KEY,
+  EDITOR_ANNOTATION_LAYER_OBJ_KEY,
+} from "../utils/symbols";
+import { processLinks } from "../utils/inferred_links";
 
 const props = defineProps<{
   page?: PDFPageProxy;
@@ -26,6 +25,8 @@ const props = defineProps<{
   enableScripting?: boolean;
   externalLinkEnabled?: boolean;
   intent: string;
+  externalLinkEnabled?: boolean;
+  externalLinkTarget?: string;
 }>();
 
 const emit = defineEmits<{
@@ -36,6 +37,7 @@ const emit = defineEmits<{
 const layer = useTemplateRef<HTMLDivElement>("layer");
 const annotations = ref<any[]>();
 
+const containerObj = inject(CONTAINER_OBJ_KEY)! as { linkService: LinkService };
 const annotationLayerProvider = inject(EDITOR_ANNOTATION_LAYER_OBJ_KEY)! as {
   promise: Promise<PDFJS.AnnotationLayer | undefined>;
   resolve: (value: PDFJS.AnnotationLayer | undefined) => void;
@@ -122,6 +124,10 @@ async function render() {
       annotationStorage.setValue(key, value);
   }
 
+  const linkService = containerObj.linkService;
+  linkService.setExternalLinkEnabled(props.externalLinkEnabled ?? true);
+  linkService.setExternalLinkTarget(props.externalLinkTarget ?? "_blank");
+
   const layerParameters = {
     accessibilityManager: undefined,
     annotationCanvasMap: canvasMap,
@@ -131,7 +137,7 @@ async function render() {
     annotationEditorUIManager: null,
     l10n: null,
     annotationStorage,
-    linkService: new SimpleLinkService(props.externalLinkEnabled),
+    linkService,
     commentManager: null,
     structTreeLayer: null,
   };
@@ -139,7 +145,7 @@ async function render() {
   const renderParameters: AnnotationLayerParameters = {
     annotations: annotations.value!,
     viewport: viewport!.clone({ dontFlip: true }),
-    linkService: new SimpleLinkService(props.externalLinkEnabled),
+    linkService,
     annotationCanvasMap: canvasMap,
     div: layer.value!,
     annotationStorage,
@@ -148,7 +154,7 @@ async function render() {
     enableScripting: false,
     hasJSActions: await getHasJSActions(),
     fieldObjects: await getFieldObjects(),
-    downloadManager: null as unknown as IDownloadManager,
+    downloadManager: null as unknown as BaseDownloadManager,
     imageResourcesPath: props.imageResourcesPath,
   };
 
@@ -156,6 +162,15 @@ async function render() {
   const task = instance.render(renderParameters);
   task.then(async () => {
     annotationLayerProvider.resolve(instance);
+
+    const inferredLinks = await processLinks(
+      page!,
+      layer.value!,
+      viewport!.clone(),
+    );
+
+    instance.addLinkAnnotations(inferredLinks);
+
     emit("annotationLoaded", (await getAnnotations())!);
   });
 
