@@ -168,6 +168,7 @@ function findLinks(text: string): LinkMatch[] {
     ) {
       raw = url;
     } else if (emailDomain) {
+      // @ts-ignore
       const hostname = URL.parse(`http://${emailDomain}`)?.hostname;
       if (!hostname) {
         continue;
