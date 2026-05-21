@@ -37,3 +37,22 @@ function someEvent() {
   <VuePDF ref="VPDF" :pdf="pdf" />
 </template>
 ```
+
+## destroy
+
+Destroy the current `PDFDocumentLoadingTask` and terminate its worker.
+
+```vue
+<script setup>
+import { ref } from 'vue'
+
+const VPDF = ref({})
+function closeDocument() {
+  VPDF.value.destroy()
+}
+</script>
+
+<template>
+  <VuePDF ref="VPDF" :pdf="pdf" />
+</template>
+```

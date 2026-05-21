@@ -50,7 +50,7 @@ const { pdf } = usePDF('sample.pdf')
 Be sure to set `GlobalWorkerOptions.workerSrc` before calling `usePDF`, otherwise the worker will fail to load.
 
 > [!IMPORTANT]
-> Version of worker script must match with pdfjs-dist version.
+> The worker script version must match the `pdfjs-dist` version.
 
 ## Working With Layers
 
@@ -188,7 +188,7 @@ Just be aware to set the `legacy` worker before use `usePDF`.
 
 > Promise.withResolvers is not a function
 
-That throws because `Promise.withResolvers` is a relative "new feature" of JavaScript's Promises, even if almost all browsers [support it](https://caniuse.com/?search=withResolvers), in NodeJS this feature was fully included on version v22 as a base feature. To solve this issue consider updating node version if you are currently using a lower one.
+This happens because `Promise.withResolvers` is a relatively new Promise feature in JavaScript. Even though almost all browsers [support it](https://caniuse.com/?search=withResolvers), Node.js included it as a baseline feature in v22. To solve this issue, update Node.js if you are using an older version.
 
 ### Top-level await is not available in the configured target environment <badge type="tip" text="+v1.10" vertical="middle" />
 
@@ -196,7 +196,7 @@ That throws because `Promise.withResolvers` is a relative "new feature" of JavaS
 
 This error is more related to ESBuild settings instead of compatibility matters, `Top-level await` is (as usually) a "new feature" of the JavaScript definition, practically all browsers [support it](https://caniuse.com/?search=top-level%20await) and was included on NodeJS since v14.
 
-To solve this issue you will need to add this settings on `vite.config`:
+To solve this issue, add these settings to `vite.config`:
 
 ```json
 optimizeDeps: {
@@ -226,11 +226,11 @@ const { pdf } = usePDF({
 If your application runs offline, copy `node_modules/pdfjs-dist/wasm` into `public/wasm` (or any static folder) and point `wasmUrl` to that relative path, for example `/wasm/`.
 
 > [!IMPORTANT]
-> Version of wasm script must match with pdfjs-dist version.
+> The wasm script version must match the `pdfjs-dist` version.
 
 ## Contributing
 
-Any idea, suggestion or contribution to the code or documentation are very welcome.
+Any idea, suggestion, or contribution to the code or documentation is very welcome.
 
 ```sh
 # Clone the repository

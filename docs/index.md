@@ -8,7 +8,7 @@ titleTemplate: PDF component for Vue 3
 hero:
   name: VuePDF
   text: Render PDF pages on your website
-  tagline: An easy-to-use component for rendering PDF pages in a dynamically and customizable way
+  tagline: An easy-to-use component for rendering PDF pages in a dynamic and customizable way
   image:
     src: /logo.png
     alt: VuePDF

@@ -2,7 +2,7 @@
 
 ## loading: default
 
-Content to display when page is rendering
+Content rendered while the page render task is in progress.
 
 ```vue
 <template>
@@ -16,7 +16,12 @@ Content to display when page is rendering
 
 ## overlay
 
-Enable to add overlay content
+Adds content over the rendered page.
+
+Slot props:
+
+- `width`: current page viewport width in px
+- `height`: current page viewport height in px
 
 ```vue
 <template>
@@ -30,6 +35,29 @@ Enable to add overlay content
 </template>
 ```
 
+## editors
+
+Named slot used to mount editor helper components.
+
+Use this slot when `editor-layer` is enabled to register editor controllers such as `PDFFreeTextAnnotation`, `PDFHighlightAnnotation`, `PDFInkAnnotation`, `PDFStampAnnotation`, and `PDFCommentAnnotation`.
+
+```vue
+<template>
+  <VuePDF
+    :pdf="pdf"
+    text-layer
+    annotation-layer
+    editor-layer
+    :editor-type="editorType"
+  >
+    <template #editors>
+      <PDFFreeTextAnnotation :color="color" :fontSize="20" />
+      <PDFCommentAnnotation @comment="onComment" />
+    </template>
+  </VuePDF>
+</template>
+```
+
 ::: warning
-DO NOT ADD a `<canvas>` element as root of template since it can break the component when page reload on scaling, rotating, etc.
+Do not add a `<canvas>` element as the root element of slot content. Doing so can break rendering after reload operations (for example scale, rotation, or page changes).
 :::

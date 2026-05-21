@@ -53,7 +53,7 @@ Type: `boolean` <br />
 Required: `false` <br />
 Default: `false`
 
-Fit the page's width with the parent width. This prop replace [scale](#scale) in size calculation and has more precedence than [width](#width).
+Fit the page's width to the parent width. This prop replaces [scale](#scale) in size calculation and has higher precedence than [width](#width).
 
 ```vue
 <VuePDF :pdf="pdf" fit-parent />
@@ -65,7 +65,7 @@ Type: `number` <br />
 Required: `false` <br />
 Default: `null`
 
-Scale the page using a `width` in px. This prop replace [scale](#scale) in size calculation and has more precedence than [height](#height).
+Scale the page using a `width` in px. This prop replaces [scale](#scale) in size calculation and has higher precedence than [height](#height).
 
 ```vue
 <VuePDF :pdf="pdf" :width="500" />
@@ -77,7 +77,7 @@ Type: `number` <br />
 Required: `false` <br />
 Default: `null`
 
-Scale the page using a `height` in px. This prop replace [scale](#scale) in size calculation.
+Scale the page using a `height` in px. This prop replaces [scale](#scale) in size calculation.
 
 ```vue
 <VuePDF :pdf="pdf" :height="500" />
@@ -105,6 +105,23 @@ Enables text selection.
 
 ```vue
 <VuePDF :pdf="pdf" text-layer />
+```
+
+## highlight-pages
+
+Type: `number[]` <br />
+Required: `false` <br />
+Default: `null`
+
+Limit the text search performed by [highlight-text](#highlight-text) to specific page numbers.
+
+```vue
+<VuePDF
+  :pdf="pdf"
+  text-layer
+  :highlight-text="['introduction', 'summary']"
+  :highlight-pages="[1, 3, 5]"
+/>
 ```
 
 ## highlight-text  <badge type="tip" text="v1.9" vertical="middle" />
@@ -153,6 +170,30 @@ Enables document annotations like links, popups, widgets, etc.
 
 ```vue
 <VuePDF :pdf="pdf" annotation-layer />
+```
+
+## external-link-enabled
+
+Type: `boolean` <br />
+Required: `false` <br />
+Default: `true`
+
+Enable or disable opening external links rendered in the annotation layer.
+
+```vue
+<VuePDF :pdf="pdf" annotation-layer :external-link-enabled="false" />
+```
+
+## external-link-target
+
+Type: `string` <br />
+Required: `false` <br />
+Default: `_blank`
+
+Set the target used by external links in the annotation layer.
+
+```vue
+<VuePDF :pdf="pdf" annotation-layer external-link-target="_self" />
 ```
 
 ## watermark-text 
@@ -228,7 +269,7 @@ Type: `array` <br />
 Required: `false` <br />
 Default: `null`
 
-Allows to choose which annotations display on page, the following options are available:
+Allows you to choose which annotations are displayed on the page. The following options are available:
 
 *  `Link`
 *  `Text`
@@ -278,4 +319,19 @@ const annotationMap = ref({ '7R': { value: 'Modified value' } })
 </script>
 
 <VuePDF :pdf="pdf" annotation-layer :annotations-map="annotationMap" />
+```
+
+## auto-destroy
+
+Type: `boolean` <br />
+Required: `false` <br />
+Default: `false`
+
+Controls when the current `PDFDocumentLoadingTask` is destroyed:
+
+- `false`: when [pdf](#pdf) changes to a new value.
+- `true`: when the `VuePDF` component is unmounted.
+
+```vue
+<VuePDF :pdf="pdf" :auto-destroy="true" />
 ```

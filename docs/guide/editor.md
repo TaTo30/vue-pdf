@@ -40,7 +40,7 @@ const editorType = ref(0)
 ```
 
 > [!IMPORTANT]
-> For editor layer works properly both `annotation-layer` and `text-layer` must be always in `true`, switching those props two `false` will break editor behavior. 
+> For the editor layer to work properly, both `annotation-layer` and `text-layer` must always be `true`. Setting either prop to `false` will break editor behavior.
 
 
 ## Props

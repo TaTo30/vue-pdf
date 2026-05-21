@@ -6,7 +6,7 @@ outline: [2,3]
 
 ## usePDF
 
-This package provides a default composable named `usePDF` that loads and prepare the PDF Document for it usage with `VuePDF` component, also let you get some basic information and properties about the document.
+This package provides a default composable named `usePDF` that loads and prepares the PDF document for use with the `VuePDF` component, and also lets you get basic information and properties about the document.
 
 Keep in mind that `usePDF` use the same [DocumentInitParameter](https://github.com/mozilla/pdf.js/blob/38287d943532eee939ceffbe6861163f93805ca7/src/display/api.js#L145) as `pdf.js`, so you could decide how `pdf.js` should loads your PDF and then make use of more of `pdf.js` features that are not included in `VuePDF` by default.
 
@@ -24,7 +24,7 @@ const { pdf, pages, info } = usePDF('sample.pdf')
 
 ### Reactivity
 
-`usePDF` is also reactive if you use a `ref<src>` instead of a plain `src`, when the value of `ref` changes the returned values also will chage.
+`usePDF` is also reactive if you use a `ref<src>` instead of a plain `src`; when the value of `ref` changes, the returned values also change.
 
 ```vue
 <script setup>
@@ -59,6 +59,7 @@ Type: `object`
 
 An object with the following properties:
 
+- `password`: Static password used to unlock encrypted files (ignored when `onPassword` is provided).
 - `onPassword`: Callback function to request the document password if no password (or wrong password) was provided.
 - `onProgress`: Callback function to enable progress monitor.
 - `onError`: function to handle pdf loading errors
@@ -78,6 +79,7 @@ function onError(reason) {
 }
 
 const { pdf, pages, info } = usePDF('sample.pdf', {
+  password: 'password1234',
   onPassword,
   onProgress,
   onError
@@ -124,7 +126,21 @@ Document's information object.
 
 Type: `function`
 
-This function returns the page number referenced by `dest` object used by internal-links or outline object. Check the related example in [Table of Content](../examples/advanced/toc.md)
+Resolve a destination used by internal links or outline items. It returns `null` when the destination cannot be resolved.
+
+Return shape:
+
+```ts
+{
+  pageIndex: number,
+  location: {
+    type: 'XYZ' | 'Fit' | 'FitH' | 'FitV' | 'FitR' | 'FitB' | 'FitBH' | 'FitBV',
+    spec: number[]
+  }
+}
+```
+
+Check the related example in [Table of Content](../examples/advanced/toc.md).
 
 ---
 

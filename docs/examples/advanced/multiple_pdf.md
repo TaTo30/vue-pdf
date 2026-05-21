@@ -1,4 +1,4 @@
-# Multiples PDF
+# Multiple PDFs
 
 ```vue
 <script setup>

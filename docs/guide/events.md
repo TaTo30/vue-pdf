@@ -10,7 +10,7 @@ outline: deep
 <VuePDF :pdf="pdf" @loaded="onLoaded" />
 ```
 
-Emitted when page has finished to render, the payload value contains the page's data.
+Emitted when the page has finished rendering. The payload contains the page's data.
 
 Payload example:
 ```json
@@ -88,7 +88,7 @@ Payload example:
 <VuePDF :pdf="pdf" @xfa-loaded="onLoaded" />
 ```
 
-Emitted when XFA page has finished to render.
+Emitted when the XFA page has finished rendering.
 
 
 ## highlight
@@ -116,7 +116,7 @@ Annotation event data depends on what type of annotation has triggered the event
 | Property | Value                                                                                                                                 |
 | -------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | `type`   | Possible values: `internal-link`, `link`, `file-attachment`, `form-text`, `form-select`, `form-checkbox`, `form-radio`, `form-button` |
-| `data`   | Annotation's associated data                                                                                                            |
+| `data`   | Annotation's associated data                                                                                                          |
 
 
 ### internal-link
@@ -166,7 +166,7 @@ Annotation event data depends on what type of annotation has triggered the event
 
 ### form-text
 
-`form-text` emitted when the user inputs a value in an text-field element.
+`form-text` is emitted when the user enters a value in a text-field element.
 
 ```json
 {
@@ -180,7 +180,7 @@ Annotation event data depends on what type of annotation has triggered the event
 
 ### form-select
 
-`form-select` emitted when the user inputs a value in an one-select or multi-select element.
+`form-select` is emitted when the user selects a value in a single-select or multi-select element.
 
 ```json
 {
