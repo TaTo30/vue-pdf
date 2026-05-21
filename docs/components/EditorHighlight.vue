@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import { VuePDF, usePDF, PDFHighlightAnnotation } from "@tato30/vue-pdf";
-import "pdfjs-dist/web/pdf_viewer.css";
+import "@tato30/vue-pdf/style.css";
 
 const { pdf, download } = usePDF(
   "https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf",

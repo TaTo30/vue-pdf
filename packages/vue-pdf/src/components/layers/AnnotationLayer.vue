@@ -23,6 +23,7 @@ const props = defineProps<{
   imageResourcesPath?: string;
   hideForms?: boolean;
   enableScripting?: boolean;
+  externalLinkEnabled?: boolean;
   intent: string;
   externalLinkEnabled?: boolean;
   externalLinkTarget?: string;
