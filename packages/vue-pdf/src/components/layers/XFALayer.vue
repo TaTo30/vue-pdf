@@ -18,11 +18,7 @@ const emit = defineEmits<{
 }>();
 
 const layer = useTemplateRef<HTMLDivElement>("layer");
-
-const globalState = inject(CONTAINER_OBJ_KEY)! as {
-  rootEmit: Function;
-  linkService: LinkService;
-};
+const globalState = inject(CONTAINER_OBJ_KEY)! as { linkService: LinkService };
 
 async function render() {
   layer.value!.replaceChildren?.();

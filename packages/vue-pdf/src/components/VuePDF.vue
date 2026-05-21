@@ -75,7 +75,6 @@ const props = withDefaults(
     editorLayer?: boolean;
     editorType?: number;
     externalLinkEnabled?: boolean;
-    externalLinkRel?: string;
     externalLinkTarget?: string;
   }>(),
   {
@@ -337,7 +336,6 @@ function renderPage(pageNum: number) {
       }
 
       globalState.linkService.setDocument(internalProps.value.document!);
-      globalState.linkService.setRootEmit(emit);
       internalProps.value.page = page;
       internalProps.value.viewport = viewport;
       renderTask = page.render(renderContext);

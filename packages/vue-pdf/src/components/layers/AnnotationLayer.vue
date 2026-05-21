@@ -1,15 +1,11 @@
 <script setup lang="ts">
 import * as PDFJS from "pdfjs-dist";
 import { inject, onMounted, ref, toRaw, useTemplateRef, watch } from "vue";
+import { EVENTS_TO_HANDLER, annotationEventsHandler } from "../utils/annotations";
 
 import type { PDFDocumentProxy, PDFPageProxy, PageViewport } from "pdfjs-dist";
 import type { AnnotationLayerParameters, BaseDownloadManager } from "pdfjs-dist/types/src/display/annotation_layer";
 import type { LinkService } from "../utils/link_service";
-
-import {
-  EVENTS_TO_HANDLER,
-  annotationEventsHandler,
-} from "../utils/annotations";
 
 import type { AnnotationEventPayload } from "../types";
 import {
@@ -40,14 +36,10 @@ const emit = defineEmits<{
 const layer = useTemplateRef<HTMLDivElement>("layer");
 const annotations = ref<any[]>();
 
+const containerObj = inject(CONTAINER_OBJ_KEY)! as { linkService: LinkService };
 const annotationLayerProvider = inject(EDITOR_ANNOTATION_LAYER_OBJ_KEY)! as {
   promise: Promise<PDFJS.AnnotationLayer | undefined>;
   resolve: (value: PDFJS.AnnotationLayer | undefined) => void;
-};
-
-const containerObj = inject(CONTAINER_OBJ_KEY)! as {
-  rootEmit: Function;
-  linkService: LinkService;
 };
 
 function annotationsEvents(evt: Event) {
