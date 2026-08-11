@@ -1,3 +1,4 @@
+import type { CatalogAttachmentContent } from "pdfjs-dist/types/src/core/catalog";
 import type { PDFDocumentProxy } from "pdfjs-dist/types/src/display/api";
 import { EventBus } from "pdfjs-dist/types/web/event_utils";
 import type { PDFLinkService } from "pdfjs-dist/types/web/pdf_link_service";
@@ -193,6 +194,13 @@ class LinkService implements PDFLinkService {
 
     const rel = this.externalLinkRel;
     link.rel = rel.includes("noopener") ? rel : `noopener ${rel}`.trim();
+  }
+
+  async getAttachmentContent(id: string): Promise<CatalogAttachmentContent> {
+    if (!this.#pdfDocument) {
+      return null;
+    }
+    return this.#pdfDocument.getAttachmentContent(id);
   }
 
   getDestinationHash(_dest: any): string {

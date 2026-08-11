@@ -1,3 +1,18 @@
+import type { DocumentInitParameters } from 'pdfjs-dist/types/src/display/api'
+import type { PDFSrc } from '../types'
+
+function toDocumentInitParameters(source: PDFSrc): DocumentInitParameters {
+  if (typeof source === 'string' || source instanceof URL) {
+    return { url: source }
+  }
+
+  if (source instanceof ArrayBuffer || ArrayBuffer.isView(source)) {
+    return { data: source }
+  }
+
+  return source as DocumentInitParameters
+}
+
 async function createIframe(): Promise<HTMLIFrameElement> {
   return new Promise((resolve, reject) => {
     const iframe = document.createElement('iframe')
@@ -35,5 +50,7 @@ function addStylesToIframe(content: Window, sizeX: number, sizeY: number) {
 }
 
 export {
-  addStylesToIframe, createIframe,
+  addStylesToIframe,
+  createIframe,
+  toDocumentInitParameters,
 }

@@ -5,8 +5,7 @@ import type { PDFDocumentLoadingTask, PDFDocumentProxy } from 'pdfjs-dist'
 import type { Ref } from 'vue'
 import type { OnPasswordCallback, PDFDestination, PDFInfo, PDFOptions, PDFSrc } from './types'
 import { getDestinationArray, getDestinationRef, getLocation, isSpecLike } from './utils/destination'
-import { addStylesToIframe, createIframe } from './utils/miscellaneous'
-
+import { addStylesToIframe, createIframe, toDocumentInitParameters } from './utils/miscellaneous'
 
 /**
  * @typedef {Object} UsePDFParameters
@@ -43,10 +42,8 @@ export function usePDF(src: PDFSrc | Ref<PDFSrc>,
   function processLoadingTask(source: PDFSrc) {
     if (pdf.value)
       void pdf.value.destroy()
-    if (pdfDoc.value)
-      void pdfDoc.value.destroy()
 
-    const loadingTask = PDFJS.getDocument(source!)
+    const loadingTask = PDFJS.getDocument(toDocumentInitParameters(source!))
     if (options.onProgress)
       loadingTask.onProgress = options.onProgress
 
@@ -68,7 +65,8 @@ export function usePDF(src: PDFSrc | Ref<PDFSrc>,
         pages.value = doc.numPages
 
         const metadata = await doc.getMetadata()
-        const attachments = (await doc.getAttachments()) as Record<string, unknown>
+        const attachmentsMap = await doc.getAttachments()
+        const attachments: Record<string, unknown> = attachmentsMap ? Object.fromEntries(attachmentsMap) : {}
         const javascript = await doc.getJSActions()
         const outline = await doc.getOutline()
 

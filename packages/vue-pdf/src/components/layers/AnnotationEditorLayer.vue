@@ -162,7 +162,7 @@ async function render() {
     return;
   }
 
-  const drawLayer = new PDFJS.DrawLayer();
+  const drawLayer = new PDFJS.DrawLayer({ pageIndex: page!.pageNumber - 1 });
   drawLayer.setParent(containerObj.wrapper.value);
 
   editor = new PDFJS.AnnotationEditorLayer({
