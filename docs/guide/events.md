@@ -131,10 +131,17 @@ Annotation event data depends on what type of annotation has triggered the event
     "offset": {
       "left": 82,
       "bottom": 716
-    }
+    },
+    "dest": [{ "num": 2, "gen": 0 }, { "name": "XYZ" }, 82, 716, null]
   }
 }
 ```
+
+| Property        | Description                                                               |
+| --------------- | ------------------------------------------------------------------------- |
+| `referencedPage` | The 1-based page number the link points to                               |
+| `offset`        | The `left` and `bottom` coordinates within the target page                |
+| `dest`          | The raw PDF destination array resolved from the link (see PDF spec)       |
 
 ### link
 
