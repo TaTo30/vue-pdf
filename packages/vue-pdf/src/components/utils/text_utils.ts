@@ -68,9 +68,11 @@ function buildCumulativePositions(textContent: TextContent): number[] {
   let pos = 0;
 
   for (const item of textItems) {
-    pos += item.str.length;
-    if (item.hasEOL) pos += 1; // Account for \n
-    cumPositions.push(pos);
+    if (item.str !== undefined){
+      pos += item.str.length;
+      if (item.hasEOL) pos += 1; // Account for \n
+      cumPositions.push(pos);
+    }
   }
 
   return cumPositions;
@@ -104,7 +106,7 @@ function findTextItemPosition(
 
   // Clamp offset to string length (position might be in EOL)
   const item = textItems[idx];
-  const clampedOffset = Math.min(offset, item ? item.str.length : 0);
+  const clampedOffset = Math.min(offset, item ? item.str?.length || 0 : 0);
 
   return { idx, offset: clampedOffset };
 }
@@ -143,7 +145,7 @@ function convertMatches(
     const endItem = textItems[end.idx];
     const endOffset = Math.min(
       end.offset + 1,
-      endItem ? endItem.str.length : 0,
+      endItem ? endItem.str?.length || 0 : 0,
     );
 
     convertedMatches.push({
@@ -173,7 +175,7 @@ function normalizeText(
   // Build the raw text with EOL markers
   const strs: string[] = [];
   for (const textItem of textItems) {
-    strs.push(textItem.str);
+    strs.push(textItem.str || "");
     if (textItem.hasEOL) strs.push("\n");
   }
   const rawText = strs.join("");
