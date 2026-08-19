@@ -76,7 +76,7 @@ class LinkService implements PDFLinkService {
     if (typeof dest === "string") {
       explicitDest = await this.#pdfDocument.getDestination(dest);
     } else {
-      explicitDest = await dest;
+      explicitDest = dest;
     }
     if (!Array.isArray(explicitDest)) {
       console.error(
@@ -143,6 +143,7 @@ class LinkService implements PDFLinkService {
       data: {
         referencedPage: pageNumber,
         offset,
+        dest: explicitDest
       },
     });
   }
