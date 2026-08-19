@@ -224,6 +224,18 @@ describe("Annotation Layer", () => {
     expect(wrapper.emitted("annotation")![0][0]).toEqual({
       type: "internal-link",
       data: {
+        dest: [
+           {
+             gen: 0,
+             num: 47,
+           },
+           {
+             name: "XYZ",
+           },
+           0,
+           841.89,
+           null,
+        ],
         referencedPage: 2,
         offset: {
           left: 0,

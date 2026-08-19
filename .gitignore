@@ -25,6 +25,7 @@ coverage
 /cypress/screenshots/
 
 __screenshots__
+.vitest-attachments
 
 # Editor directories and files
 .vscode/*
