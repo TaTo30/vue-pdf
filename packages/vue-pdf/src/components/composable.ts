@@ -67,7 +67,8 @@ export function usePDF(src: PDFSrc | Ref<PDFSrc>,
         const metadata = await doc.getMetadata()
         const attachmentsMap = await doc.getAttachments()
         const attachments: Record<string, unknown> = attachmentsMap ? Object.fromEntries(attachmentsMap) : {}
-        const javascript = await doc.getJSActions()
+        const jsActionsMap = await doc.getJSActions()
+        const javascript = jsActionsMap ? Object.fromEntries(jsActionsMap) : null
         const outline = await doc.getOutline()
 
         info.value = {
