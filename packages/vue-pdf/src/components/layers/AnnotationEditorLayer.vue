@@ -176,7 +176,8 @@ async function render() {
       ? ({ div: textLayerElement } as any as HTMLDivElement)
       : undefined, // <-- Type casting to satisfy typescript bllsht :)
     drawLayer: drawLayer,
-    mode: props.editorType,
+    // pdf.js types `mode` as `object` and never reads it; updateMode() below applies the editor type.
+    mode: props.editorType as unknown as object,
     structTreeLayer: null as any,
     accessibilityManager: undefined,
     annotationLayer: annotationLayerInstance,
