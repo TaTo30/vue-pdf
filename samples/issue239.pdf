@@ -1,0 +1,53 @@
+%PDF-1.4
+1 0 obj
+<</Type/Catalog/Pages 2 0 R>>
+endobj
+2 0 obj
+<</Type/Pages/Kids[3 0 R 4 0 R]/Count 2>>
+endobj
+3 0 obj
+<</Type/Page/Parent 2 0 R/MediaBox[0 0 612 792]/Resources<</Font<</F1 7 0 R>>>>/Contents 8 0 R/Annots[5 0 R 6 0 R]>>
+endobj
+4 0 obj
+<</Type/Page/Parent 2 0 R/MediaBox[0 0 612 792]/Resources<</Font<</F1 7 0 R>>>>/Contents 9 0 R>>
+endobj
+5 0 obj
+<</Type/Annot/Subtype/Link/Rect[72 700 300 720]/Border[0 0 0]/A<</S/URI/URI(https://example.com/)>>>>
+endobj
+6 0 obj
+<</Type/Annot/Subtype/Link/Rect[72 660 300 680]/Border[0 0 0]/A<</S/GoTo/D[4 0 R/Fit]>>>>
+endobj
+7 0 obj
+<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>
+endobj
+8 0 obj
+<</Length 250>>
+stream
+/P <</MCID 0>> BDC BT /F1 12 Tf 72 706 Td (Web link annotation) Tj ET EMC
+/P <</MCID 1>> BDC BT /F1 12 Tf 72 666 Td (Link annotation to page 2) Tj ET EMC
+/P <</MCID 2>> BDC BT /F1 12 Tf 72 600 Td (This user@example.com is an inferred link.) Tj ET EMC
+endstream
+endobj
+9 0 obj
+<</Length 60>>
+stream
+/P <</MCID 0>> BDC BT /F1 12 Tf 72 706 Td (Page 2) Tj ET EMC
+endstream
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000009 00000 n 
+0000000054 00000 n 
+0000000111 00000 n 
+0000000243 00000 n 
+0000000355 00000 n 
+0000000472 00000 n 
+0000000577 00000 n 
+0000000640 00000 n 
+0000000939 00000 n 
+trailer
+<</Size 10/Root 1 0 R>>
+startxref
+1047
+%%EOF

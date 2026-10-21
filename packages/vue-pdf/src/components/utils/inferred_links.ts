@@ -208,7 +208,7 @@ async function processLinks(
   // Use consistent options for text content - NO marked content
   const textContent = await page.getTextContent({
     disableNormalization: true,
-    includeMarkedContent: true,
+    includeMarkedContent: false,
   });
   const [text, diffs] = normalizeText(textContent);
   const links = findLinks(text);
@@ -252,7 +252,7 @@ async function processLinks(
         mockTextContainer,
         page._pageIndex * 100 + i,
       );
-      if (annotation) {
+      if (annotation?.rect) {
         annotations.push(annotation);
       }
     }

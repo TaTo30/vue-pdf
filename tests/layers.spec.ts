@@ -8,6 +8,7 @@ import { waitUntil, waitUntilNetwork } from "./test-utils";
 
 import a14PDF from "@samples/14.pdf";
 import a45PDF from "@samples/45.pdf";
+import issue239PDF from "@samples/issue239.pdf";
 import xfaPDF from "@samples/xfa.pdf";
 
 describe("Text Layer", () => {
@@ -99,10 +100,12 @@ describe("Text Layer", () => {
 describe("Annotation Layer", () => {
   const { pdf } = usePDF(a14PDF);
   const { pdf: pdf45 } = usePDF(a45PDF);
+  const { pdf: pdf239 } = usePDF(issue239PDF);
 
   beforeAll(async () => {
     await waitUntil(() => pdf.value);
     await waitUntil(() => pdf45.value);
+    await waitUntil(() => pdf239.value);
   });
 
   test("Visibility", async () => {
@@ -243,6 +246,28 @@ describe("Annotation Layer", () => {
         },
       },
     });
+  });
+
+  test("Inferred links on a tagged page", async () => {
+    // Page 1 has a URI link, a GoTo link and a line of tagged (marked content) text
+    // with an email address, which becomes an inferred link. Attached so the links
+    // are measured against a laid-out page.
+    const wrapper = mount(VuePDF, {
+      attachTo: document.body,
+      props: {
+        pdf: pdf239.value,
+        annotationLayer: true,
+      },
+    });
+    expect(wrapper).toBeTruthy();
+
+    await waitUntil(() => wrapper.emitted("annotationLoaded"));
+    expect(
+      wrapper
+        .findAll("div.annotationLayer a")
+        .map((link) => link.attributes("href")),
+    ).toEqual(["https://example.com/", "#", "mailto:user@example.com"]);
+    wrapper.unmount();
   });
 });
 
