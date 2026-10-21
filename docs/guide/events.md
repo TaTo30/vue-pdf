@@ -90,6 +90,16 @@ Payload example:
 
 Emitted when the XFA page has finished rendering.
 
+## error
+
+```vue
+<VuePDF :pdf="pdf" @error="onError" />
+```
+
+Emitted when the page fails to render. The payload is the error that rejected the page's render. A render cancelled by a newer one (changing the page, scale or rotation, or calling `reload` or `cancel`) is not a failure and does not emit.
+
+Errors loading the document go to the `onError` option of [usePDF](/guide/composables.md#parameters) instead.
+
 
 ## highlight
 

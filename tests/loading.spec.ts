@@ -1,6 +1,7 @@
-import { beforeAll, describe, expect, test } from "vitest";
+import { beforeAll, describe, expect, test, vi } from "vitest";
 
 import { mount } from "@vue/test-utils";
+import * as PDFJS from "pdfjs-dist";
 
 import { VuePDF, usePDF } from "@tato30/vue-pdf";
 import { waitUntil, waitUntilNetwork } from "./test-utils";
@@ -150,5 +151,54 @@ describe("Page Navigation", () => {
 
     expect(wrapper1.emitted("loaded")).toHaveLength(1);
     expect(wrapper2.emitted("loaded")).toHaveLength(1);
+  });
+});
+
+describe("Render Errors", () => {
+  // Stubs page.render() for the next call with a task whose promise rejects
+  async function failNextRender(reason: unknown) {
+    const page = await (await pdf.value!.promise).getPage(1);
+    let promise: Promise<void> | undefined;
+    const render = vi
+      .spyOn(Object.getPrototypeOf(page), "render")
+      .mockImplementationOnce(() => {
+        promise = Promise.reject(reason);
+        return { promise, cancel: () => {} };
+      });
+    return { render, rejected: () => promise };
+  }
+
+  test("Emits error when the page fails to render", async () => {
+    const failure = new Error("render failed");
+    const { render } = await failNextRender(failure);
+
+    const wrapper = mount(VuePDF, {
+      props: {
+        pdf: pdf.value,
+      },
+    });
+
+    await waitUntil(() => wrapper.emitted("error"));
+    expect(wrapper.emitted("error")).toEqual([[failure]]);
+    expect(wrapper.emitted("loaded")).toBeUndefined();
+    render.mockRestore();
+  });
+
+  test("Does not emit error when the render is cancelled", async () => {
+    const { render, rejected } = await failNextRender(
+      new PDFJS.RenderingCancelledException("Rendering cancelled"),
+    );
+
+    const wrapper = mount(VuePDF, {
+      props: {
+        pdf: pdf.value,
+      },
+    });
+
+    await waitUntil(() => rejected() !== undefined);
+    // VuePDF's handler was attached first, so it has run by the time this one does
+    await rejected()!.catch(() => {});
+    expect(wrapper.emitted("error")).toBeUndefined();
+    render.mockRestore();
   });
 });

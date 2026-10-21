@@ -99,6 +99,7 @@ const emit = defineEmits<{
   (event: "editorAdded", payload: EditorEventPayload): void;
   (event: "editorRemoved", payload: EditorEventPayload): void;
   (event: "editorSelected", payload: EditorEventPayload): void;
+  (event: "error", payload: unknown): void;
 }>();
 
 // Template Refs
@@ -345,8 +346,9 @@ function renderPage(pageNum: number) {
           paintWatermark(viewport.scale);
           emit("loaded", internalProps.value.viewport!);
         })
-        .catch(() => {
-          // render task cancelled
+        .catch((error) => {
+          // A newer render cancelled this one: routine. Anything else is a real failure.
+          if (!(error instanceof PDFJS.RenderingCancelledException)) emit("error", error);
         });
     });
 }
