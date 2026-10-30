@@ -168,7 +168,9 @@ async function render() {
       viewport!.clone(),
     );
 
-    instance.addLinkAnnotations(inferredLinks);
+    if (inferredLinks.length > 0) {
+      instance.addLinkAnnotations(inferredLinks);
+    }
 
     emit("annotationLoaded", (await getAnnotations())!);
   });
