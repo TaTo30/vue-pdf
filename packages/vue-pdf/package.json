@@ -1,6 +1,6 @@
 {
   "name": "@tato30/vue-pdf",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "PDF component for Vue 3",
   "author": {
     "name": "Aldo Hernandez",
@@ -50,7 +50,7 @@
     "vue": "^3.2.33"
   },
   "dependencies": {
-    "pdfjs-dist": "6.4.299"
+    "pdfjs-dist": "6.5.438"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
