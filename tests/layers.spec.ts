@@ -269,6 +269,76 @@ describe("Annotation Layer", () => {
     ).toEqual(["https://example.com/", "#", "mailto:user@example.com"]);
     wrapper.unmount();
   });
+
+  test("Inferred links do not break annotation layer when range measurement yields zero dimensions", async () => {
+    const origGetClientRects = Range.prototype.getClientRects;
+    Range.prototype.getClientRects = function () {
+      return [
+        {
+          width: 0,
+          height: 0,
+          left: 0,
+          top: 0,
+          right: 0,
+          bottom: 0,
+          x: 0,
+          y: 0,
+          toJSON: () => {},
+        },
+      ] as unknown as DOMRectList;
+    };
+
+    try {
+      const wrapper = mount(VuePDF, {
+        attachTo: document.body,
+        props: {
+          pdf: pdf239.value,
+          annotationLayer: true,
+        },
+      });
+      expect(wrapper).toBeTruthy();
+
+      await waitUntil(() => wrapper.emitted("annotationLoaded"));
+      // Native link annotations are preserved, zero-dimension inferred link is safely skipped
+      expect(
+        wrapper
+          .findAll("div.annotationLayer a")
+          .map((link) => link.attributes("href")),
+      ).toEqual(["https://example.com/", "#"]);
+      wrapper.unmount();
+    } finally {
+      Range.prototype.getClientRects = origGetClientRects;
+    }
+  });
+
+  test("Inferred links do not break annotation layer when range measurement returns empty rects", async () => {
+    const origGetClientRects = Range.prototype.getClientRects;
+    Range.prototype.getClientRects = function () {
+      return [] as unknown as DOMRectList;
+    };
+
+    try {
+      const wrapper = mount(VuePDF, {
+        attachTo: document.body,
+        props: {
+          pdf: pdf239.value,
+          annotationLayer: true,
+        },
+      });
+      expect(wrapper).toBeTruthy();
+
+      await waitUntil(() => wrapper.emitted("annotationLoaded"));
+      // Native link annotations are preserved without error
+      expect(
+        wrapper
+          .findAll("div.annotationLayer a")
+          .map((link) => link.attributes("href")),
+      ).toEqual(["https://example.com/", "#"]);
+      wrapper.unmount();
+    } finally {
+      Range.prototype.getClientRects = origGetClientRects;
+    }
+  });
 });
 
 describe("XFA Layer", () => {

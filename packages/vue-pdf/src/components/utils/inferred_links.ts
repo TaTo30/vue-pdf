@@ -38,6 +38,9 @@ function calculateLinkPosition(
   textLayerDiv: HTMLDivElement,
 ) {
   const rangeRects = range.getClientRects();
+  if (rangeRects.length === 0) {
+    return { rect: null };
+  }
   if (rangeRects.length === 1) {
     return { rect: DOMRectToPDF(rangeRects[0], viewport, textLayerDiv) };
   }
@@ -61,6 +64,9 @@ function calculateLinkPosition(
       rect,
     );
     i += 8;
+  }
+  if (i === 0) {
+    return { rect: null };
   }
   return { quadPoints: new Float32Array(quadPoints), rect };
 }
@@ -129,13 +135,23 @@ function createLinkAnnotation(
   range.setStart(startNode, startOffset);
   range.setEnd(endNode, endOffset);
 
+  const pos = calculateLinkPosition(range, viewport, textLayerDiv);
+  if (
+    !pos.rect ||
+    !Array.isArray(pos.rect) ||
+    pos.rect.length !== 4 ||
+    pos.rect.some((val) => typeof val !== "number" || !Number.isFinite(val))
+  ) {
+    return null;
+  }
+
   return {
     id: `inferred_link_${id}`,
     unsafeUrl: url,
     url,
     annotationType: PDFJS.AnnotationType.LINK,
     rotation: 0,
-    ...calculateLinkPosition(range, viewport, textLayerDiv),
+    ...pos,
     // Populated in the annotationLayer to avoid unnecessary object creation,
     // since most inferred links overlap existing LinkAnnotations:
     borderStyle: null,
