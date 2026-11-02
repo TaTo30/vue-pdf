@@ -8,12 +8,12 @@
     "tests"
   ],
   "scripts": {
-    "dev": "npm run --prefix packages/playground dev",
-    "dev:docs": "npm run --prefix packages/vue-pdf build:lib && npm run --prefix docs dev",
+    "dev": "npm run -w packages/playground dev",
+    "dev:docs": "npm run -w packages/vue-pdf build:lib && npm run -w docs dev",
     "test:setup": "npx playwright install --with-deps",
-    "test": "npm run --prefix tests test",
-    "build": "npm run test && npm run --prefix packages/vue-pdf build",
-    "build:docs": "npm run --prefix packages/vue-pdf build:lib && npm run --prefix docs build",
+    "test": "npm run -w tests test && npm run -w packages/vue-pdf test:dts",
+    "build": "npm run test && npm run -w packages/vue-pdf build",
+    "build:docs": "npm run -w packages/vue-pdf build:lib && npm run -w docs build",
     "lint:fix": "eslint --fix ."
   },
   "dependencies": {

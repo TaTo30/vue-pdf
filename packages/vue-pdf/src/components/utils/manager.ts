@@ -61,6 +61,7 @@ export default class MinimalUiManager extends AnnotationEditorUIManager {
       null,
       null,
       false,
+      null
     );
     this._supportsPinchToZoom = false;
 

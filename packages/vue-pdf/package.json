@@ -43,6 +43,7 @@
     "build": "npm run build:lib && npm run build:dts",
     "build:lib": "vite build && vite --config vite.minimal.config.ts build --emptyOutDir=false",
     "build:dts": "vue-tsc --declaration --emitDeclarationOnly -p tsconfig.build.json",
+    "test:dts": "vue-tsc --noEmit -d -p tsconfig.build.json",
     "lint": "eslint .",
     "lint:fix": "eslint --fix ."
   },
